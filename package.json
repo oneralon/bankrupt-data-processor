@@ -1,0 +1,27 @@
+{
+  "name": "bankrupt-amqp-parser",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "collect": "coffee ./list-collector/index.coffee",
+    "parse-lists": "coffee ./list-parser/index.coffee"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://bitbucket.org/crocotrip/bankrupt-amqp-parser"
+  },
+  "author": "oneralon",
+  "license": "ISC",
+  "dependencies": {
+    "amqplib": "^0.3.2",
+    "bunyan": "^1.4.0",
+    "bunyan-format": "^0.2.1",
+    "fs": "0.0.2",
+    "jsdom": "^5.6.0",
+    "mongodb": "^2.0.36",
+    "mongoose": "^4.0.6",
+    "node-phantom-simple": "^1.2.0",
+    "redis": "^0.12.1",
+    "sync": "^0.2.5"
+  }
+}
