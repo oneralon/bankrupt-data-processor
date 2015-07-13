@@ -1,8 +1,17 @@
 module.exports =
-  amqpUrl: "amqp://localhost"
-  listsQueue: 'bankrot-parser.lists'
-  auctionsQueue: 'bankrot-parser.auctions'
-  timeout: 30000
+  amqpUrl:        'amqp://localhost'
+  listsQueue:     'bankrot-parser.lists'
+  listHtmlWorkers: 4
+  aucUrlQueue:    'bankrot-parser.aucUrl'
+  aucHtmlQueue:   'bankrot-parser.aucHtml'
+  lotUrlQueue:    'bankrot-parser.lotUrl'
+  lotHtmlQueue:   'bankrot-parser.lotHtml'
+  aucUrlWorkers:  8
+  aucHtmlWorkers: 4
+  lotUrlWorkers:  8
+  lotHtmlWorkers: 4
+  tmpDB:          'bankrot-parser-tmp'
+  timeout:        30000
 
   urls: [
     'http://www.opentp.ru'

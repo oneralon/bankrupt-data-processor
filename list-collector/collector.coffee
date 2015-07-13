@@ -19,13 +19,12 @@ module.exports =
   url: null
   page: null
   init: (cb) ->
-    log.info 'Start collector init'
     amqp.connect(config.amqpUrl).catch(cb).then (connection) =>
       connection.createChannel().catch(cb).then (channel) =>
+        channel.assertQueue(queue)
         Sync =>
           ph = phantom.create.sync @
           page = ph.createPage.sync @
-          log.info 'Collector initiated'
           cb null,
             connection: connection
             phantom: ph
