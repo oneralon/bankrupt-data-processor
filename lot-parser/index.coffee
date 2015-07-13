@@ -5,13 +5,13 @@ log        = require('./../helpers/logger')()
 
 if cluster.isMaster
   i = 0
-  while i < config.aucHtmlWorkers
+  while i < config.lotHtmlWorkers
     cluster.fork()
     i++
   cluster.on 'exit', (worker, code, signal) ->
     unless code is 0
-      log.error "Auctions HTML parser worker exit with signal #{signal}"
-    else log.info "Auctions HTML parser worker exit with signal #{signal}"
+      log.error "Lots HTML parser worker exit with signal #{signal}"
+    else log.info "Lots HTML parser worker exit with signal #{signal}"
 else
   parser.start cluster.worker.process.pid, (err) ->
     if err?

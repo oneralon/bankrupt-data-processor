@@ -11,6 +11,7 @@ module.exports =
   lotUrlWorkers:  8
   lotHtmlWorkers: 4
   tmpDB:          'bankrot-parser-tmp'
+  db:             'bankrot-parser'
   timeout:        30000
 
   urls: [
