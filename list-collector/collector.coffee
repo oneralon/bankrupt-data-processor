@@ -52,12 +52,19 @@ module.exports =
     log.info "Start collect #{url}"
     @url = url
     @current = 1
+    worked = false
+    setTimeout =>
+      unless worked
+        log.error "Timeout on #{url}"
+        cb()
+    , config.timeout
     @page.open @url, (status) =>
       Sync =>
         inject @, @nextPage.sync(@)
         while @next isnt null
           inject @, @nextPage.sync(@)
         log.info "Complete collect #{url}"
+        worked = true
         cb()
 
   nextPage: (cb) ->
@@ -80,7 +87,7 @@ module.exports =
         if nextLink?
           nextLink.dispatchEvent e
           window.updating = true
-          $('#ctl00_ctl00_MainContent_ContentPlaceHolderMiddle_UpdatePanel2').bind 'DOMNodeRemoved', ->
+          $("[id*='ctl00_ctl00_MainContent']").bind 'DOMNodeRemoved', ->
             if window.updating
               window.updating = false
               console.log 'UPDATED_NEW_DATA'
