@@ -13,7 +13,7 @@ inject    = (to, from)->
 getPage = (url, cb) ->
   opts =
     url: url
-    timeout: config.timeout
+    timeout: 120000
   request opts, (err, res, body) =>
     cb err if err?
     cb null, body
@@ -42,6 +42,12 @@ module.exports =
 
   start: (number, cb)->
     log.info "Starting auctions HTML collector #{number}"
+    interval = setInterval =>
+      @aucUrlChannel.assertQueue(aucUrlQueue).then (ok) =>
+        if ok.messageCount is 0
+          clearInterval interval
+          @close(cb)
+    , 5000
     Sync =>
       inject @, @init.sync(@)
       @aucUrlChannel.consume aucUrlQueue, (message) =>

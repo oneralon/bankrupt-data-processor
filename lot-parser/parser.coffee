@@ -55,6 +55,12 @@ module.exports =
 
   start: (number, cb)->
     log.info "Starting lot HTML parser #{number}"
+    interval = setInterval =>
+      @lotHtmlChannel.assertQueue(lotHtmlQueue).then (ok) =>
+        if ok.messageCount is 0
+          clearInterval interval
+          @close(cb)
+    , 5000
     Sync =>
       inject @, @init.sync(@)
       @lotHtmlChannel.consume lotHtmlQueue, (message) =>

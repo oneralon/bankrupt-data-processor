@@ -13,7 +13,7 @@ inject    = (to, from)->
 getPage = (url, cb) ->
   opts =
     url: url
-    timeout: config.timeout
+    timeout: 120000
   request opts, (err, res, body) =>
     cb err if err?
     cb null, body
@@ -41,7 +41,13 @@ module.exports =
           cb()
 
   start: (number, cb)->
-    log.info "Starting auctions HTML collector #{number}"
+    log.info "Starting lots HTML collector #{number}"
+    interval = setInterval =>
+      @lotUrlChannel.assertQueue(lotUrlQueue).then (ok) =>
+        if ok.messageCount is 0
+          clearInterval interval
+          @close(cb)
+    , 5000
     Sync =>
       inject @, @init.sync(@)
       @lotUrlChannel.consume lotUrlQueue, (message) =>
@@ -53,4 +59,4 @@ module.exports =
           @lotHtmlChannel.sendToQueue lotHtmlQueue, new Buffer(html), {headers: {url: lotUrl}}
           @lotUrlChannel.ack(message, true)
       , {noAck: false, consumerTag: 'auc-html-collector', exclusive: false}
-      log.info 'Consumer of auctions HTML collector started'
+      log.info 'Consumer of lots HTML collector started'

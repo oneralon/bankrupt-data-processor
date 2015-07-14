@@ -12,9 +12,10 @@ if cluster.isMaster
     unless code is 0
       log.error "Auctions HTML collector worker exit with signal #{signal}"
     else log.info "Auctions HTML collector worker exit with signal #{signal}"
+    if Object.keys(cluster.workers).length is 0 then process.exit 0
 else
   collector.start cluster.worker.process.pid, (err) ->
     if err?
       log.error err
-      process.exit(1)
-    else process.exit(0)
+      process.exit 1
+    else process.exit 0

@@ -18,6 +18,7 @@ module.exports =
   next: null
   url: null
   page: null
+  interval: null
   init: (cb) ->
     amqp.connect(config.amqpUrl).catch(cb).then (connection) =>
       connection.createChannel().catch(cb).then (channel) =>
@@ -32,11 +33,10 @@ module.exports =
             page: page
 
   close: (cb) ->
-    @page.close =>
+    @page.close () =>
       @phantom.exit()
-      @channel.close().catch(cb).then =>
-        @connection.close().catch(cb).then =>
-          log.info 'Collecting completed'
+      @channel.close().catch(cb).then () =>
+        @connection.close().catch(cb).then () =>
           cb()
 
   collect: (urls, cb) ->
@@ -45,17 +45,18 @@ module.exports =
       inject @, @init.sync(@)
       for url in urls
         inject @, @proceed.sync @, url
-      @close.sync @
+      @close.sync(@)
+      log.info 'Collecting completed'
+      cb()
 
   proceed: (url, cb) ->
     log.info "Start collect #{url}"
     @url = url
     @current = 1
-    worked = false
-    setTimeout =>
-      unless worked
-        log.error "Timeout on #{url}"
-        cb()
+    @interval = setInterval =>
+      log.error "Timeout on #{url}"
+      clearInterval @interval
+      cb()
     , config.timeout
     @page.open @url, (status) =>
       Sync =>
@@ -63,7 +64,7 @@ module.exports =
         while @next isnt null
           inject @, @nextPage.sync(@)
         log.info "Complete collect #{url}"
-        worked = true
+        clearInterval @interval
         cb()
 
   nextPage: (cb) ->

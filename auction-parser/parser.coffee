@@ -56,6 +56,12 @@ module.exports =
 
   start: (number, cb)->
     log.info "Starting auction HTML parser #{number}"
+    interval = setInterval =>
+      @aucHtmlChannel.assertQueue(aucHtmlQueue).then (ok) =>
+        if ok.messageCount is 0
+          clearInterval interval
+          @close(cb)
+    , 5000
     Sync =>
       inject @, @init.sync(@)
       @aucHtmlChannel.consume aucHtmlQueue, (message) =>
@@ -75,4 +81,4 @@ module.exports =
           log.info "Inserted to DB"
           @aucHtmlChannel.ack(message, true)
       , {noAck: false, consumerTag: 'auc-parser', exclusive: false}
-      log.info 'Consumer of auction HTML parser #{number} started'
+      log.info "Consumer of auction HTML parser #{number} started"

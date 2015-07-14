@@ -37,12 +37,14 @@ module.exports =
             redis = redis.createClient()
             redis.on 'error', (err) ->
               throw new err
-            cb null,
-              listsChannel: listsChannel
-              aucUrlChannel: aucUrlChannel
-              lotUrlChannel: lotUrlChannel
-              connection: connection
-              redis: redis
+            redis.flushall (err) =>
+              if err? then cb err
+              cb null,
+                listsChannel: listsChannel
+                aucUrlChannel: aucUrlChannel
+                lotUrlChannel: lotUrlChannel
+                connection: connection
+                redis: redis
 
   close: (cb) ->
     @listsChannel.close().catch(cb).then =>
@@ -52,6 +54,12 @@ module.exports =
 
   start: (number, cb)->
     log.info "Starting list HTML parser #{number}"
+    interval = setInterval =>
+      @listsChannel.assertQueue(listsQueue).then (ok) =>
+        if ok.messageCount is 0
+          clearInterval interval
+          @close(cb)
+    , 5000
     Sync =>
       inject @, @init.sync(@)
       @listsChannel.consume listsQueue, (message) =>
@@ -72,10 +80,10 @@ module.exports =
                 if reply is null
                   @aucUrlChannel.sendToQueue aucUrlQueue, new Buffer(aucUrl), {}
                   @redis.set aucUrl, new Date()
-                # else
-                #   if (new Date()) - (new Date(reply)) > 3600000 # 1 hour
-                #     @aucUrlChannel.sendToQueue aucUrlQueue, new Buffer(aucUrl), {}
-                #     @redis.set aucUrl, new Date()
+                else
+                  if (new Date()) - (new Date(reply)) > 600000 # 10 minute
+                    @aucUrlChannel.sendToQueue aucUrlQueue, new Buffer(aucUrl), {}
+                    @redis.set aucUrl, new Date()
             @listsChannel.ack(message, true)
       , {noAck: false, consumerTag: 'parser', exclusive: false}
       log.info "Consumer of list HTML parser (#{number}) started"
