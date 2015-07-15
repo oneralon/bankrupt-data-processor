@@ -43,7 +43,7 @@ module.exports =
     log.info "Start collecting from #{urls.length} sources"
     Sync =>
       inject @, @init.sync(@)
-      for url in urls
+      for url, name of urls
         inject @, @proceed.sync @, url
       @close.sync(@)
       log.info 'Collecting completed'

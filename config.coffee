@@ -1,39 +1,37 @@
 module.exports =
   amqpUrl:          'amqp://localhost'
   listsQueue:       'bankrot-parser.lists'
-  listHtmlWorkers:  8
+  listHtmlWorkers:  2
   aucUrlQueue:      'bankrot-parser.aucUrl'
   aucHtmlQueue:     'bankrot-parser.aucHtml'
   lotUrlQueue:      'bankrot-parser.lotUrl'
   lotHtmlQueue:     'bankrot-parser.lotHtml'
   aucUrlWorkers:    32
-  aucHtmlWorkers:   8
+  aucHtmlWorkers:   2
   lotUrlWorkers:    32
-  lotHtmlWorkers:   8
+  lotHtmlWorkers:   2
   tmpDB:            'bankrot-parser-tmp'
   db:               'bankrot-parser'
   timeout:          30000
 
-  urls: [
-    'http://www.opentp.ru'
-    'http://www.uralbidin.ru'
-    'https://www.gloriaservice.ru'
-    'http://www.meta-invest.ru'
-    'http://bepspb.ru'
-    'http://www.tendergarant.com'
-    'http://bankrupt.etp-agenda.ru'
-    'http://bankrupt.electro-torgi.ru'
-    'http://www.propertytrade.ru'
-    'http://www.alfalot.ru'
-    'http://www.arbitat.ru'
-    'http://www.utpl.ru'
-    'http://bankrupt.etpu.ru'
-    'http://torgibankrot.ru'
-    'http://www.vertrades.ru/bankrupt'
-    'http://utender.ru'
-    'http://tenderstandart.ru'
-    'http://bankrupt.centerr.ru'
-    'http://www.etp-bankrotstvo.ru'
-    'http://www.etp1.ru'
-    'http://ipsetp.ru'
-  ]
+  urls:
+    'http://www.opentp.ru':             'Открытая торговая площадка'
+    'http://www.uralbidin.ru':          'ЭТП "UralBidIn"'
+    'http://www.etp1.ru':               'ЭТП №1'
+    'http://www.etp-bankrotstvo.ru':    'ЭТП по продаже имущества банкротов'
+    'https://www.gloriaservice.ru':     'ЭТП "Регион"'
+    'http://www.meta-invest.ru':        'Мета-Инвест'
+    'http://www.tendergarant.com':      'Тендер Гарант'
+    'http://www.alfalot.ru':            'Альфалот'
+    'http://bepspb.ru':                 'Балтийская ЭТП'
+    'http://bankrupt.etp-agenda.ru':    'ЭТП "Агенда"'
+    'http://bankrupt.centerr.ru':       'Центр реализации'
+    'http://bankrupt.electro-torgi.ru': 'Площадка electro-torgi'
+    'http://www.propertytrade.ru':      'Площадка Property Trade'
+    'http://tenderstandart.ru':         'ТендерСтандарт'
+    'http://utender.ru':                'uTender'
+    'http://www.vertrades.ru/bankrupt': 'ВердиктЪ'
+    'http://torgibankrot.ru':           'Южная ЭТП'
+    'http://bankrupt.etpu.ru':          'Уральская ЭТП'
+    'http://www.utpl.ru':               'Объединенная торговая площадка'                     
+    'http://ipsetp.ru':                 'АйПиЭс ЭТП'
