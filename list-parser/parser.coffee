@@ -78,6 +78,7 @@ module.exports =
                   lotName: lotName
                   lotUrl: lotUrl
                   etpUrl: etpUrl
+                  etpName: config.urls[etpUrl]
                 auc = window.$(row).find("td > a.purchase-type-auction-open, td > a.tip-purchase")
                 aucUrl = etpUrl + auc.attr('href')
                 aucNum = auc.html()
@@ -89,6 +90,7 @@ module.exports =
                     aucNum: aucNum
                     aucUrl: aucUrl
                     etpUrl: etpUrl
+                    etpName: config.urls[etpUrl]
                   @redis.set aucUrl, new Date()
                 else
                   if (new Date()) - (new Date(reply)) > 600000 # 10 minute
