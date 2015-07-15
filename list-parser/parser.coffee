@@ -71,18 +71,31 @@ module.exports =
             log.info "Rows #{rows.length}"
             for row in rows
               Sync =>
-                lotUrl = etpUrl + window.$(row).find("td > a.tip-lot").attr('href')
-                @lotUrlChannel.sendToQueue lotUrlQueue, new Buffer(lotUrl), {auction: etpUrl}
-                aucUrl = etpUrl + window.$(row).find("td > a.purchase-type-auction-open, td > a.tip-purchase").attr('href')
+                lot = window.$(row).find("td > a.tip-lot")
+                lotUrl = etpUrl + lot.attr('href')
+                lotName = lot.html()
+                @lotUrlChannel.sendToQueue lotUrlQueue, new Buffer(lotUrl),
+                  lotName: lotName
+                  lotUrl: lotUrl
+                  etpUrl: etpUrl
+                auc = window.$(row).find("td > a.purchase-type-auction-open, td > a.tip-purchase")
+                aucUrl = etpUrl + auc.attr('href')
+                aucNum = auc.html()
                 if typeof window.$(row).find("td > a.purchase-type-auction-open, td > a.tip-purchase").attr('href') is 'undefined'
                   cb "Undefined url #{etpUrl}"
                 reply = redisGet.sync null, @redis, aucUrl
                 if reply is null
-                  @aucUrlChannel.sendToQueue aucUrlQueue, new Buffer(aucUrl), {}
+                  @aucUrlChannel.sendToQueue aucUrlQueue, new Buffer(aucUrl),
+                    aucNum: aucNum
+                    aucUrl: aucUrl
+                    etpUrl: etpUrl
                   @redis.set aucUrl, new Date()
                 else
                   if (new Date()) - (new Date(reply)) > 600000 # 10 minute
-                    @aucUrlChannel.sendToQueue aucUrlQueue, new Buffer(aucUrl), {}
+                    @aucUrlChannel.sendToQueue aucUrlQueue, new Buffer(aucUrl),
+                      aucNum: aucNum
+                      aucUrl: aucUrl
+                      etpUrl: etpUrl
                     @redis.set aucUrl, new Date()
             @listsChannel.ack(message, true)
       , {noAck: false, consumerTag: 'parser', exclusive: false}
