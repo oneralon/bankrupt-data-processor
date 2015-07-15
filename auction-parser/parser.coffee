@@ -65,18 +65,22 @@ module.exports =
     Sync =>
       inject @, @init.sync(@)
       @aucHtmlChannel.consume aucHtmlQueue, (message) =>
+        etpUrl = message.properties.headers.etpUrl
+        aucUrl = message.properties.headers.aucUrl
+        aucNum = message.properties.headers.aucNum
         Sync =>
           html = message.content.toString()
-          aucUrl = message.properties.headers.url
           log.info aucUrl
           window = getWindow.sync null, html
           info = parsers.auction_info.sync null, window.$
           info.url = aucUrl
+          info.number = aucNum
+          info.lots = []
           info.owner = parsers.trade_owner.sync null, window.$
           info.owner.contact = parsers.trade_owner_contact.sync null, window.$
           info.debtor = parsers.debtor_info.sync null, window.$
           info.region = info.debtor.region
-          info.documents = parsers.auction_documents.sync null, window.$
+          info.documents = parsers.auction_documents.sync null, window.$, etpUrl
           dbInsert.sync null, @collection, info
           log.info "Inserted to DB"
           @aucHtmlChannel.ack(message, true)

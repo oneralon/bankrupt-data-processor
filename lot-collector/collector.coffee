@@ -56,7 +56,8 @@ module.exports =
           log.info "Get page #{lotUrl}"
           html = getPage.sync null, lotUrl
           log.info "OK page #{lotUrl}"
-          @lotHtmlChannel.sendToQueue lotHtmlQueue, new Buffer(html), {headers: {url: lotUrl}}
+          @lotHtmlChannel.sendToQueue lotHtmlQueue, new Buffer(html),
+            headers: message.properties.headers
           @lotUrlChannel.ack(message, true)
       , {noAck: false, consumerTag: 'auc-html-collector', exclusive: false}
       log.info 'Consumer of lots HTML collector started'

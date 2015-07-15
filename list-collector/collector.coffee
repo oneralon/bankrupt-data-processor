@@ -40,7 +40,7 @@ module.exports =
           cb()
 
   collect: (urls, cb) ->
-    log.info "Start collecting from #{urls.length} sources"
+    log.info "Start collecting from #{Object.keys(urls).length} sources"
     Sync =>
       inject @, @init.sync(@)
       for url, name of urls

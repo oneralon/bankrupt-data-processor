@@ -69,36 +69,37 @@ module.exports =
           jsdom.env html, src: [jquery], (err, window) =>
             rows = window.$("[id*='ctl00_ctl00_MainContent'] > tbody > tr.gridRow")
             log.info "Rows #{rows.length}"
-            for row in rows
-              Sync =>
-                lot = window.$(row).find("td > a.tip-lot")
+            Sync =>
+              for row in rows
+                lot = window.$(row).find("td.gridColumn a.tip-lot")
                 lotUrl = etpUrl + lot.attr('href')
                 lotName = lot.html()
-                @lotUrlChannel.sendToQueue lotUrlQueue, new Buffer(lotUrl),
-                  lotName: lotName
-                  lotUrl: lotUrl
-                  etpUrl: etpUrl
-                  etpName: config.urls[etpUrl]
-                auc = window.$(row).find("td > a.purchase-type-auction-open, td > a.tip-purchase")
+                if typeof lotUrl is 'undefined'
+                  log.error "LOT: #{lotUrl}"
+                  cb "Undefined url #{etpUrl}"
+                auc = window.$(row).find("td.gridAltColumn a[class*='purchase-type-']")
                 aucUrl = etpUrl + auc.attr('href')
                 aucNum = auc.html()
-                if typeof window.$(row).find("td > a.purchase-type-auction-open, td > a.tip-purchase").attr('href') is 'undefined'
-                  cb "Undefined url #{etpUrl}"
-                reply = redisGet.sync null, @redis, aucUrl
-                if reply is null
-                  @aucUrlChannel.sendToQueue aucUrlQueue, new Buffer(aucUrl),
+                @lotUrlChannel.sendToQueue lotUrlQueue, new Buffer(lotUrl),
+                  headers:
+                    lotName: lotName
+                    lotUrl: lotUrl
                     aucNum: aucNum
                     aucUrl: aucUrl
                     etpUrl: etpUrl
                     etpName: config.urls[etpUrl]
-                  @redis.set aucUrl, new Date()
-                else
-                  if (new Date()) - (new Date(reply)) > 600000 # 10 minute
-                    @aucUrlChannel.sendToQueue aucUrlQueue, new Buffer(aucUrl),
+                if typeof aucNum is 'undefined'
+                  log.error "AUC: #{aucUrl}"
+                  cb "Undefined url #{etpUrl}"
+                reply = redisGet.sync null, @redis, aucUrl
+                if reply is null
+                  @aucUrlChannel.sendToQueue aucUrlQueue, new Buffer(aucUrl),
+                    headers:
                       aucNum: aucNum
                       aucUrl: aucUrl
                       etpUrl: etpUrl
-                    @redis.set aucUrl, new Date()
-            @listsChannel.ack(message, true)
+                      etpName: config.urls[etpUrl]
+                  @redis.set aucUrl, true
+              @listsChannel.ack(message, true)
       , {noAck: false, consumerTag: 'parser', exclusive: false}
       log.info "Consumer of list HTML parser (#{number}) started"

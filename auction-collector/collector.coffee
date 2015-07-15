@@ -56,7 +56,8 @@ module.exports =
           log.info "Get page #{aucUrl}"
           html = getPage.sync null, aucUrl
           log.info "OK page #{aucUrl}"
-          @aucHtmlChannel.sendToQueue aucHtmlQueue, new Buffer(html), {headers: {url: aucUrl}}
+          @aucHtmlChannel.sendToQueue aucHtmlQueue, new Buffer(html),
+            headers: message.properties.headers
           @aucUrlChannel.ack(message, true)
       , {noAck: false, consumerTag: 'auc-html-collector', exclusive: false}
       log.info 'Consumer of auctions HTML collector started'

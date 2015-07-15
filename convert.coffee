@@ -24,7 +24,9 @@ tempConnection.collection('auctions').find (err, cursor) ->
   auc_promises = []
   stream = cursor.stream()
   stream.on 'data', (auc) ->
-    console.log auc.number
+    if auc.number.length > 10
+      console.log auc.number
+      console.log auc.url
     auc_promises.push new Promise (resolve) ->
       Trade.findOne({number: auc.number}).populate('lots').exec (err, trade) ->
         save_promises = []
