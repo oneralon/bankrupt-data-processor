@@ -9,6 +9,7 @@ listsQueue      = config.listsQueue
 aucUrlQueue     = config.aucUrlQueue
 lotUrlQueue     = config.lotUrlQueue
 jquery          = fs.readFileSync("#{__dirname}/../vendor/jquery.js").toString()
+host            = /^https?\:\/\/[A-Za-z0-9\.\-]+/
 
 inject    = (to, from)->
   for key, val of from
@@ -73,13 +74,13 @@ module.exports =
               Sync =>
                 for row in rows
                   lot = window.$(row).find("td.gridColumn a.tip-lot")
-                  lotUrl = etpUrl + lot.attr('href')
+                  lotUrl = etpUrl.match(host)[0] + lot.attr('href')
                   lotName = lot.html()
                   if typeof lotUrl is 'undefined'
                     log.error "LOT: #{lotUrl}"
                     cb "Undefined url #{etpUrl}"
                   auc = window.$(row).find("td.gridAltColumn a[class*='purchase-type-']")
-                  aucUrl = etpUrl + auc.attr('href')
+                  aucUrl = etpUrl.match(host)[0] + auc.attr('href')
                   aucNum = auc.html()
                   @lotUrlChannel.sendToQueue lotUrlQueue, new Buffer(lotUrl),
                     headers:
