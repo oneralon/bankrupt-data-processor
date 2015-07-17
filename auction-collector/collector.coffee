@@ -24,22 +24,18 @@ downloadPage = (url, cb) ->
   .on 'timeout', -> cb "Reset by timeout #{url}"
 
 getPage = (url, cb) ->
-  Sync =>
-    tries = 0
-    try
+  try
+    Sync =>
+      tries = 0
       res = downloadPage.sync @, url
       while res.statusCode isnt 200 and tries < config.getPageTries
         tries = tries + 1
-        try
-          res = downloadPage.sync @, url
-        catch e
-          if e isnt "Reset by timeout #{url}" then cb err
-          else continue
-      if res.statusCode is 200 then cb null, res.body
-      else cb "Error on download #{url}"
-    catch e
-      log.error e
-      cb e
+        res = downloadPage.sync @, url
+        if res.statusCode is 200 then cb null, res.body
+        else cb "Error on download #{url}"
+  catch e
+    log.error e
+    cb e
 
 module.exports =
   aucUrlChannel: null
@@ -64,14 +60,14 @@ module.exports =
           cb()
 
   start: (number, cb)->
+    log.info "Starting auctions HTML collector #{number}"
+    interval = setInterval =>
+      @aucUrlChannel.assertQueue(aucUrlQueue).then (ok) =>
+        if ok.messageCount is 0
+          clearInterval interval
+          @close(cb)
+    , 5000
     try
-      log.info "Starting auctions HTML collector #{number}"
-      interval = setInterval =>
-        @aucUrlChannel.assertQueue(aucUrlQueue).then (ok) =>
-          if ok.messageCount is 0
-            clearInterval interval
-            @close(cb)
-      , 5000
       Sync =>
         inject @, @init.sync(@)
         @aucUrlChannel.consume aucUrlQueue, (message) =>
