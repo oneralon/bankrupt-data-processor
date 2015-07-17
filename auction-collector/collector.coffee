@@ -21,7 +21,9 @@ downloadPage = (url, cb) ->
         'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.132 Safari/537.36'
   }).on 'error', (err) -> cb err
   .on 'response', (res) -> 
-    res.on 'data', (data) -> cb null, { statusCode: res.statusCode, body: data }
+    data = ''
+    res.on 'data', (end) -> cb null, { statusCode: res.statusCode, body: new Buffer(data) }
+    res.on 'data', (chunk) => data += chunk
   .on 'timeout', -> cb "Reset by timeout #{url}"
 
 getPage = (url, cb) ->
@@ -68,7 +70,7 @@ module.exports =
         if ok.messageCount is 0
           clearInterval interval
           @close(cb)
-    , 5000
+    , 60000
     try
       Sync =>
         inject @, @init.sync(@)

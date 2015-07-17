@@ -2,7 +2,7 @@ _         = require 'lodash'
 
 module.exports = (region) ->
   replaced = {}
-
+  console.log region
   if _.isEmpty(region) or /null/i.test(region) or /не определен/i.test region
     return 'Не определен'
   replaced.country = /(край.*?)($|\s)/ig.exec(region)

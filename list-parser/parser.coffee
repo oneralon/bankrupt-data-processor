@@ -61,7 +61,7 @@ module.exports =
           if ok.messageCount is 0
             clearInterval interval
             @close(cb)
-      , 5000
+      , 60000
       Sync =>
         inject @, @init.sync(@)
         @listsChannel.consume listsQueue, (message) =>
