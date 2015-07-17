@@ -11,6 +11,7 @@ inject    = (to, from)->
     to[key] = val
 
 downloadPage = (url, cb) ->
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0"
   request.get(url,{
     options:
       headers:
