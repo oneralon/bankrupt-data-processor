@@ -19,6 +19,7 @@ module.exports =
   url: null
   page: null
   interval: null
+  cookies: null
   init: (cb) ->
     amqp.connect(config.amqpUrl).catch(cb).then (connection) =>
       connection.createChannel().catch(cb).then (channel) =>
@@ -58,8 +59,11 @@ module.exports =
       clearInterval @interval
       cb()
     , config.timeout
-    @page.open @url, (status) =>
+    @page.open @url, (err, res) =>
+      cb "Non 200 code page" unless res is 'success'
       Sync =>
+        cookie = @page.evaluate.sync null, ->
+          
         inject @, @nextPage.sync(@)
         while @next isnt null
           inject @, @nextPage.sync(@)
@@ -68,31 +72,35 @@ module.exports =
         cb()
 
   nextPage: (cb) ->
-    log.info "Start page #{@current} of #{@url}"
-    @page.onConsoleMessage = (message) =>
-      if message is 'UPDATED_NEW_DATA'
-        log.info "Complete page #{@current} of #{@url}"
-        cb(null, {page: @page, next: @result, current: @result})
-    Sync =>
-      html = @page.get.sync null, 'content'
-      @channel.sendToQueue queue, new Buffer(html), {headers: {url: @url}}
-      result = @page.evaluate.sync null, ->
-        next = $($('.pager span').filter(->
-          $(@).text().indexOf('Страниц') is -1
-        )[0]).next().text()
-        next = parseInt(next)
-        e = document.createEvent 'MouseEvents'
-        e.initMouseEvent 'click', true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null
-        nextLink = $($('.pager span').filter( -> $(@).text().indexOf('Страниц') is -1)[0]).next()?[0]
-        if nextLink?
-          nextLink.dispatchEvent e
-          window.updating = true
-          $("[id*='ctl00_ctl00_MainContent']").bind 'DOMNodeRemoved', ->
-            if window.updating
-              window.updating = false
-              console.log 'UPDATED_NEW_DATA'
-        next
-      if result?
-        @next = result
-        @result = result
-      else cb(null, {page: @page, next: null})
+    try
+      log.info "Start page #{@current} of #{@url}"
+      @page.onConsoleMessage = (message) =>
+        if message is 'UPDATED_NEW_DATA'
+          log.info "Complete page #{@current} of #{@url}"
+          cb(null, {page: @page, next: @result, current: @result})
+      Sync =>
+        html = @page.get.sync null, 'content'
+        @channel.sendToQueue queue, new Buffer(html), {headers: {url: @url}}
+        result = @page.evaluate.sync null, ->
+          next = $($('.pager span').filter(->
+            $(@).text().indexOf('Страниц') is -1
+          )[0]).next().text()
+          next = parseInt(next)
+          e = document.createEvent 'MouseEvents'
+          e.initMouseEvent 'click', true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null
+          nextLink = $($('.pager span').filter( -> $(@).text().indexOf('Страниц') is -1)[0]).next()?[0]
+          if nextLink?
+            nextLink.dispatchEvent e
+            window.updating = true
+            $("[id*='ctl00_ctl00_MainContent']").bind 'DOMNodeRemoved', ->
+              if window.updating
+                window.updating = false
+                console.log 'UPDATED_NEW_DATA'
+          next
+        if result?
+          @next = result
+          @result = result
+        else cb(null, {page: @page, next: null})
+    catch e
+      log.error e
+      cb e

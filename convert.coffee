@@ -8,6 +8,8 @@ config          = require "./config"
 diffpatch       = require './helpers/diffpatch'
 regionize       = require './helpers/regionize'
 
+log             = require('./helpers/logger')()
+
 require './models/trade'
 require './models/lot'
 
@@ -19,14 +21,14 @@ Lot       = prodConnection.model 'Lot'
 
 
 
-console.log 'Convert temp db to production db'
+log.info 'Convert temp db to production db'
 tempConnection.collection('auctions').find (err, cursor) ->
   auc_promises = []
   stream = cursor.stream()
   stream.on 'data', (auc) ->
     if auc.number.length > 10
-      console.log auc.number
-      console.log auc.url
+      log.info auc.number
+      log.info auc.url
     auc_promises.push new Promise (resolve) ->
       Trade.findOne({number: auc.number}).populate('lots').exec (err, trade) ->
         save_promises = []
@@ -37,7 +39,7 @@ tempConnection.collection('auctions').find (err, cursor) ->
               trade[k] = v or undefined
           for auc_lot in auc.lots
             auc_lot.region = regionize auc_lot.region
-            console.log auc_lot.region
+            log.info auc_lot.region
             lot = new Lot()
             for k, v of auc_lot
               if v?
@@ -64,11 +66,11 @@ tempConnection.collection('auctions').find (err, cursor) ->
             trade.save resolve
           for auc_lot in auc.lots
             auc_lot.region = regionize auc_lot.region
-            console.log auc_lot.region
+            log.info auc_lot.region
             lot = _.where(trade.lots, {number: Number auc_lot.number})[0]
             if lot?
               diff = diffpatch.diff lot, auc_lot, Lot
-              # console.log diff
+              # log.info diff
               diffpatch.patch lot, diff
               lot.intervals = auc_lot.intervals
               lot.documents = auc_lot.documents
@@ -78,7 +80,7 @@ tempConnection.collection('auctions').find (err, cursor) ->
               save_promises.push new Promise (resolve) ->
                 lot.save resolve
             else
-              console.log "Trade #{trade.number} has no lot #{auc_lot.number}"
+              log.info "Trade #{trade.number} has no lot #{auc_lot.number}"
               lot = new Lot()
               for k, v of auc_lot
                 if v?
@@ -92,7 +94,7 @@ tempConnection.collection('auctions').find (err, cursor) ->
         Promise.all(save_promises).then resolve
 
   stream.on 'end', ->
-    console.log 'end'
+    log.info 'end'
     Promise.all(auc_promises).then () ->
       update_etps ->
         update_statuses ->
@@ -100,7 +102,7 @@ tempConnection.collection('auctions').find (err, cursor) ->
             prodConnection.close()
             tempConnection.db.dropDatabase()
             tempConnection.close()
-            console.log 'converted'
+            log.info 'converted'
 
 update_etps = (cb) ->
   Trade.distinct 'etp.name', (err, result) ->

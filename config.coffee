@@ -10,28 +10,33 @@ module.exports =
   aucHtmlWorkers:   2
   lotUrlWorkers:    32
   lotHtmlWorkers:   2
-  tmpDB:            'bankrot-parser-tmp'
-  db:               'bankrot-parser'
+  tmpDB:            'test-bankrot-parser-tmp'
+  db:               'test-bankrot-parser'
+  getPageTries:     10
+  getPageTimeout:   30000
   timeout:          30000
 
   urls:
-    'http://www.opentp.ru':             'Открытая торговая площадка'
-    'http://www.uralbidin.ru':          'ЭТП "UralBidIn"'
-    'http://www.etp1.ru':               'ЭТП №1'
-    'http://www.etp-bankrotstvo.ru':    'ЭТП по продаже имущества банкротов'
-    'https://www.gloriaservice.ru':     'ЭТП "Регион"'
-    'http://www.meta-invest.ru':        'Мета-Инвест'
-    'http://www.tendergarant.com':      'Тендер Гарант'
-    'http://www.alfalot.ru':            'Альфалот'
+    'http://opentp.ru':                 'Открытая торговая площадка'
+    'http://uralbidin.ru':              'ЭТП "UralBidIn"'
+    'http://etp1.ru':                   'ЭТП №1'
+    'http://etp-bankrotstvo.ru':        'ЭТП по продаже имущества банкротов'
+    'https://gloriaservice.ru':         'ЭТП "Регион"'
+    'http://meta-invest.ru':            'Мета-Инвест'
+    'http://tendergarant.com':          'Тендер Гарант'
+    'http://alfalot.ru':                'Альфалот'
     'http://bepspb.ru':                 'Балтийская ЭТП'
     'http://bankrupt.etp-agenda.ru':    'ЭТП "Агенда"'
     'http://bankrupt.centerr.ru':       'Центр реализации'
-    'http://bankrupt.electro-torgi.ru': 'Площадка electro-torgi'
-    'http://www.propertytrade.ru':      'Площадка Property Trade'
+    'http://bankrupt.electro-torgi.ru': 'ЭТП по реализации имущества должников'
+    'http://propertytrade.ru':          'Площадка Property Trade'
     'http://tenderstandart.ru':         'ТендерСтандарт'
     'http://utender.ru':                'uTender'
-    'http://www.vertrades.ru/bankrupt': 'ВердиктЪ'
+    'http://vertrades.ru/bankrupt':     'ВердиктЪ'
     'http://torgibankrot.ru':           'Южная ЭТП'
     'http://bankrupt.etpu.ru':          'Уральская ЭТП'
-    'http://www.utpl.ru':               'Объединенная торговая площадка'                     
+    'http://utpl.ru':                   'Объединенная торговая площадка'                     
     'http://ipsetp.ru':                 'АйПиЭс ЭТП'
+    'http://etp.kartoteka.ru':          'Комерсантъ Картотека'
+    'http://mts-etp.ru/':               'Межрегиональная торговая система'
+    'http://bg-tender.ru/':             'ЭТП Бизнесс-Групп'
