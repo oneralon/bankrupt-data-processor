@@ -71,14 +71,18 @@ module.exports =
       Sync =>
         inject @, @init.sync(@)
         @lotUrlChannel.consume lotUrlQueue, (message) =>
-          Sync =>
-            lotUrl = message.content.toString()
-            log.info "Get page #{lotUrl}"
-            html = getPage.sync null, lotUrl
-            log.info "OK page #{lotUrl}"
-            @lotHtmlChannel.sendToQueue lotHtmlQueue, new Buffer(html),
-              headers: message.properties.headers
-            @lotUrlChannel.ack(message, true)
+          try
+            Sync =>
+              lotUrl = message.content.toString()
+              log.info "Get page #{lotUrl}"
+              html = getPage.sync null, lotUrl
+              log.info "OK page #{lotUrl}"
+              @lotHtmlChannel.sendToQueue lotHtmlQueue, new Buffer(html),
+                headers: message.properties.headers
+              @lotUrlChannel.ack(message, true)
+          catch e
+            log.error e
+            cb e
         , {noAck: false, consumerTag: 'auc-html-collector', exclusive: false}
         log.info 'Consumer of lots HTML collector started'
     catch e

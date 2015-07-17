@@ -71,14 +71,18 @@ module.exports =
       Sync =>
         inject @, @init.sync(@)
         @aucUrlChannel.consume aucUrlQueue, (message) =>
-          Sync =>
-            aucUrl = message.content.toString()
-            log.info "Get page #{aucUrl}"
-            html = getPage.sync null, aucUrl
-            log.info "OK page #{aucUrl}"
-            @aucHtmlChannel.sendToQueue aucHtmlQueue, new Buffer(html),
-              headers: message.properties.headers
-            @aucUrlChannel.ack(message, true)
+          try
+            Sync =>
+              aucUrl = message.content.toString()
+              log.info "Get page #{aucUrl}"
+              html = getPage.sync null, aucUrl
+              log.info "OK page #{aucUrl}"
+              @aucHtmlChannel.sendToQueue aucHtmlQueue, new Buffer(html),
+                headers: message.properties.headers
+              @aucUrlChannel.ack(message, true)
+          catch e
+            log.error e
+            cb e
         , {noAck: false, consumerTag: 'auc-html-collector', exclusive: false}
         log.info 'Consumer of auctions HTML collector started'
     catch e
