@@ -20,7 +20,8 @@ downloadPage = (url, cb) ->
         'Cache-Control': 'max-age=0'
         'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.132 Safari/537.36'
   }).on 'error', (err) -> cb err
-  .on 'response', (response) -> cb null, response
+  .on 'response', (res) -> 
+    res.on 'data', (data) -> cb null, { statusCode: res.statusCode, body: data }
   .on 'timeout', -> cb "Reset by timeout #{url}"
 
 getPage = (url, cb) ->
@@ -76,11 +77,15 @@ module.exports =
             Sync =>
               aucUrl = message.content.toString()
               log.info "Get page #{aucUrl}"
-              html = getPage.sync null, aucUrl
+              data = getPage.sync null, aucUrl
               log.info "OK page #{aucUrl}"
-              @aucHtmlChannel.sendToQueue aucHtmlQueue, new Buffer(html),
-                headers: message.properties.headers
-              @aucUrlChannel.ack(message, true)
+              try
+                @aucHtmlChannel.sendToQueue aucHtmlQueue, data,
+                  headers: message.properties.headers
+                @aucUrlChannel.ack(message, true)
+              catch e
+                log.error e
+                cb e
           catch e
             log.error e
             cb e
