@@ -30,9 +30,10 @@ getPage = (url, cb) ->
       res = downloadPage.sync @, url
       while res.statusCode isnt 200 and tries < config.getPageTries
         tries = tries + 1
+        log.error "Get #{res.statusCode} on #{url}"
         res = downloadPage.sync @, url
-        if res.statusCode is 200 then cb null, res.body
-        else cb "Error on download #{url}"
+      if res.statusCode is 200 then cb null, res.body
+      else cb "Error on download #{url}"
   catch e
     log.error e
     cb e
