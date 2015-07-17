@@ -29,9 +29,12 @@ getPage = (url, cb) ->
     try
       res = downloadPage.sync @, url
       while res.statusCode isnt 200 and tries < config.getPageTries
-        res = downloadPage.sync @, url
-        log.info res.statusCode
         tries = tries + 1
+        try
+          res = downloadPage.sync @, url
+        catch e
+          if e isnt "Reset by timeout #{url}" then cb err
+          else continue
       if res.statusCode is 200 then cb null, res.body
       else cb "Error on download #{url}"
     catch e
