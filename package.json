@@ -1,11 +1,8 @@
 {
-  "name": "bankrupt-amqp-parser",
-  "version": "1.0.0",
-  "description": "",
-  "scripts": {
-    "collect": "coffee ./list-collector/index.coffee",
-    "parse-lists": "coffee ./list-parser/index.coffee"
-  },
+  "name": "amqp-bankrupt-parser",
+  "version": "2.0.0",
+  "description": "Parser of ETPs for Bankrupt application",
+  "scripts": {},
   "repository": {
     "type": "git",
     "url": "https://bitbucket.org/crocotrip/bankrupt-amqp-parser"
@@ -16,16 +13,17 @@
     "amqplib": "^0.3.2",
     "bunyan": "^1.4.0",
     "bunyan-format": "^0.2.1",
-    "fs": "0.0.2",
-    "jsdom": "^5.6.0",
-    "lodash": "^3.10.0",
-    "moment": "^2.10.3",
-    "mongodb": "^2.0.36",
-    "mongoose": "^4.0.6",
-    "node-phantom-simple": "^1.2.0",
-    "promise": "^7.0.3",
+    "cheerio": "^0.19.0",
+    "encoding": "^0.1.11",
+    "forever-monitor": "^1.6.0",
+    "lodash": "^3.10.1",
+    "moment": "^2.10.6",
+    "mongodb": "^2.0.39",
+    "mongoose": "^4.1.1",
+    "node-phantom-simple": "^2.0.2",
+    "promise": "^7.0.4",
     "redis": "^0.12.1",
-    "request": "^2.58.0",
+    "request": "^2.60.0",
     "sync": "^0.2.5"
   }
 }

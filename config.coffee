@@ -1,42 +1,80 @@
 module.exports =
-  amqpUrl:          'amqp://localhost'
-  listsQueue:       'bankrot-parser.lists'
-  listHtmlWorkers:  2
-  aucUrlQueue:      'bankrot-parser.aucUrl'
-  aucHtmlQueue:     'bankrot-parser.aucHtml'
-  lotUrlQueue:      'bankrot-parser.lotUrl'
-  lotHtmlQueue:     'bankrot-parser.lotHtml'
-  aucUrlWorkers:    32
-  aucHtmlWorkers:   2
-  lotUrlWorkers:    32
-  lotHtmlWorkers:   2
-  tmpDB:            'test-bankrot-parser-tmp'
-  db:               'test-bankrot-parser'
-  getPageTries:     10
-  getPageTimeout:   30000
-  timeout:          30000
+  amqpUrl:           'amqp://localhost'
+  listsHtmlQueue:    'bankrupt-parser.listHtmls'
+  tradeUrlsQueue:    'bankrupt-parser.tradeUrls'
+  tradeHtmlQueue:    'bankrupt-parser.tradeHtml'
+  lotsUrlsQueue:     'bankrupt-parser.lotsUrls'
+  lotsHtmlQueue:     'bankrupt-parser.lotsHtml'
+  
+  listWorkers:       1
+  lotUrlWorkers:     2
+  tradeUrlWorkers:   4
+  lotHtmlWorkers:    2
+  tradeHtmlWorkers:  2
+  timeout: 600000
 
-  urls:
-    'http://opentp.ru':                 'Открытая торговая площадка'
-    'http://uralbidin.ru':              'ЭТП "UralBidIn"'
-    'http://etp1.ru':                   'ЭТП №1'
-    'http://etp-bankrotstvo.ru':        'ЭТП по продаже имущества банкротов'
-    'https://gloriaservice.ru':         'ЭТП "Регион"'
-    'http://meta-invest.ru':            'Мета-Инвест'
-    'http://tendergarant.com':          'Тендер Гарант'
-    'http://alfalot.ru':                'Альфалот'
-    'http://bepspb.ru':                 'Балтийская ЭТП'
-    'http://bankrupt.etp-agenda.ru':    'ЭТП "Агенда"'
-    'http://bankrupt.centerr.ru':       'Центр реализации'
-    'http://bankrupt.electro-torgi.ru': 'ЭТП по реализации имущества должников'
-    'http://propertytrade.ru':          'Площадка Property Trade'
-    'http://tenderstandart.ru':         'ТендерСтандарт'
-    'http://utender.ru':                'uTender'
-    'http://vertrades.ru/bankrupt':     'ВердиктЪ'
-    'http://torgibankrot.ru':           'Южная ЭТП'
-    'http://bankrupt.etpu.ru':          'Уральская ЭТП'
-    'http://utpl.ru':                   'Объединенная торговая площадка'                     
-    'http://ipsetp.ru':                 'АйПиЭс ЭТП'
-    'http://etp.kartoteka.ru':          'Комерсантъ Картотека'
-    'http://mts-etp.ru/':               'Межрегиональная торговая система'
-    'http://bg-tender.ru/':             'ЭТП Бизнесс-Групп'
+  tmpDB:             'tmp-bankrupt-parser'
+  prodDB:            'prod-bankrupt-parser'
+
+  etps: [
+    name: 'ЭТП uTender'
+    url: 'http://www.utender.ru/'
+    platform: 'i-tender'
+  ,
+    name: 'Электронная площадка Центра реализации'
+    url: 'http://www.bankrupt.centerr.ru/'
+    platform: 'i-tender'
+  ,
+    name: 'ЭТП Вердиктъ'
+    url: 'http://www.vertrades.ru/bankrupt/'
+    platform: 'i-tender'
+  ,
+    name: 'Объединенная торговая площадка'
+    url: 'http://www.utpl.ru/'
+    platform: 'i-tender'
+  ,
+    name: 'Балтийская ЭТП'
+    url: 'http://www.bepspb.ru/public/purchases-all/'
+    platform: 'i-tender'
+  ,
+    name: 'Открытая торговая площадка'
+    url: 'http://opentp.ru/public/purchases-all/'
+    platform: 'i-tender'
+  ,
+    name: 'Первая ЭТП'
+    url: 'http://etp1.ru/public/purchases-all/'
+    platform: 'i-tender'
+  ,
+    name: 'ЭТП "Регион"'
+    url: 'https://www.gloriaservice.ru/public/purchases-all/'
+    platform: 'i-tender'
+  ,
+    name: 'ЭТП UralBidIn'
+    url: 'http://www.uralbidin.ru/public/purchases-all/'
+    platform: 'i-tender'
+  # ,
+  #   name: ''
+  #   url: ''
+  #   platform: 'i-tender'
+  # ,
+  #   name: ''
+  #   url: ''
+  #   platform: 'i-tender'
+  # ,
+  #   name: ''
+  #   url: ''
+  #   platform: 'i-tender'
+  # ,
+  #   name: ''
+  #   url: ''
+  #   platform: 'i-tender'
+  # ,
+  #   name: ''
+  #   url: ''
+  #   platform: 'i-tender'
+  # ,
+  #   name: ''
+  #   url: ''
+  #   platform: 'i-tender'
+
+  ]

@@ -1,9 +1,4 @@
-_ = require 'lodash'
-moment = require 'moment'
-tagger = require './../helpers/tagger'
-
-auction_fields =
-[
+module.exports.info = [
     field: 'number'
     type: Number
     title: 'Номер'
@@ -95,34 +90,44 @@ auction_fields =
     title: 'БИК'
 ]
 
-module.exports = ($, cb) ->
-  fieldset = $("fieldset").filter(->
-    /информация о лоте/i.test $(this).find("legend").text().trim()
-  ).find("td.tdTitle")
-  .add $('fieldset').filter(->
-    $(@).find('legend').text().trim() is 'Обеспечение задатка'
-  ).find('td.tdTitle')
-  result = {}
-  fieldset.each () ->
-    field = _.where(auction_fields, title: $(@).text().replace(/(:|\(\*\))/g, '').trim())?[0]
-    if field?
-      value = $(@).next().find('span').eq(0).text()
-      switch field.type
-        when String
-          result[field.field] = value.trim()
-          break
-        when Number
-          result[field.field] = Number(value.trim().replace(/\s/g, '').replace(/,/g, '.').replace(/%/g, '').trim())
-          break
-        when Date
-          switch value.length
-            when 16
-              format = "DD.MM.YYYY HH:mm"
-              break
-            when 10
-              format = "DD.MM.YYYY"
-              break
-          date = moment(value, format)
-          result[field.field] = if date.isValid() then date.format() else undefined
-          break
-  tagger result, cb
+module.exports.interval = [
+    field: 'interval_start_date'
+    type: Date
+    title: 'Дата начала интервала'
+  ,
+    field: 'request_start_date'
+    type: Date
+    title: 'Дата начала приема заявок на интервале'
+  ,
+    field: 'request_end_date'
+    type: Date
+    title: 'Дата окончания приема заявок на интервале'
+  ,
+    field: 'interval_end_date'
+    type: Date
+    title: 'Дата окончания интервала'
+  ,
+    field: 'price_reduction_percent'
+    type: Number
+    title: 'Снижение цены предыдущего интервала на процент от начальной цены, проценты'
+  ,
+    field: 'price_reduction_percent'
+    type: Number
+    title: 'Снижение от предыдущей цены, проценты'
+  ,
+    field: 'price_reduction_percent'
+    type: Number
+    title: 'Снижение от предыдущей цены, рубли'
+  ,
+    field: 'deposit_sum'
+    type: Number
+    title: 'Задаток на интервале, руб.'
+  ,
+    field: 'interval_price'
+    type: Number
+    title: 'Цена на интервале, руб.'
+  ,
+    field: 'comment'
+    type: String
+    title: 'Комментарий'
+]

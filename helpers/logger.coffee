@@ -1,9 +1,9 @@
 bunyan     = require 'bunyan'
 formatOut  = require('bunyan-format')({outputMode: 'short'})
 
-module.exports = ->
+module.exports = (name) ->
   bunyan.createLogger
-    name: 'bankrupt-parser'
+    name: name
     streams: [
       level: 'error'
       path: __dirname + '/../logs/error.log'
