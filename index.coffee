@@ -3,6 +3,7 @@ redis     = require './helpers/redis'
 amqp      = require './helpers/amqp'
 consumers = require './helpers/consumers'
 mongo     = require './helpers/mongo'
+collector = require './helpers/collector'
 logger    = require './helpers/logger'
 log       = logger  'MAIN'
 
@@ -13,8 +14,7 @@ proceed = (etp, cb) ->
     try
       redis.clear.sync null
       consumers.start()
-      collector = require "./collectors/#{etp.platform}"
-      collector.collect.sync collector, etp
+      collector.collect.sync null, etp
       watchdog = setInterval =>
         Sync =>
           try

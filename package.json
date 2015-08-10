@@ -21,6 +21,7 @@
     "mongodb": "^2.0.39",
     "mongoose": "^4.1.1",
     "node-phantom-simple": "^2.0.2",
+    "optimist": "^0.6.1",
     "promise": "^7.0.4",
     "redis": "^0.12.1",
     "request": "^2.60.0",

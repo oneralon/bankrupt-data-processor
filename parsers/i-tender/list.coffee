@@ -28,13 +28,15 @@ module.exports = (html, etp, cb) ->
         tradeNum = trade.text()
         if typeof lotUrl is 'undefined'
           log.error "LOT: #{lotUrl}"
-        else result.lots.push
-          etp: etp
-          url: lotUrl
-          tradeUrl: tradeUrl
-          downloader: 'request'
-          parser: 'i-tender/lot'
-          queue: config.lotsHtmlQueue
+        else
+          if redis.check.sync(null, lotUrl)
+            result.lots.push
+              etp: etp
+              url: lotUrl
+              tradeUrl: tradeUrl
+              downloader: 'request'
+              parser: 'i-tender/lot'
+              queue: config.lotsHtmlQueue
         if redis.check.sync(null, tradeUrl)
           result.trades.push
             etp: etp

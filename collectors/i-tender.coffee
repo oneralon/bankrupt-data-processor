@@ -3,6 +3,7 @@ amqp      = require 'amqplib'
 Sync      = require 'sync'
 
 logger    = require '../helpers/logger'
+redis     = require '../helpers/redis'
 log       = logger  'I-TENDER LIST COLLECTOR'
 config    = require '../config'
 
@@ -10,7 +11,7 @@ inject    = (to, from)->
   for key, val of from
     to[key] = val
 
-module.exports =
+collector =
   phantom: null
   current: null
   connection: null
@@ -18,6 +19,8 @@ module.exports =
   next: null
   url: null
   page: null
+  state: null
+  retry: true
   interval: null
   cookies: null
   init: (cb) ->
@@ -27,6 +30,9 @@ module.exports =
         Sync =>
           try
             ph = phantom.create.sync @
+            ph.onError = (err) ->
+              log.info err
+              cb err
             page = ph.createPage.sync @
             cb null,
               connection: connection
@@ -48,9 +54,13 @@ module.exports =
     Sync =>
       try
         inject @, @init.sync(@)
+        watchdog = setInterval =>
+          if @phantom.exitCode isnt null then cb 'Killed phantom'
+        , 60000
         inject @, @proceed.sync @, etp
         @close.sync(@)
         log.info 'Collecting completed'
+        clearInterval watchdog
         cb()
       catch e
         log.error e
@@ -66,7 +76,7 @@ module.exports =
         log.error err
         cb e
       cb "Non 200 code page" unless res is 'success'
-      Sync =>   
+      Sync =>
         try
           inject @, @nextPage.sync(@)
           while @next isnt null
@@ -86,6 +96,15 @@ module.exports =
         cb(null, {page: @page, next: @result, current: @result})
     Sync =>
       try
+        if @retry
+          state = redis.get.sync null, @etp.url
+          @retry = false
+          if state?
+            if state is 'complete'
+              cb(null, {page: @page, next: null})
+            else
+              log.info 'Return to collect'
+              @page.evaluate.sync null, "function(){document.aspnetForm.__CVIEWSTATE.value = '#{state}'}"
         html = @page.get.sync null, 'content'
         @channel.sendToQueue config.listsHtmlQueue, new Buffer(html, 'utf8'),
           headers:
@@ -109,11 +128,27 @@ module.exports =
               if window.updating
                 window.updating = false
                 console.log 'UPDATED_NEW_DATA'
-          next
+          state = document.aspnetForm.__CVIEWSTATE.value
+          if next?
+            return JSON.stringify {next: next, state: state}
+          else return null
+        result = JSON.parse(result)
         if result?
-          @next = result
-          @result = result
-        else cb(null, {page: @page, next: null})
+          redis.set.sync null, @etp.url, result.state
+          @next = result.next
+          @result = result.next
+        else
+          redis.set.sync null, @etp.url, 'complete'
+          cb(null, {page: @page, next: null})
       catch e
         log.error e
         cb e
+
+argv = require('optimist').argv
+etp = {name: argv.name, url: argv.url, platform: argv.platform}
+collector.collect etp, (err) ->
+  if err?
+    log.error err
+    process.exit 1
+  else
+    process.exit 0

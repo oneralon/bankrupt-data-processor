@@ -27,3 +27,25 @@ module.exports.clear = (cb) ->
     log.info 'Clear redis DB'
     cb err if err?
     cb()
+
+module.exports.set = (key, value, cb) ->
+  client = redis.createClient()
+  client.on 'error', (err) ->
+    log.error err
+    cb err
+  client.set key, value, (err) ->
+    if err? then cb err
+    log.info "Redis set #{key}"
+    cb()
+
+module.exports.get = (key, cb) ->
+  client = redis.createClient()
+  client.on 'error', (err) ->
+    log.error err
+    cb err
+  client.get key, (err, reply) ->
+    if err?
+      log.error err
+      cb err
+    log.info "Redis get #{key}"
+    cb(null, reply)
