@@ -7,7 +7,7 @@ module.exports.consume = (queue, handler) ->
   log = logger "QUEUE #{queue} COMSUMER"
   error = (err) =>
     log.error err
-    cluster.worker.process.exit(1)
+    process.exit(1)
   log.info 'Start comsuming'
   amqp.connect(config.amqpUrl).catch(error).then (connection) =>
     connection.createChannel().catch(error).then (channel) =>
