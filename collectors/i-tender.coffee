@@ -21,6 +21,7 @@ collector =
   retry: true
   interval: null
   cookies: null
+  watchdog: null
   init: (cb) ->
     Sync =>
       try
@@ -37,6 +38,7 @@ collector =
         @close -> cb e
 
   close: (cb) ->
+    clearInterval @watchdog
     @phantom.exit()
     cb()
 
@@ -44,14 +46,13 @@ collector =
     Sync =>
       try
         inject @, @init.sync(@)
-        watchdog = setInterval =>
+        @watchdog = setInterval =>
           if @phantom.exitCode isnt null
             @close -> cb 'Killed phantom'
         , 120000
         inject @, @proceed.sync @, etp
         @close.sync(@)
         log.info 'Collecting completed'
-        clearInterval watchdog
         cb()
       catch e
         log.error e
@@ -125,8 +126,11 @@ collector =
           else return null
         if result?
           result = JSON.parse(result)
-          if result.state.length > 30
-            redis.set.sync null, @etp.url, result.state
+          if result.state? and result.state.length > 30
+            state = redis.get.sync null, @etp.url
+            if state isnt result.state
+              console.log result.state
+              redis.set.sync null, @etp.url, result.state
           @next = result.next
           @result = result.next
         else
