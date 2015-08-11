@@ -125,7 +125,7 @@ collector =
           else return null
         if result?
           result = JSON.parse(result)
-          if state? and state isnt ''
+          if result.state? and result.state isnt ''
             redis.set.sync null, @etp.url, result.state
           @next = result.next
           @result = result.next
