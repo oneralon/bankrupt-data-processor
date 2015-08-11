@@ -33,7 +33,7 @@ module.exports.build = (etp, cb) ->
   Lots = connection.collection 'lots'
   Trades = connection.collection 'trades'
   promises = []
-  Trades.find {url: etpExp}, (err, tradesCursor) ->
+  Trades.find {}, (err, tradesCursor) ->
     tradesStream = tradesCursor.stream()
     tradesStream.on 'data', (trade) ->
       promises.push new Promise (resolve) ->
@@ -44,7 +44,7 @@ module.exports.build = (etp, cb) ->
             lots.push lot
           lotsStream.on 'end', ->
             log.info "Trade #{trade.url} has #{lots.length} lots"
-            Trades.update {url: trade.url}, {$set: {lots:lots}}, -> 
+            Trades.update {url: trade.url}, {$set: {lots:lots}}, ->
               resolve()
     tradesStream.on 'end', =>
       Promise.all(promises).then () ->
@@ -116,7 +116,7 @@ module.exports.convert = (etp, cb) ->
   log = logger  'MONGODB CONVERTER'
   etpExp = new RegExp(etp.url.match(/^https?\:\/\/[A-Za-z0-9\.\-]+/i)[0], 'i')
   log.info 'Start converting temp DB to production DB'
-  tempConnection.collection('trades').find {url: etpExp}, (err, cursor) ->
+  tempConnection.collection('trades').find {}, (err, cursor) ->
     auc_promises = []
     stream = cursor.stream()
     stream.on 'data', (auc) ->
@@ -193,5 +193,6 @@ module.exports.convert = (etp, cb) ->
         update_etps ->
           update_statuses ->
             update_regions ->
+              tempConnection.db.dropDatabase()
               log.info 'Complete converting'
               cb()
