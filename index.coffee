@@ -14,8 +14,8 @@ proceed = (etp, cb) ->
     try
       redis.clear.sync null
       amqp.init.sync null
-      consumers.start()
       collector.collect.sync null, etp
+      consumers.start()
       watchdog = setInterval =>
         Sync =>
           try

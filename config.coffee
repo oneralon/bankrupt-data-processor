@@ -14,7 +14,7 @@ module.exports =
   timeout: 600000
 
   tmpDB:             'tmp-bankrupt-parser'
-  prodDB:            'prod-bankrupt-parser'
+  prodDB:            'bankrot-parser'
 
   etps: [
     name: 'Открытая торговая площадка' #77
