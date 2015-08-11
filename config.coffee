@@ -17,6 +17,10 @@ module.exports =
   prodDB:            'bankrot-parser'
 
   etps: [
+    name: 'ЭТП "Банкротство"' #6
+    url: 'http://etp-bankrotstvo.ru/public/purchases-all/'
+    platform: 'i-tender'
+  ,
     name: 'Открытая торговая площадка' #77
     url: 'http://opentp.ru/public/purchases-all/'
     platform: 'i-tender'
@@ -77,6 +81,10 @@ module.exports =
     url: 'http://www.vertrades.ru/bankrupt/public/purchases-all/'
     platform: 'i-tender'
   ,
+    name: 'ЭТП "Комерсантъ Картотека"' #11461
+    url: 'http://etp.kartoteka.ru/public/purchases-all/'
+    platform: 'i-tender'
+  ,
     name: 'Электронная площадка Центра реализации' #94395
     url: 'http://www.bankrupt.centerr.ru/public/purchases-all/'
     platform: 'i-tender'
@@ -89,7 +97,11 @@ module.exports =
     url: 'http://etp1.ru/public/purchases-all/'
     platform: 'i-tender'
   ,
-    name: '«ТЕНДЕР ГАРАНТ»' #??? < 300
+    name: '"ТЕНДЕР ГАРАНТ"' #??? < 300
     url: 'http://tendergarant.com/public/purchases-all/'
     platform: 'i-tender'
+  ,
+    name: 'Сбербанк АСТ'
+    url: 'http://utp.sberbank-ast.ru/Bankruptcy/List/BidList'
+    platform: 'sberbank-ast'
   ]
