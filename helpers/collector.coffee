@@ -20,6 +20,4 @@ proceed = (etp, cb)->
     '--name', etp.name, '--url', etp.url],
   {max: 1})
   collector.on 'exit:code', (code) ->
-    if code isnt 0
-      cb(null, code)
-    else cb()
+    cb(null, code)

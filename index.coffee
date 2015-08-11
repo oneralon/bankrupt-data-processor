@@ -19,7 +19,7 @@ proceed = (etp, cb) ->
       watchdog = setInterval =>
         Sync =>
           try
-            working = amqp.check.sync null, null
+            working = amqp.check.sync null,
             if not working
               clearInterval watchdog
               consumers.stop()

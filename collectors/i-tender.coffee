@@ -74,7 +74,6 @@ collector =
           while @next isnt null
             inject @, @nextPage.sync(@)
           log.info "Complete collect #{etp.url}"
-          clearInterval @interval
           cb()
         catch e
           log.error e
@@ -132,7 +131,7 @@ collector =
               redis.set.sync null, @etp.url, result.state
           @next = result.next
           @result = result.next
-        else
+        if @next is null
           redis.set.sync null, @etp.url, 'complete'
           cb(null, {page: @page, next: null})
       catch e
