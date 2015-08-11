@@ -7,7 +7,7 @@ module.exports =
   lotsHtmlQueue:     'bankrupt-parser.lotsHtml'
 
   listWorkers:       2
-  lotUrlWorkers:     2
+  lotUrlWorkers:     4
   tradeUrlWorkers:   4
   lotHtmlWorkers:    2
   tradeHtmlWorkers:  2
@@ -17,6 +17,10 @@ module.exports =
   prodDB:            'prod-bankrupt-parser'
 
   etps: [
+    name: 'Открытая торговая площадка'
+    url: 'http://opentp.ru/public/purchases-all/'
+    platform: 'i-tender'
+  ,
     name: 'ЭТП uTender'
     url: 'http://www.utender.ru/'
     platform: 'i-tender'
@@ -35,10 +39,6 @@ module.exports =
   ,
     name: 'Балтийская ЭТП'
     url: 'http://www.bepspb.ru/public/purchases-all/'
-    platform: 'i-tender'
-  ,
-    name: 'Открытая торговая площадка'
-    url: 'http://opentp.ru/public/purchases-all/'
     platform: 'i-tender'
   ,
     name: 'Первая ЭТП'
