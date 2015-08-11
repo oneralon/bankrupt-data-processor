@@ -6,7 +6,7 @@ module.exports =
   lotsUrlsQueue:     'bankrupt-parser.lotsUrls'
   lotsHtmlQueue:     'bankrupt-parser.lotsHtml'
 
-  listWorkers:       1
+  listWorkers:       2
   lotUrlWorkers:     2
   tradeUrlWorkers:   4
   lotHtmlWorkers:    2
