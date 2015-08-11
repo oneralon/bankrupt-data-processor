@@ -47,7 +47,7 @@ collector =
         watchdog = setInterval =>
           if @phantom.exitCode isnt null
             @close -> cb 'Killed phantom'
-        , 60000
+        , 120000
         inject @, @proceed.sync @, etp
         @close.sync(@)
         log.info 'Collecting completed'
@@ -125,7 +125,7 @@ collector =
           else return null
         if result?
           result = JSON.parse(result)
-          if result.state? and result.state isnt ''
+          if result.state.length > 30
             redis.set.sync null, @etp.url, result.state
           @next = result.next
           @result = result.next
