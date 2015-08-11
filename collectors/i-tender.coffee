@@ -125,7 +125,7 @@ collector =
           else return null
         if result?
           result = JSON.parse(result)
-          if result.state? and result.state.length > 30
+          if result.state? and result.state.length > 30 and result.next is '>>'
             state = redis.get.sync null, @etp.url
             if state isnt result.state
               redis.set.sync null, @etp.url, result.state
