@@ -1,7 +1,7 @@
 phantom   = require 'node-phantom-simple'
-amqp      = require 'amqplib'
 Sync      = require 'sync'
 
+amqp      = require '../helpers/amqp'
 logger    = require '../helpers/logger'
 redis     = require '../helpers/redis'
 log       = logger  'I-TENDER LIST COLLECTOR'
@@ -14,8 +14,6 @@ inject    = (to, from)->
 collector =
   phantom: null
   current: null
-  connection: null
-  channel: null
   next: null
   url: null
   page: null
@@ -24,30 +22,23 @@ collector =
   interval: null
   cookies: null
   init: (cb) ->
-    amqp.connect(config.amqpUrl).catch(cb).then (connection) =>
-      connection.createChannel().catch(cb).then (channel) =>
-        channel.assertQueue(config.listsHtmlQueue)
-        Sync =>
-          try
-            ph = phantom.create.sync @
-            ph.onError = (err) ->
-              log.info err
-              cb err
-            page = ph.createPage.sync @
-            cb null,
-              connection: connection
-              phantom: ph
-              channel: channel
-              page: page
-          catch e
-            log.error e
-            @close -> cb e
+    Sync =>
+      try
+        ph = phantom.create.sync @
+        ph.onError = (err) ->
+          log.info err
+          cb err
+        page = ph.createPage.sync @
+        cb null,
+          phantom: ph
+          page: page
+      catch e
+        log.error e
+        @close -> cb e
 
   close: (cb) ->
     @phantom.exit()
-    @channel.close().catch(cb).then () =>
-      @connection.close().catch(cb).then () =>
-        cb()
+    cb()
 
   collect: (etp, cb) ->
     Sync =>
@@ -105,7 +96,7 @@ collector =
               log.info 'Return to collect'
               @page.evaluate.sync null, "function(){document.aspnetForm.__CVIEWSTATE.value = '#{state}'}"
         html = @page.get.sync null, 'content'
-        @channel.sendToQueue config.listsHtmlQueue, new Buffer(html, 'utf8'),
+        amqp.publish.sync null, config.listsHtmlQueue, new Buffer(html, 'utf8'),
           headers:
             parser: 'i-tender/list'
             etp: @etp

@@ -13,7 +13,8 @@ proceed = (etp, cb) ->
   Sync =>
     try
       redis.clear.sync null
-      consumers.start()
+      amqp.init.sync null
+      # consumers.start()
       collector.collect.sync null, etp
       watchdog = setInterval =>
         Sync =>
@@ -21,7 +22,7 @@ proceed = (etp, cb) ->
             working = amqp.check.sync null, null
             if not working
               clearInterval watchdog
-              consumers.stop()
+              # consumers.stop()
               mongo.build.sync null, etp
               mongo.convert.sync null, etp
               cb()
