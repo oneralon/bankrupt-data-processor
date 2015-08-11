@@ -10,6 +10,9 @@ if cluster.isMaster
   while i < config.lotUrlWorkers
     cluster.fork()
     i++
+  cluster.on 'disconnect', (worker) ->
+    log.error "Trade URL consumer worker #{worker.process.pid} disconnected"
+    cluster.fork()
   cluster.on 'exit', (worker, code, signal) ->
     unless code is 0
       log.error "Trade URL consumer worker exit with code #{code}"
@@ -28,4 +31,4 @@ else
           amqp.publish.sync null, headers.queue, html, headers: headers
           cb()
         catch e
-          cb e    
+          cb e

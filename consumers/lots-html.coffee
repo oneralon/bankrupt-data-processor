@@ -11,6 +11,9 @@ if cluster.isMaster
   while i < config.lotHtmlWorkers
     cluster.fork()
     i++
+  cluster.on 'disconnect', (worker) ->
+    log.error "Lot HTML consumer worker #{worker.process.pid} disconnected"
+    cluster.fork()
   cluster.on 'exit', (worker, code, signal) ->
     unless code is 0
       log.error "Lot HTML consumer worker exit with code #{code}"
@@ -33,4 +36,4 @@ else
           cb()
         catch e
           log.error e
-          cb e  
+          cb e

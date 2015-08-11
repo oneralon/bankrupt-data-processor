@@ -11,6 +11,9 @@ if cluster.isMaster
   while i < config.tradeHtmlWorkers
     cluster.fork()
     i++
+  cluster.on 'disconnect', (worker) ->
+    log.error "Trade HTML consumer worker #{worker.process.pid} disconnected"
+    cluster.fork()
   cluster.on 'exit', (worker, code, signal) ->
     unless code is 0
       log.error "Trade HTML consumer worker exit with code #{code}"
@@ -34,4 +37,4 @@ else
           cb()
         catch e
           log.error e
-          cb e  
+          cb e
