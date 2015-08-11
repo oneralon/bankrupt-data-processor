@@ -45,7 +45,7 @@ collector =
       try
         inject @, @init.sync(@)
         watchdog = setInterval =>
-          if @phantom.exitCode isnt null then
+          if @phantom.exitCode isnt null
             @close -> cb 'Killed phantom'
         , 60000
         inject @, @proceed.sync @, etp
