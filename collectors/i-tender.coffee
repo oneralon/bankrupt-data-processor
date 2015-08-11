@@ -123,9 +123,10 @@ collector =
           if next?
             return JSON.stringify {next: next, state: state}
           else return null
-        result = JSON.parse(result)
         if result?
-          redis.set.sync null, @etp.url, result.state
+          result = JSON.parse(result)
+          if state? and state isnt ''
+            redis.set.sync null, @etp.url, result.state
           @next = result.next
           @result = result.next
         else
