@@ -41,14 +41,13 @@ collector =
               page: page
           catch e
             log.error e
-            cb e
+            @close -> cb e
 
   close: (cb) ->
-    @page.close () =>
-      @phantom.exit()
-      @channel.close().catch(cb).then () =>
-        @connection.close().catch(cb).then () =>
-          cb()
+    @phantom.exit()
+    @channel.close().catch(cb).then () =>
+      @connection.close().catch(cb).then () =>
+        cb()
 
   collect: (etp, cb) ->
     Sync =>
@@ -64,7 +63,7 @@ collector =
         cb()
       catch e
         log.error e
-        cb e
+        @close -> cb e
 
   proceed: (etp, cb) ->
     log.info "Start collect #{etp.url}"
@@ -86,7 +85,7 @@ collector =
           cb()
         catch e
           log.error e
-          cb e
+          @close -> cb e
 
   nextPage: (cb) ->
     log.info "Start page #{@current} of #{@url}"
@@ -142,7 +141,7 @@ collector =
           cb(null, {page: @page, next: null})
       catch e
         log.error e
-        cb e
+        @close -> cb e
 
 argv = require('optimist').argv
 etp = {name: argv.name, url: argv.url, platform: argv.platform}
