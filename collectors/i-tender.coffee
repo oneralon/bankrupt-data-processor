@@ -129,7 +129,6 @@ collector =
           if result.state? and result.state.length > 30
             state = redis.get.sync null, @etp.url
             if state isnt result.state
-              console.log result.state
               redis.set.sync null, @etp.url, result.state
           @next = result.next
           @result = result.next
