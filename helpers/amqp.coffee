@@ -77,8 +77,8 @@ module.exports.check = (queue, cb) ->
                             channel.assertQueue(config.lotsHtmlQueue).then (ok) =>
                               result.push ok.messageCount is 0
                               log.info "AMQP check #{result.indexOf(false) isnt -1}"
-                              channel.close().catch(error).then ->
-                                connection.close().catch(error).then ->
+                              channel.close().catch(error).then =>
+                                connection.close().catch(error).then =>
                                   cb null, result.indexOf(false) isnt -1
                   , 1000
 
