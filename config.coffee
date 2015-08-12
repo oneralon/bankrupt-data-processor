@@ -3,17 +3,13 @@ module.exports =
   listsHtmlQueue:    'bankrupt-parser.listHtmls'
   tradeUrlsQueue:    'bankrupt-parser.tradeUrls'
   tradeHtmlQueue:    'bankrupt-parser.tradeHtml'
-  lotsUrlsQueue:     'bankrupt-parser.lotsUrls'
-  lotsHtmlQueue:     'bankrupt-parser.lotsHtml'
 
   listWorkers:       1
-  lotUrlWorkers:     1
   tradeUrlWorkers:   1
-  lotHtmlWorkers:    1
   tradeHtmlWorkers:  1
   timeout: 600000
 
-  tmpDB:             'tmp1-bankrupt-parser'
+  tmpDB:             'tmp-bankrupt-parser'
   prodDB:            'bankrot-parser'
 
   etps: [
