@@ -7,13 +7,13 @@ module.exports =
   lotsHtmlQueue:     'bankrupt-parser.lotsHtml'
 
   listWorkers:       1
-  lotUrlWorkers:     16
-  tradeUrlWorkers:   16
+  lotUrlWorkers:     1
+  tradeUrlWorkers:   1
   lotHtmlWorkers:    1
   tradeHtmlWorkers:  1
   timeout: 600000
 
-  tmpDB:             'tmp-bankrupt-parser'
+  tmpDB:             'tmp1-bankrupt-parser'
   prodDB:            'bankrot-parser'
 
   etps: [

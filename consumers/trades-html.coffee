@@ -29,10 +29,9 @@ else
       html        = message.content.toString()
       Sync =>
         try
-          trade = parser html, etp
+          trade = parser.sync null, html, etp
           trade.url = headers.url
           trade.etp = etp
-          trade.lots = []
           mongo.insert.sync null, 'trades', trade
           cb()
         catch e

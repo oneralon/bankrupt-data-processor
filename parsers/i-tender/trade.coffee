@@ -1,7 +1,10 @@
 _         = require 'lodash'
 cheerio   = require 'cheerio'
 moment    = require 'moment'
+Promise   = require 'promise'
 
+request   = require '../../downloaders/request'
+parseLot  = require './lot'
 logger    = require '../../helpers/logger'
 log       = logger  'I-TENDER TRADE PARSER'
 config    = require '../../config'
@@ -10,8 +13,17 @@ host      = /^https?\:\/\/[A-Za-z0-9\.\-]+/
 
 fieldsets = require './trade-fieldset'
 
-module.exports = (html, etp) ->
+module.exports = (html, etp, cb) ->
   $ = cheerio.load(html)
+  promises = urls = []
+  lotsJQ = $("table[id*='ctl00_ctl00_MainContent_ContentPlaceHolderMiddle_ctl00_srLots'] tr:not([class='gridHeader'])")
+  for lotJQ in lotsJQ
+    url = etp.url.match(host)[0] + $(lotJQ).find('td.gridAltColumn a').attr('href')
+    promises.push new Promise (resolve) ->
+      request url, (err, html) ->
+        cb err if err?
+        lot = parseLot html, etp
+        resolve(lot)
   trade = {}
   fieldset = $("fieldset").filter(->
     /информация о(б аук| пуб| кон)/i.test $(@).find("legend").text().trim()
@@ -120,4 +132,7 @@ module.exports = (html, etp) ->
           date = moment(value, format)
           trade.owner.contact[field.field] = if date.isValid() then date.format() else undefined
           break
-  return trade
+
+  Promise.all(promises).then (lots) ->
+    trade.lots = lots
+    cb null, trade
