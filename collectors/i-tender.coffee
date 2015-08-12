@@ -1,4 +1,6 @@
 phantom   = require 'node-phantom-simple'
+etag      = require 'etag'
+cheerio   = require 'cheerio'
 Sync      = require 'sync'
 
 amqp      = require '../helpers/amqp'
@@ -7,7 +9,7 @@ redis     = require '../helpers/redis'
 log       = logger  'I-TENDER LIST COLLECTOR'
 config    = require '../config'
 
-inject    = (to, from)->
+inject = (to, from)->
   for key, val of from
     to[key] = val
 
@@ -81,6 +83,7 @@ collector =
 
   nextPage: (cb) ->
     log.info "Start page #{@current} of #{@url}"
+    @page.onError = (err) -> log.error err
     @page.onConsoleMessage = (message) =>
       if message is 'UPDATED_NEW_DATA'
         log.info "Complete page #{@current} of #{@url}"
@@ -96,11 +99,21 @@ collector =
             else
               log.info 'Return to collect'
               @page.evaluate.sync null, "function(){document.aspnetForm.__CVIEWSTATE.value = '#{state}'}"
-        html = @page.get.sync null, 'content'
-        amqp.publish.sync null, config.listsHtmlQueue, new Buffer(html, 'utf8'),
-          headers:
-            parser: 'i-tender/list'
-            etp: @etp
+        data = @page.evaluate.sync null, """
+          function() {
+            var data = '';
+            $("[id*='ctl00_ctl00_MainContent'] tr.gridRow").each(function() {
+              data = data + $(this).html().replace(/\\n|\\s/gi, '');
+            });
+            return data;
+          }"""
+        nonstored = redis.check.sync(null, @url + etag(data))
+        if nonstored
+          html = @page.get.sync null, 'content'
+          amqp.publish.sync null, config.listsHtmlQueue, new Buffer(html, 'utf8'),
+            headers:
+              parser: 'i-tender/list'
+              etp: @etp
         result = @page.evaluate.sync null, ->
           next = $($('.pager span').filter(->
             $(@).text().indexOf('Страниц') is -1
@@ -115,10 +128,12 @@ collector =
           if nextLink?
             nextLink.dispatchEvent e
             window.updating = true
-            $("[id*='ctl00_ctl00_MainContent']").bind 'DOMNodeRemoved', ->
-              if window.updating
+            $("[id*='ctl00_ctl00_MainContent']").bind 'DOMNodeInserted', ->
+              if window.updating and $("[id*='ctl00_ctl00_MainContent'] tr.gridRow").length > 0
                 window.updating = false
-                console.log 'UPDATED_NEW_DATA'
+                setTimeout ->
+                  console.log 'UPDATED_NEW_DATA'
+                , 50
           state = document.aspnetForm.__CVIEWSTATE.value
           if next?
             return JSON.stringify {next: next, state: state}
