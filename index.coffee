@@ -19,7 +19,7 @@ proceed = (etp, cb) ->
       watchdog = setInterval =>
         Sync =>
           try
-            working = amqp.check.sync null,
+            working = amqp.check.sync null, null
             if not working
               clearInterval watchdog
               consumers.stop()
@@ -27,7 +27,7 @@ proceed = (etp, cb) ->
               mongo.convert.sync null, etp
               cb()
           catch e then cb e
-      , 5000
+      , 10000
     catch e then cb e
 
 Sync =>
