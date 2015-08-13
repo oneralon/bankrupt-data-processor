@@ -20,6 +20,7 @@ publish = (container, url, etp) ->
     request url, (err, html) ->
       cb err if err?
       lot = parseLot html, etp
+      lot.url = url
       log.info "Resolved #{url}"
       resolve(lot)
 

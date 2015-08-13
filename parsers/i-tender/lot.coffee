@@ -52,7 +52,7 @@ module.exports = (html, etp) ->
     fields = $(@).find('td')
     values = fields.map -> $(@).text().trim()
     for i in [0..fieldNames.length - 1]
-      field = _.where(fieldsets.interval, title: fieldNames.eq(@).text().replace(/(:|\(\*\))/g, '').trim())?[0]
+      field = _.where(fieldsets.interval, title: $(fieldNames[i]).text().replace(/(:|\(\*\))/g, '').trim())?[0]
       if field?
         value = values[i]
         switch field.type
