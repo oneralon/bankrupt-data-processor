@@ -4,7 +4,7 @@ amqp       = require '../helpers/amqp'
 mongo      = require '../helpers/mongo'
 config     = require '../config'
 logger     = require '../helpers/logger'
-log        = logger  'TRADE URL CONSUMER'
+log        = logger  'TRADE HTML CONSUMER'
 
 if cluster.isMaster
   i = 0
@@ -29,9 +29,10 @@ else
       html        = message.content.toString()
       Sync =>
         try
-          trade = parser.sync null, html, etp
+          trade = parser.sync null, html, etp, headers.url
           trade.url = headers.url
           trade.etp = etp
+          console.log trade
           mongo.insert.sync null, 'trades', trade
           cb()
         catch e

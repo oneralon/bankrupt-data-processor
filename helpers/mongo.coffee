@@ -28,7 +28,7 @@ module.exports.insert = (table, item, cb) ->
     cb null, res
 
 module.exports.build = (etp, cb) ->
-  etpExp = new RegExp(etp.url.match(/^https?\:\/\/[A-Za-z0-9\.\-]+/i)[0], 'i')
+  etpExp = new RegExp(etp.href.match(/^https?\:\/\/[A-Za-z0-9\.\-]+/i)[0], 'i')
   connection = mongoose.createConnection "mongodb://localhost/#{config.tmpDB}"
   Lots = connection.collection 'lots'
   Trades = connection.collection 'trades'
@@ -114,7 +114,7 @@ diffpatch =
 
 module.exports.convert = (etp, cb) ->
   log = logger  'MONGODB CONVERTER'
-  etpExp = new RegExp(etp.url.match(/^https?\:\/\/[A-Za-z0-9\.\-]+/i)[0], 'i')
+  etpExp = new RegExp(etp.href.match(/^https?\:\/\/[A-Za-z0-9\.\-]+/i)[0], 'i')
   log.info 'Start converting temp DB to production DB'
   tempConnection.collection('trades').find {url: etpExp}, (err, cursor) ->
     auc_promises = []

@@ -61,11 +61,11 @@ collector =
         @close -> cb e
 
   proceed: (etp, cb) ->
-    log.info "Start collect #{etp.url}"
-    @url = etp.url
+    log.info "Start collect #{etp.href}"
+    @url = etp.href
     @etp = etp
     @current = 1
-    @page.open @etp.url, (err, res) =>
+    @page.open @etp.href, (err, res) =>
       if err?
         log.error err
         cb e
@@ -75,7 +75,7 @@ collector =
           inject @, @nextPage.sync(@)
           while @next isnt null
             inject @, @nextPage.sync(@)
-          log.info "Complete collect #{etp.url}"
+          log.info "Complete collect #{etp.href}"
           cb()
         catch e
           log.error e
@@ -91,7 +91,7 @@ collector =
     Sync =>
       try
         if @retry
-          state = redis.get.sync null, @etp.url
+          state = redis.get.sync null, @etp.href
           @retry = false
           if state?
             if state is 'complete'
@@ -141,13 +141,13 @@ collector =
         if result?
           result = JSON.parse(result)
           if result.state? and result.state.length > 30 and result.next is '>>'
-            state = redis.get.sync null, @etp.url
+            state = redis.get.sync null, @etp.href
             if state isnt result.state
-              redis.set.sync null, @etp.url, result.state
+              redis.set.sync null, @etp.href, result.state
           @next = result.next
           @result = result.next
         if @next is null
-          redis.set.sync null, @etp.url, 'complete'
+          redis.set.sync null, @etp.href, 'complete'
           cb(null, {page: @page, next: null})
       catch e
         log.error e

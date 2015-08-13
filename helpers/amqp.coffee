@@ -61,18 +61,22 @@ module.exports.check = (queue, cb) ->
             result.push ok.messageCount is 0
             channel.assertQueue(config.tradeHtmlQueue).then (ok) =>
               result.push ok.messageCount is 0
-              setTimeout =>
-                channel.assertQueue(config.listsHtmlQueue).then (ok) =>
-                  result.push ok.messageCount is 0
-                  channel.assertQueue(config.tradeUrlsQueue).then (ok) =>
+              channel.assertQueue(config.tradeJsonQueue).then (ok) =>
+                result.push ok.messageCount is 0
+                setTimeout =>
+                  channel.assertQueue(config.listsHtmlQueue).then (ok) =>
                     result.push ok.messageCount is 0
-                    channel.assertQueue(config.tradeHtmlQueue).then (ok) =>
+                    channel.assertQueue(config.tradeUrlsQueue).then (ok) =>
                       result.push ok.messageCount is 0
-                      log.info "AMQP check #{result.indexOf(false) isnt -1}"
-                      channel.close().catch(error).then ->
-                        connection.close().catch(error).then ->
-                          cb null, result.indexOf(false) isnt -1
-              , 1000
+                      channel.assertQueue(config.tradeHtmlQueue).then (ok) =>
+                        result.push ok.messageCount is 0
+                        channel.assertQueue(config.tradeJsonQueue).then (ok) =>
+                          result.push ok.messageCount is 0
+                          log.info "AMQP check #{result.indexOf(false) isnt -1}"
+                          channel.close().catch(error).then ->
+                            connection.close().catch(error).then ->
+                              cb null, result.indexOf(false) isnt -1
+                , 1000
 
 module.exports.init = (cb) ->
   log = logger "AMQP"
@@ -85,6 +89,7 @@ module.exports.init = (cb) ->
       channel.assertQueue(config.listsHtmlQueue, {durable: true, noAck: false}).then ->
         channel.assertQueue(config.tradeUrlsQueue, {durable: true, noAck: false}).then ->
           channel.assertQueue(config.tradeHtmlQueue, {durable: true, noAck: false}).then ->
-            channel.close().catch(error).then () ->
-              connection.close().catch(error).then () ->
-              cb()
+            channel.assertQueue(config.tradeJsonQueue, {durable: true, noAck: false}).then ->
+              channel.close().catch(error).then () ->
+                connection.close().catch(error).then () ->
+                cb()

@@ -1,8 +1,9 @@
 module.exports =
   amqpUrl:           'amqp://localhost'
   listsHtmlQueue:    'bankrupt-parser.listHtmls'
-  tradeUrlsQueue:    'bankrupt-parser.tradeUrls'
+  tradeUrlsQueue:    'bankrupt-parser.tradehrefs'
   tradeHtmlQueue:    'bankrupt-parser.tradeHtml'
+  tradeJsonQueue:    'bankrupt-parser.tradeJson'
 
   listWorkers:       1
   tradeUrlWorkers:   1
@@ -14,82 +15,82 @@ module.exports =
 
   etps: [
     name: 'Открытая торговая площадка' #77
-    url: 'http://opentp.ru/public/purchases-all/'
+    href: 'http://opentp.ru/public/purchases-all/'
     platform: 'i-tender'
   ,
     name: 'ЭТП "Регион"' #112
-    url: 'https://www.gloriaservice.ru/public/purchases-all/'
+    href: 'https://www.gloriaservice.ru/public/purchases-all/'
     platform: 'i-tender'
   ,
     name: 'ЭТП "UralBidIn"' #307
-    url: 'http://www.uralbidin.ru/public/purchases-all/'
+    href: 'http://www.uralbidin.ru/public/purchases-all/'
     platform: 'i-tender'
   ,
     name: 'ЭТП "Property Trade"' #692
-    url: 'http://propertytrade.ru/public/purchases-all/'
+    href: 'http://propertytrade.ru/public/purchases-all/'
     platform: 'i-tender'
   ,
     name: 'ЭТП "Агенда"' #1244
-    url: 'http://bankrupt.etp-agenda.ru/public/purchases-all/'
+    href: 'http://bankrupt.etp-agenda.ru/public/purchases-all/'
     platform: 'i-tender'
   ,
     name: 'ЭТП "Мета-Инвест"' #1288
-    url: 'http://meta-invest.ru/public/purchases-all/'
+    href: 'http://meta-invest.ru/public/purchases-all/'
     platform: 'i-tender'
   ,
     name: 'Уральская ЭТП' #1430
-    url: 'http://bankrupt.etpu.ru/public/purchases-all/'
+    href: 'http://bankrupt.etpu.ru/public/purchases-all/'
     platform: 'i-tender'
   ,
     name: 'ЭТП "ТендерСтандарт"' #2176
-    url: 'http://tenderstandart.ru/public/purchases-all/'
+    href: 'http://tenderstandart.ru/public/purchases-all/'
     platform: 'i-tender'
   ,
     name: 'ЭТП "Electro-Torgi"' #2191
-    url: 'http://bankrupt.electro-torgi.ru/public/purchases-all/'
+    href: 'http://bankrupt.electro-torgi.ru/public/purchases-all/'
     platform: 'i-tender'
   ,
     name: 'ЭТП "Арбитат"' #2455
-    url: 'http://arbitat.ru/public/purchases-all/'
+    href: 'http://arbitat.ru/public/purchases-all/'
     platform: 'i-tender'
   ,
     name: 'Южная ЭТП' #4004
-    url: 'http://torgibankrot.ru/public/purchases-all/'
+    href: 'http://torgibankrot.ru/public/purchases-all/'
     platform: 'i-tender'
   ,
     name: 'Балтийская ЭТП' #4099
-    url: 'http://www.bepspb.ru/public/purchases-all/'
+    href: 'http://www.bepspb.ru/public/purchases-all/'
     platform: 'i-tender'
   ,
     name: 'ЭТП "Альфалот"' #4469
-    url: 'http://alfalot.ru/public/purchases-all/'
+    href: 'http://alfalot.ru/public/purchases-all/'
     platform: 'i-tender'
   ,
     name: 'Объединенная торговая площадка' #5524
-    url: 'http://www.utpl.ru/public/purchases-all/'
+    href: 'http://www.utpl.ru/public/purchases-all/'
     platform: 'i-tender'
   ,
     name: 'ЭТП "Вердиктъ"' #5446
-    url: 'http://www.vertrades.ru/bankrupt/public/purchases-all/'
+    href: 'http://www.vertrades.ru/bankrupt/public/purchases-all/'
     platform: 'i-tender'
   ,
     name: 'ЭТП "Комерсантъ Картотека"' #11461
-    url: 'http://etp.kartoteka.ru/public/purchases-all/'
+    href: 'http://etp.kartoteka.ru/public/purchases-all/'
     platform: 'i-tender'
   ,
     name: 'Электронная площадка Центра реализации' #94395
-    url: 'http://www.bankrupt.centerr.ru/public/purchases-all/'
+    href: 'http://www.bankrupt.centerr.ru/public/purchases-all/'
     platform: 'i-tender'
   ,
     name: 'ЭТП "uTender"' #136013
-    url: 'http://www.utender.ru/public/purchases-all/'
+    href: 'http://www.utender.ru/public/purchases-all/'
     platform: 'i-tender'
   ,
     name: 'Электронная площадка №1' #0
-    url: 'http://etp1.ru/public/purchases-all/'
+    href: 'http://etp1.ru/public/purchases-all/'
     platform: 'i-tender'
   ,
     name: 'ЭТП "ТЕНДЕР ГАРАНТ"' #??? < 300
-    url: 'http://tendergarant.com/public/purchases-all/'
+    href: 'http://tendergarant.com/public/purchases-all/'
     platform: 'i-tender'
   ]
