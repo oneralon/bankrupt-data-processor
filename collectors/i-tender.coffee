@@ -154,7 +154,7 @@ collector =
         @close -> cb e
 
 argv = require('optimist').argv
-etp = {name: argv.name, url: argv.url, platform: argv.platform}
+etp = {name: argv.name, href: argv.href, platform: argv.platform}
 collector.collect etp, (err) ->
   if err?
     log.error err

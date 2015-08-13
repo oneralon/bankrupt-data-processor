@@ -17,7 +17,7 @@ module.exports.collect = (etp, cb) ->
 proceed = (etp, cb)->
   collector = forever.start([
     'coffee', "./collectors/#{etp.platform}.coffee",
-    '--name', etp.name, '--url', etp.href],
+    '--name', etp.name, '--href', etp.href, '--platform', etp.platform],
   {max: 1})
   collector.on 'exit:code', (code) ->
     cb(null, code)

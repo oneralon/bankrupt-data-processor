@@ -1,4 +1,4 @@
-# Bankrupt Auctions Parser with AMQP
+# Bankrupt Data Processor
 
 ## 1. Installation
 1.1 Install AMQP-server and redis

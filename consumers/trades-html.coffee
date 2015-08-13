@@ -32,8 +32,7 @@ else
           trade = parser.sync null, html, etp, headers.url
           trade.url = headers.url
           trade.etp = etp
-          console.log trade
-          mongo.insert.sync null, 'trades', trade
+          amqp.publish.sync null, config.tradeJsonQueue, JSON.stringify(trade), headers: headers
           cb()
         catch e
           log.error e

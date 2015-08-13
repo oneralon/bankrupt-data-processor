@@ -1,7 +1,7 @@
 module.exports =
   amqpUrl:           'amqp://localhost'
   listsHtmlQueue:    'bankrupt-parser.listHtmls'
-  tradeUrlsQueue:    'bankrupt-parser.tradehrefs'
+  tradeUrlsQueue:    'bankrupt-parser.tradeUrls'
   tradeHtmlQueue:    'bankrupt-parser.tradeHtml'
   tradeJsonQueue:    'bankrupt-parser.tradeJson'
 
