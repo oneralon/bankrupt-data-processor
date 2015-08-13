@@ -28,10 +28,7 @@ module.exports.patch = (obj, diff) ->
 
 module.exports.lot = (model, object) ->
   for k, v of object
-    if v?
-      model[k] = v
-    else
-      model[k] = undefined
+    model[k] = v
 
 module.exports.trade = (model, object) ->
   model.lots = []

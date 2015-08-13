@@ -6,7 +6,7 @@ module.exports =
   tradeJsonQueue:    'bankrupt-parser.tradeJson'
 
   listWorkers:       1
-  tradeUrlWorkers:   4
+  tradeUrlWorkers:   1
   tradeHtmlWorkers:  1
   timeout: 600000
 

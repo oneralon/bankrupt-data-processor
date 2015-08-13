@@ -71,9 +71,9 @@ module.exports.update = (auction, cb) ->
       for alot in auction.lots
         if alot.url?
           lot = new Lot()
+          diffpatch.lot lot, alot
           lot.trade = trade._id
           lot.region = trade.region
-          diffpatch.lot lot, alot
           trade.lots.push lot
           save.push new Promise (resolve) -> lot.save resolve
     else

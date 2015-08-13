@@ -16,9 +16,9 @@ fieldsets = require './trade-fieldset'
 collector = require './lots-collector'
 
 publish = (container, url, etp) ->
-  container.push new Promise (resolve) ->
+  container.push new Promise (resolve, reject) ->
     request url, (err, html) ->
-      cb err if err?
+      reject err if err?
       lot = parseLot html, etp
       lot.url = url
       log.info "Resolved #{url}"
