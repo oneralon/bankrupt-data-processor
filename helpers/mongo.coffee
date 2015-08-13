@@ -58,7 +58,7 @@ module.exports.update_regions = (cb) ->
       else cb()
 
 module.exports.update = (auction, cb) ->
-  if not auction.region or auction.region is 'Не определен'
+  if not auction.region? or auction.region is 'Не определен'
     auction.region = regionize(auction)
   for lot in auction.lots
     lot.region = auction.region if not lot.region or lot.region is 'Не определен'

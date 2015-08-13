@@ -85,7 +85,7 @@ module.exports = (auction) ->
     '89': 'Ямало-Ненецкий автономный округ'
     '91': 'Республика Крым'
     '92': 'Севастополь'
-  return 'Не определен' unless auction?
+  return 'Не определен' if not auction?
   if auction.debtor.ogrn
     region = regions[auction.debtor.ogrn.slice(3,5)]
   if not region and auction.debtor.inn
@@ -94,4 +94,4 @@ module.exports = (auction) ->
     region = regions[auction.owner.ogrn.slice(3,5)]
   if not region and auction.owner.inn
     region = regions[auction.owner.inn.slice(0,2)]
-  return if region then region.name else 'Не определен'
+  return region or 'Не определен'

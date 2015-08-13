@@ -23,8 +23,6 @@ proceed = (etp, cb) ->
             if not working
               clearInterval watchdog
               consumers.stop()
-              mongo.build.sync null, etp
-              mongo.convert.sync null, etp
               cb()
           catch e then cb e
       , 10000
