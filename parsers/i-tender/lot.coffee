@@ -78,7 +78,7 @@ module.exports = (html, etp) ->
   lot.documents = []
   fieldset.each ->
     lot.documents.push {
-      url: etp.url.match(host)[0] + $(@).attr('href')
+      url: etp.href.match(host)[0] + $(@).attr('href')
       name: $(@).text()
     }
   return lot

@@ -2,6 +2,7 @@ _         = require 'lodash'
 cheerio   = require 'cheerio'
 moment    = require 'moment'
 Promise   = require 'promise'
+Sync      = require 'sync'
 
 request   = require '../../downloaders/request'
 parseLot  = require './lot'
@@ -12,18 +13,19 @@ config    = require '../../config'
 host      = /^https?\:\/\/[A-Za-z0-9\.\-]+/
 
 fieldsets = require './trade-fieldset'
+collector = require './lots-collector'
 
-module.exports = (html, etp, cb) ->
+publish = (container, url, etp) ->
+  container.push new Promise (resolve) ->
+    request url, (err, html) ->
+      cb err if err?
+      lot = parseLot html, etp
+      log.info "Resolved #{url}"
+      resolve(lot)
+
+module.exports = (html, etp, url, cb) ->
   $ = cheerio.load(html)
-  promises = urls = []
-  lotsJQ = $("table[id*='ctl00_ctl00_MainContent_ContentPlaceHolderMiddle_ctl00_srLots'] tr:not([class='gridHeader'])")
-  for lotJQ in lotsJQ
-    url = etp.url.match(host)[0] + $(lotJQ).find('td.gridAltColumn a').attr('href')
-    promises.push new Promise (resolve) ->
-      request url, (err, html) ->
-        cb err if err?
-        lot = parseLot html, etp
-        resolve(lot)
+  log.info "Parse trade #{url}"
   trade = {}
   fieldset = $("fieldset").filter(->
     /информация о(б аук| пуб| кон)/i.test $(@).find("legend").text().trim()
@@ -59,7 +61,7 @@ module.exports = (html, etp, cb) ->
   trade.documents = []
   fieldset.each ->
     trade.documents.push {
-      url: etp.url.match(host)[0] + $(@).attr('href')
+      url: etp.href.match(host)[0] + $(@).attr('href')
       name: $(@).text()
     }
   fieldset = $("fieldset").filter(->
@@ -133,6 +135,25 @@ module.exports = (html, etp, cb) ->
           trade.owner.contact[field.field] = if date.isValid() then date.format() else undefined
           break
 
-  Promise.all(promises).then (lots) ->
-    trade.lots = lots
-    cb null, trade
+  promises = urls = []
+  lotsJQ = $("table[id*='ctl00_ctl00_MainContent_ContentPlaceHolderMiddle_ctl00_srLots'] tr:not([class='gridHeader'])")
+  for lotJQ in lotsJQ
+    rel = $(lotJQ).find('td.gridAltColumn a').attr('href')
+    urls.push etp.href.match(host)[0] + rel if rel?
+  if $(".pager span:not(:contains('Страницы:'))").next("a:not(:contains('<<'))").length is 0
+    for lotUrl in urls
+      publish promises, lotUrl, etp
+    Promise.all(promises).then (lots) ->
+      trade.lots = lots
+      cb null, trade
+  else
+    log.info 'More than 50 lots in trade'
+    collector.collect url, (err, relatives) ->
+      cb err if err?
+      for rel in relatives
+        urls.push etp.href.match(host)[0] + rel
+      for lotUrl in urls
+        publish promises, lotUrl, etp
+      Promise.all(promises).then (lots) ->
+        trade.lots = lots
+        cb null, trade

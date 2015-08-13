@@ -18,7 +18,7 @@ module.exports = (html, etp, cb) ->
       trades = []
       for row in rows
         trade = $(row).find("td.gridAltColumn a[class*='purchase-type-']")
-        tradeUrl = etp.url.match(host)[0] + trade.attr('href')
+        tradeUrl = etp.href.match(host)[0] + trade.attr('href')
         tradeUrl += '/' unless /\/$/.test tradeUrl
         tradeNum = trade.text()
         if _.where(trades, {url: tradeUrl}).length is 0
