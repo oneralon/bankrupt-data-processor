@@ -25,3 +25,20 @@ module.exports.diff = (left, right, model) ->
 module.exports.patch = (obj, diff) ->
   for k, v of diff
     obj[k] = v
+
+module.exports.lot = (model, object) ->
+  for k, v of object
+    if v?
+      model[k] = v
+    else
+      model[k] = undefined
+
+module.exports.trade = (model, object) ->
+  model.lots = []
+  model.owner     = object.owner
+  model.debtor    = object.debtor
+  model.etp       = object.etp
+  model.documents = object.documents
+  for k, v of object
+    unless v instanceof Object
+      model[k] = v or undefined

@@ -1,6 +1,7 @@
 cluster    = require 'cluster'
 Sync       = require 'sync'
 amqp       = require '../helpers/amqp'
+mongo      = require '../helpers/mongo'
 config     = require '../config'
 logger     = require '../helpers/logger'
 log        = logger  'TRADE JSON CONSUMER'
@@ -27,7 +28,7 @@ else
       auction     = JSON.parse message.content.toString()
       Sync =>
         try
-          mongo.insert.sync null, 'trades', auction
+          mongo.update.sync null, auction
           cb()
         catch e
           cb e
