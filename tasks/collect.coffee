@@ -1,5 +1,6 @@
 Forever    = require 'forever-monitor'
 Sync       = require 'sync'
+exec       = require('child_process').execSync
 
 logger     = require '../helpers/logger'
 log        = logger  'COLLECTOR FOREVER'
@@ -19,6 +20,7 @@ module.exports = (grunt) ->
           redis.clear.sync null
           amqp.init.sync null
           collector.sync null, etp, null
+        exec 'pkill phantomjs'
         log.info "Complete full collecting of #{config.etps.length} sources"
         done()
       catch e
@@ -34,6 +36,7 @@ module.exports = (grunt) ->
           redis.clear.sync null
           amqp.init.sync null
           collector.sync null, etp, config.incUpdTime
+        exec 'pkill phantomjs'
         log.info "Complete updating of #{config.etps.length} sources"
         done()
       catch e
