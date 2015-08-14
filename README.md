@@ -1,4 +1,4 @@
-# Bankrupt Auctions Parser with AMQP
+# Bankrupt Data Processor
 
 ## 1. Installation
 1.1 Install AMQP-server and redis
@@ -19,7 +19,7 @@
 ```
 1.4 Install global NPM-packages
 ```
-# npm install -g phantomjs forever coffee-script
+# npm install -g phantomjs forever coffee-script grunt-cli nodemon
 ```
 1.5 Install local NPM-packages
 ```
