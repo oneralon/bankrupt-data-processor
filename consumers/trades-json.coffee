@@ -8,7 +8,7 @@ log        = logger  'TRADE JSON CONSUMER'
 
 if cluster.isMaster
   i = 0
-  while i < config.tradeUrlWorkers
+  while i < config.tradeJsonWorkers
     cluster.fork()
     i++
   cluster.on 'disconnect', (worker) ->

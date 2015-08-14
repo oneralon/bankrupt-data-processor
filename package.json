@@ -18,6 +18,8 @@
     "encoding": "^0.1.11",
     "etag": "^1.7.0",
     "forever-monitor": "^1.6.0",
+    "grunt": "^0.4.5",
+    "load-grunt-config": "^0.17.2",
     "lodash": "^3.10.1",
     "moment": "^2.10.6",
     "mongodb": "^2.0.39",
