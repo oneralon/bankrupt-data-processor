@@ -19,11 +19,12 @@ proceed = (etp, timeout, cb)->
     'coffee', "./collectors/#{etp.platform}.coffee",
     '--name', etp.name, '--href', etp.href, '--platform', etp.platform],
   {max: 1})
-  watchdog = setTimeout ->
+  watchdog = setTimeout( ->
     clearTimeout watchdog
     log.info "Stop collecting by timer"
     collector.stop()
     cb(null, 0)
-  , timeout
+  , timeout) if timeout?
   collector.on 'exit:code', (code) ->
+    clearTimeout watchdog if watchdog?
     cb(null, code)
