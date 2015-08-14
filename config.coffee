@@ -7,10 +7,10 @@ module.exports =
 
   listWorkers:       1
   tradeUrlWorkers:   8
-  tradeHtmlWorkers:  2
+  tradeHtmlWorkers:  8
   tradeJsonWorkers:  1
   timeout:           60000
-  incUpdTime:        300000
+  incUpdTime:        60000
 
   database:          'bankrot-parser'
 
