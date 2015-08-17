@@ -2,6 +2,8 @@ Sync       = require 'sync'
 Promise    = require 'promise'
 mongoose   = require 'mongoose'
 
+config     = require '../config'
+
 сonnection = mongoose.createConnection "mongodb://localhost/#{config.database}"
 
 require '../models/trade'
