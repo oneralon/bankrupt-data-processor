@@ -44,6 +44,38 @@ module.exports = (grunt) ->
           done()
         catch e then done(e)
 
+  grunt.registerTask 'update:old', ->
+    log.info "Select for update old trades"
+    now = yesterday = new Date()
+    yesterday.setDate(now.getDate() - 1)
+    query =
+      updated: { $exists: true, $lt: yesterday }
+    done = @async()
+    regex = ""
+    for etp in config.etps
+      regex += "#{etp.href.match(host)[2]}|"
+    regex = regex.slice(0,-1)
+    query.url = { $regex:regex }
+    Trade.find(query).limit(100).exec (err, trades) ->
+      done(err) if err?
+      Sync =>
+        try
+          for trade in trades
+            etp = config.etps.filter( (t) ->
+              r = new RegExp(trade.url.match(host)[2])
+              r.test t.href
+            )?[0] 
+            if etp?
+              amqp.publish.sync null, config.tradeUrlsQueue, null, headers:
+                etp: etp
+                url: trade.url.replace '\/\/www.', '\/\/'
+                downloader: 'request'
+                parser: "#{etp.platform}/trade"
+                queue: config.tradeHtmlQueue
+                number: trade.number
+          done()
+        catch e then done(e)
+
   grunt.registerTask 'update:meta', ->
     log.info 'Update meta info'
     done = @async()

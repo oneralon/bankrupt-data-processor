@@ -25,3 +25,7 @@
 ```
 $ npm install
 ```
+1.6 Add env variable
+```
+$ echo "export $BDP_BASE=$(pwd)" >> ~/.bashrc
+```
