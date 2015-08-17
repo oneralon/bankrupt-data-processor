@@ -69,7 +69,7 @@ module.exports.update = (auction, cb) ->
       trade = trades[0]
       i = 1
       while i < trades.length
-        save.push new Promise (resolve) -> trades[i].remove resolve
+        save.push new Promise (resolve) -> trades[i].remove () -> resolve()
         i++
     unless trade?
       log.info "NEW Trade #{auction.url}"

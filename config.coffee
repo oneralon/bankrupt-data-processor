@@ -12,7 +12,7 @@ module.exports =
   timeout:           60000
   incUpdTime:        30000
 
-  database:          'bankrot-parser'
+  database:          'copy-bankrupt-parser'
 
   etps: [
     name: 'Открытая торговая площадка'
