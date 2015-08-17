@@ -1,5 +1,6 @@
 mongoose   = require 'mongoose'
-Sync        = require 'sync'
+moment     = require 'moment'
+Sync       = require 'sync'
 
 amqp       = require '../helpers/amqp'
 mongo      = require '../helpers/mongo'
@@ -24,7 +25,7 @@ module.exports = (grunt) ->
       regex += "#{etp.href.match(host)[2]}|"
     regex = regex.slice(0,-1)
     query.url = { $regex:regex }
-    Trade.find(query).limit(100).exec (err, trades) ->
+    Trade.find(query).limit(300).exec (err, trades) ->
       done(err) if err?
       Sync =>
         try
@@ -46,17 +47,16 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'update:old', ->
     log.info "Select for update old trades"
-    now = yesterday = new Date()
-    yesterday.setDate(now.getDate() - 1)
+    date = moment().subtract(2, 'day')
     query =
-      updated: { $exists: true, $lt: yesterday }
+      updated: { $exists: true, $lt: date }
     done = @async()
     regex = ""
     for etp in config.etps
       regex += "#{etp.href.match(host)[2]}|"
     regex = regex.slice(0,-1)
     query.url = { $regex:regex }
-    Trade.find(query).limit(100).exec (err, trades) ->
+    Trade.find(query).limit(300).exec (err, trades) ->
       done(err) if err?
       Sync =>
         try
