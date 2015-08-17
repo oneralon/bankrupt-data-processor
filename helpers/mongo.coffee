@@ -63,7 +63,12 @@ module.exports.update = (auction, cb) ->
   for lot in auction.lots
     lot.region = auction.region if not lot.region or lot.region is 'Не определен'
   save = []
-  Trade.findOne({url: auction.url}).populate('lots').exec (err, trade) ->
+  regurl = new RegExp(auction.url.replace('://', '://(www.)?'))
+  Trade.find({url: regurl}).populate('lots').exec (err, trades) ->
+    if trades.length > 1
+      trade = trades.pop()
+      for t in trades
+        save.push new Promise (resolve) -> t.remove resolve
     unless trade?
       log.info "NEW Trade #{auction.url}"
       trade = new Trade()
