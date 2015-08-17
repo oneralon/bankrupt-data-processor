@@ -7,6 +7,7 @@ Sync      = require 'sync'
 request   = require '../../downloaders/request'
 parseLot  = require './lot'
 logger    = require '../../helpers/logger'
+status    = require '../../helpers/status'
 log       = logger  'I-TENDER TRADE PARSER'
 config    = require '../../config'
 
@@ -157,5 +158,7 @@ module.exports = (html, etp, url, cb) ->
         publish promises, lotUrl, etp
       collector.phantom.exit()
       Promise.all(promises).then (lots) ->
+        for lot in lots
+          lot.status = status(status)
         trade.lots = lots
         cb null, trade
