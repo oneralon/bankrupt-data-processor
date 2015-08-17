@@ -5,3 +5,4 @@ module.exports = (grunt)->
     staticMappings:
       collect: 'tasks/collect.coffee'
       consumers: 'tasks/consumers.coffee'
+      update: 'tasks/update.coffee'
