@@ -1,5 +1,6 @@
 Sync       = require 'sync'
 Promise    = require 'promise'
+mongoose   = require 'mongoose'
 
 сonnection = mongoose.createConnection "mongodb://localhost/#{config.database}"
 
