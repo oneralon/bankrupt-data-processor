@@ -37,7 +37,7 @@ module.exports = (grunt) ->
             if etp?
               amqp.publish.sync null, config.tradeUrlsQueue, null, headers:
                 etp: etp
-                url: trade.url.replace '\/\/www.', '\/\/'
+                url: trade.url
                 downloader: 'request'
                 parser: "#{etp.platform}/trade"
                 queue: config.tradeHtmlQueue
