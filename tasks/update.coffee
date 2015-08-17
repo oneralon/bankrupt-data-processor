@@ -2,6 +2,7 @@ mongoose   = require 'mongoose'
 Sync        = require 'sync'
 
 amqp       = require '../helpers/amqp'
+mongo      = require '../helpers/mongo'
 config     = require '../config'
 logger     = require '../helpers/logger'
 log        = logger  'TRADE UPDATER'
@@ -43,3 +44,13 @@ module.exports = (grunt) ->
           done()
         catch e then done(e)
 
+  grunt.registerTask 'update:meta', ->
+    log.info 'Update meta info'
+    done = @async()
+    mongo.update_etps (err) ->
+      done(err) if err?
+      mongo.update_statuses (err) ->
+        done(err) if err?
+        mongo.update_regions (err) ->
+          done(err) if err?
+          done()

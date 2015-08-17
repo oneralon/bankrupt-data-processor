@@ -37,7 +37,7 @@ module.exports =
         @close.sync @
         log.info "Complete collecting urls of #{@url}"
         cb null, @urls
-      catch e then cb e
+      catch e then @close -> cb e
   proceed: (cb) ->
     log.info "Collect on page #{@current}"
     @page.onUrlChanged = (targetUrl) =>

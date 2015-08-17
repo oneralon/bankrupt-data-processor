@@ -155,6 +155,7 @@ module.exports = (html, etp, url, cb) ->
         urls.push etp.href.match(host)[0] + rel
       for lotUrl in urls
         publish promises, lotUrl, etp
+      collector.phantom.exit()
       Promise.all(promises).then (lots) ->
         trade.lots = lots
         cb null, trade
