@@ -32,6 +32,7 @@ uniq = (url, cb) ->
   Trade.find({url:rurl}).populate('lots').exec (err, trades) ->
     if trades.length is 1 then cb()
     else
+      console.log "#{url} has dublicates"
       i = 1
       while i < trades.length
         save.push new Promise (resolve) ->
