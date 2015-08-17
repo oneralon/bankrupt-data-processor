@@ -32,13 +32,14 @@ uniq = (url, cb) ->
   Trade.find({url:rurl}).populate('lots').exec (err, trades) ->
     if trades.length is 1 then cb()
     else
+      saved = trades[0]
       console.log "#{url} has dublicates"
-      i = 1
-      while i < trades.length
-        save.push new Promise (resolve) ->
-          lots = []
-          for lot in trades[i].lots
-            lots.push new Promise (rs) -> lot.remove rs
-          Promise.all(lots).then -> trades[i].remove -> resolve()
-        i++
+      for trade in trades
+        if trade._id isnt saved._id
+          save.push new Promise (resolve) ->
+            lots = []
+            for lot in trade.lots
+              lots.push new Promise (rs) -> lot.remove rs
+            Promise.all(lots).then -> trade.remove -> resolve()
+          i++
       Promise.all(save).then -> cb()
