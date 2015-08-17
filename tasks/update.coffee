@@ -17,8 +17,6 @@ Trade     = сonnection.model 'Trade'
 module.exports = (grunt) ->
   grunt.registerTask 'update:invalid', ->
     log.info "Select for update invalid trades"
-    query =
-      
     done = @async()
     regex = ""
     for etp in config.etps
