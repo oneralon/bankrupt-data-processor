@@ -18,13 +18,15 @@ module.exports = (grunt) ->
   grunt.registerTask 'update:invalid', ->
     log.info "Select for update invalid trades"
     query =
-      updated: { $exists: false }
+      
     done = @async()
     regex = ""
     for etp in config.etps
-      regex += "#{etp.href.match(host)[2]}|"
+      regex += "(#{etp.href.match(host)[2]})|"
     regex = regex.slice(0,-1)
-    query.url = { $regex: new RegExp(regex) }
+    query =
+      url: { $regex: new RegExp(regex) }
+      updated: { $exists: false }
     Trade.find(query).limit(300).exec (err, trades) ->
       done(err) if err?
       Sync =>
