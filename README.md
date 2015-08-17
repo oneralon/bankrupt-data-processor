@@ -29,3 +29,7 @@ $ npm install
 ```
 $ echo "export $BDP_BASE=$(pwd)" >> ~/.bashrc
 ```
+1.7 Allow restart rabbit
+```
+# echo "%sudo ALL=NOPASSWD: /etc/init.d/rabbitmq-server" >> /etc/sudoers
+```
