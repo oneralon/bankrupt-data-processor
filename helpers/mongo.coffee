@@ -66,9 +66,11 @@ module.exports.update = (auction, cb) ->
   regurl = new RegExp(auction.url.replace('://', '://(www.)?'))
   Trade.find({url: regurl}).populate('lots').exec (err, trades) ->
     if trades.length > 1
-      trade = trades.pop()
-      for t in trades
-        save.push new Promise (resolve) -> t.remove resolve
+      trade = trades[0]
+      i = 1
+      while i < trades.length
+        save.push new Promise (resolve) -> trades[i].remove resolve
+        i++
     unless trade?
       log.info "NEW Trade #{auction.url}"
       trade = new Trade()

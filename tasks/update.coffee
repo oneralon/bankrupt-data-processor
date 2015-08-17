@@ -30,6 +30,7 @@ module.exports = (grunt) ->
       Sync =>
         try
           for trade in trades
+            console.log trade.url
             etp = config.etps.filter( (t) ->
               r = new RegExp(trade.url.match(host)[2])
               r.test t.href
