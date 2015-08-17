@@ -40,4 +40,5 @@ uniq = (url, cb) ->
           for lot in trade[i].lots
             lots.push new Promise (rs) -> lot.remove rs
           Promise.all(lots).then -> resolve()
+        i++
       Promise.all(save).then -> cb()
