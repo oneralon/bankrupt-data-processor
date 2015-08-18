@@ -25,7 +25,7 @@ publish = (container, url, etp) ->
       log.info "Resolved #{url}"
       resolve(lot)
 
-module.exports = (html, etp, url, cb) ->
+module.exports = (html, etp, url, ismicro, cb) ->
   $ = cheerio.load(html)
   log.info "Parse trade #{url}"
   trade = {}
@@ -149,16 +149,18 @@ module.exports = (html, etp, url, cb) ->
       trade.lots = lots
       cb null, trade
   else
-    log.info 'More than 50 lots in trade'
-    collector.collect url, (err, relatives) ->
-      cb err if err?
-      for rel in relatives
-        urls.push etp.href.match(host)[0] + rel
-      for lotUrl in urls
-        publish promises, lotUrl, etp
-      collector.phantom.exit()
-      Promise.all(promises).then (lots) ->
-        for lot in lots
-          lot.status = status(status)
-        trade.lots = lots
-        cb null, trade
+    if not ismicro
+      log.info 'More than 50 lots in trade'
+      collector.collect url, (err, relatives) ->
+        cb err if err?
+        for rel in relatives
+          urls.push etp.href.match(host)[0] + rel
+        for lotUrl in urls
+          publish promises, lotUrl, etp
+        collector.phantom.exit()
+        Promise.all(promises).then (lots) ->
+          for lot in lots
+            lot.status = status(status)
+          trade.lots = lots
+          cb null, trade
+    else cb 'Micro parser more than 50'

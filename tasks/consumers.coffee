@@ -5,6 +5,7 @@ module.exports = (grunt) ->
     done = @async()
     spawn 'coffee', ['consumers/lists-html.coffee'], { detached: true, stdio: ['ignore', 'ignore', 'ignore']}
     spawn 'coffee', ['consumers/trades-html.coffee'], { detached: true, stdio: ['ignore', 'ignore', 'ignore']}
+    spawn 'coffee', ['consumers/trades-html-micro.coffee'], { detached: true, stdio: ['ignore', 'ignore', 'ignore']}
     spawn 'coffee', ['consumers/trades-url.coffee'], { detached: true, stdio: ['ignore', 'ignore', 'ignore']}
     spawn 'coffee', ['consumers/trades-json.coffee'], { detached: true, stdio: ['ignore', 'ignore', 'ignore']}
     done()
