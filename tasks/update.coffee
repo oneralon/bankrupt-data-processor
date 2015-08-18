@@ -25,7 +25,7 @@ module.exports = (grunt) ->
     query =
       url: new RegExp(regex)
       updated: { $exists: false }
-    Trade.find(query).limit(300).exec (err, trades) ->
+    Trade.find(query).limit(1000).exec (err, trades) ->
       done(err) if err?
       Sync =>
         try
@@ -57,7 +57,7 @@ module.exports = (grunt) ->
       regex += "#{etp.href.match(host)[2]}|"
     regex = regex.slice(0,-1)
     query.url = new RegExp(regex)
-    Trade.find(query).limit(300).exec (err, trades) ->
+    Trade.find(query).limit(1000).exec (err, trades) ->
       done(err) if err?
       Sync =>
         try
