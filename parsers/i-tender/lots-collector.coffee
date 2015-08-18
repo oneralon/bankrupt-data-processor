@@ -53,7 +53,7 @@ module.exports =
           for url in JSON.parse(urls)
             if url? and @urls.indexOf(url) is -1 then @urls.push url
           next = @page.evaluate.sync null, ->
-            links = $(".pager span:not(:contains('Страницы:'))").next("a:not(:contains('<<'))")
+            links = $("table[id*='ctl00_ctl00_MainContent_ContentPlaceHolderMiddle_ctl00_srLots'] .pager span:not(:contains('Страницы:'))").next("a:not(:contains('<<'))")
             if links.length > 0 then return true
             else return null
           cb(null, next)
