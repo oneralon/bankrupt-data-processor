@@ -20,7 +20,8 @@ module.exports =
         @phantom.onError = (err) -> cb err
         @page = @phantom.createPage.sync @
         @page.onError = (err) -> log.error err
-        code = @page.open.sync @, @url
+        while code isnt 'success'
+          code = @page.open.sync @, @url
         cb "Non 200 code page" if code isnt 'success'
         cb()
       catch e then cb e
