@@ -142,7 +142,7 @@ module.exports = (html, etp, url, ismicro, cb) ->
   for lotJQ in lotsJQ
     rel = $(lotJQ).find('td.gridAltColumn a').attr('href')
     urls.push etp.href.match(host)[0] + rel if rel?
-  if $(".pager span:not(:contains('Страницы:'))").next("a:not(:contains('<<'))").length is 0
+  if $("table[id*='ctl00_ctl00_MainContent_ContentPlaceHolderMiddle_ctl00_srLots'] .pager span:not(:contains('Страницы:'))").next("a:not(:contains('<<'))").length is 0
     for lotUrl in urls
       publish promises, lotUrl, etp
     Promise.all(promises).then (lots) ->
