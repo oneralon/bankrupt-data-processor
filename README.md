@@ -33,3 +33,33 @@ $ echo "export $BDP_BASE=$(pwd)" >> ~/.bashrc
 ```
 # echo "%sudo ALL=NOPASSWD: /etc/init.d/rabbitmq-server" >> /etc/sudoers
 ```
+
+## 2. Using
+2.1 Full collect from all ETPs
+```
+$ grunt collect:full
+```
+2.2 New collect from all ETPs
+```
+$ grunt collect:update
+```
+2.3 Start consumers
+```
+$ grunt consumers:start
+```
+2.4 Delete dublicates of trades
+```
+$ grunt migration:dublicates
+```
+2.5 Select chank of invalid trades for update
+```
+$ grunt update:invalid
+```
+2.6 Select chank of invalid trades for update
+```
+$ grunt update:old
+```
+2.7 Update meta info (after all)
+```
+$ grunt update:meta
+```
