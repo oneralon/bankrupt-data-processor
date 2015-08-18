@@ -6,6 +6,14 @@ logger          = require '../helpers/logger'
 log             = logger  'REQUEST DOWNLOADER'
 
 module.exports = (url, cb) ->
+  Sync =>
+    try
+      while not data? or data.length is 0
+        data = get.sync null, url
+      cb null, data
+    catch e then cb e
+
+get = (url, cb) ->
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0"
   request.get(url,{
     options:
