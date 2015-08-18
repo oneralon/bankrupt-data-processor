@@ -8,7 +8,7 @@ log        = logger  'TRADE HTML CONSUMER'
 
 if cluster.isMaster
   i = 0
-  while i < config.tradeHtmlWorkers
+  while i < config.tradeHtmlWorkers * 2
     cluster.fork()
     i++
   cluster.on 'disconnect', (worker) ->
