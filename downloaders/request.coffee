@@ -8,7 +8,7 @@ log             = logger  'REQUEST DOWNLOADER'
 module.exports = (url, cb) ->
   Sync =>
     try
-      while not data? or data.length is 0
+      while not data? or data.length is 0 or typeof data is 'undefined'
         data = get.sync null, url
       cb null, data
     catch e then cb e
