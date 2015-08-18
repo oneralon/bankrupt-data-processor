@@ -20,6 +20,7 @@ module.exports = (html, etp, cb) ->
         trade = $(row).find("td.gridAltColumn a[class*='purchase-type-']")
         tradeUrl = etp.href.match(host)[0] + trade.attr('href')
         tradeUrl += '/' unless /\/$/.test tradeUrl
+        tradeUrl = tradeUrl.replace '://www.', '://'
         tradeNum = trade.text()
         if _.where(trades, {url: tradeUrl}).length is 0
           trades.push
