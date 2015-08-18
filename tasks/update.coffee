@@ -25,6 +25,7 @@ module.exports = (grunt) ->
     query =
       url: new RegExp(regex)
       updated: { $exists: false }
+      'etp.platform': { $exists: false }
     Trade.find(query).limit(1000).exec (err, trades) ->
       done(err) if err?
       Sync =>
