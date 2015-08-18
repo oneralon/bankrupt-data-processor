@@ -19,11 +19,14 @@ collector = require './lots-collector'
 publish = (container, url, etp) ->
   container.push new Promise (resolve, reject) ->
     request url, (err, html) ->
-      reject err if err?
-      lot = parseLot html, etp
-      lot.url = url
-      log.info "Resolved #{url}"
-      resolve(lot)
+      unless err?
+        lot = parseLot html, etp
+        lot.url = url
+        log.info "Resolved #{url}"
+        resolve(lot)
+      else
+        log.error "Resolved #{url}"
+        resolve()
 
 module.exports = (html, etp, url, ismicro, cb) ->
   $ = cheerio.load(html)
