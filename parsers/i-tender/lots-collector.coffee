@@ -47,25 +47,25 @@ module.exports =
   proceed: (cb) ->
     log.info "Collect on page #{@current}"
     @page.onResourceReceived = (responce) =>
-      console.log responce.url
-    @page.onUrlChanged = (targetUrl) =>
-      Sync =>
-        try
-          @page.evaluate.sync null, jquery
-          urls = @page.evaluate.sync null, ->
-            urls = []
-            lots = $("table[id*='ctl00_ctl00_MainContent_ContentPlaceHolderMiddle_ctl00_srLots'] tr:not([class='gridHeader'])")
-            for lot in lots
-              urls.push $(lot).find('td.gridAltColumn a').attr('href')
-            JSON.stringify urls
-          for url in JSON.parse(urls)
-            if url? and @urls.indexOf(url) is -1 then @urls.push url
-          next = @page.evaluate.sync null, ->
-            links = $("table[id*='ctl00_ctl00_MainContent_ContentPlaceHolderMiddle_ctl00_srLots'] .pager span:not(:contains('Страницы:'))").next("a:not(:contains('<<'))")
-            if links.length > 0 then return true
-            else return null
-          cb(null, next)
-        catch e then @close -> cb e
+      if responce.url is @url
+    # @page.onUrlChanged = (targetUrl) =>
+        Sync =>
+          try
+            @page.evaluate.sync null, jquery
+            urls = @page.evaluate.sync null, ->
+              urls = []
+              lots = $("table[id*='ctl00_ctl00_MainContent_ContentPlaceHolderMiddle_ctl00_srLots'] tr:not([class='gridHeader'])")
+              for lot in lots
+                urls.push $(lot).find('td.gridAltColumn a').attr('href')
+              JSON.stringify urls
+            for url in JSON.parse(urls)
+              if url? and @urls.indexOf(url) is -1 then @urls.push url
+            next = @page.evaluate.sync null, ->
+              links = $("table[id*='ctl00_ctl00_MainContent_ContentPlaceHolderMiddle_ctl00_srLots'] .pager span:not(:contains('Страницы:'))").next("a:not(:contains('<<'))")
+              if links.length > 0 then return true
+              else return null
+            cb(null, next)
+          catch e then @close -> cb e
     Sync =>
       try
         @page.evaluate.sync null, jquery
