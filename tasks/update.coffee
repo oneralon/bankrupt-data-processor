@@ -24,8 +24,11 @@ module.exports = (grunt) ->
     regex = regex.slice(0,-1)
     query =
       url: new RegExp(regex)
-      updated: { $exists: false }
-      'etp.platform': { $exists: false }
+      $or: [
+        updated: { $exists: false }
+      ,
+        'etp.platform': { $exists: false }
+      ]
     Trade.find(query).limit(1000).exec (err, trades) ->
       done(err) if err?
       Sync =>
@@ -35,7 +38,7 @@ module.exports = (grunt) ->
             etp = config.etps.filter( (t) ->
               r = new RegExp(trade.url.match(host)[2])
               r.test t.href
-            )?[0] 
+            )?[0]
             if etp?
               amqp.publish.sync null, config.tradeUrlsQueue, null, headers:
                 etp: etp
@@ -66,7 +69,7 @@ module.exports = (grunt) ->
             etp = config.etps.filter( (t) ->
               r = new RegExp(trade.url.match(host)[2])
               r.test t.href
-            )?[0] 
+            )?[0]
             if etp?
               amqp.publish.sync null, config.tradeUrlsQueue, null, headers:
                 etp: etp
