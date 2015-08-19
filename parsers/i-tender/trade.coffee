@@ -59,7 +59,8 @@ module.exports = (html, etp, url, ismicro, cb) ->
             when 10
               format = "DD.MM.YYYY"
               break
-          console.log value.length
+          if value.length < 10
+            console.log $(@).html()
           date = moment(value, format)
           trade[field.field] = if date.isValid() then date.format() else undefined
           break
