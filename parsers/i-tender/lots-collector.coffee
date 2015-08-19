@@ -22,7 +22,9 @@ module.exports =
         @phantom = Phantom.create.sync @
         @phantom.onError = (err) -> cb err
         @page = @phantom.createPage.sync @
-        @page.onError = (err) -> log.error err
+        @page.onError = (message, stack) ->
+          log.error message
+          log.error stack
         while code isnt 'success'
           code = @page.open.sync @, @url
         cb()
@@ -62,7 +64,6 @@ module.exports =
         catch e then @close -> cb e
     Sync =>
       try
-        console.log jquery
         @page.evaluate.sync null, jquery
         result = @page.evaluate.sync null, ->
           links = $(".pager span:not(:contains('Страницы:'))").next("a:not(:contains('<<'))")
