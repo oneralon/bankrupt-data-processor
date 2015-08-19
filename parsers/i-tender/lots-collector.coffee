@@ -47,7 +47,7 @@ module.exports =
   proceed: (cb) ->
     log.info "Collect on page #{@current}"
     @page.onResourceReceived = (responce) =>
-      console.log responce
+      console.log responce.url
     @page.onUrlChanged = (targetUrl) =>
       Sync =>
         try
