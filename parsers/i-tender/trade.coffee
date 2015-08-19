@@ -140,7 +140,8 @@ module.exports = (html, etp, url, ismicro, cb) ->
           trade.owner.contact[field.field] = if date.isValid() then date.format() else undefined
           break
 
-  promises = urls = []
+  promises = []
+  urls = []
   lotsJQ = $("table[id*='ctl00_ctl00_MainContent_ContentPlaceHolderMiddle_ctl00_srLots'] tr:not([class='gridHeader'])")
   for lotJQ in lotsJQ
     rel = $(lotJQ).find('td.gridAltColumn a').attr('href')
