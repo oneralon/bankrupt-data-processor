@@ -2,7 +2,7 @@ Phantom   = require 'node-phantom-simple'
 Sync      = require 'sync'
 fs        = require 'fs'
 
-jquery    = fs.readFileSync __dirname + '/jquery.js'
+jquery    = fs.readFileSync(__dirname + '/jquery.js').toString()
 
 logger    = require '../../helpers/logger'
 log       = logger  'I-TENDER LOTS URL COLLECTOR'
