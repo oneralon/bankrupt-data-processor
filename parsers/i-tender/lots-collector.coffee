@@ -48,7 +48,6 @@ module.exports =
     log.info "Collect on page #{@current}"
     @page.onResourceReceived = (responce) =>
       if responce.url is @url
-    # @page.onUrlChanged = (targetUrl) =>
         Sync =>
           try
             @page.evaluate.sync null, jquery
