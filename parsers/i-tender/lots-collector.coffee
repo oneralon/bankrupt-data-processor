@@ -41,6 +41,7 @@ module.exports =
       catch e then @close -> cb e
   proceed: (cb) ->
     log.info "Collect on page #{@current}"
+    @page.onError = (err) -> log.error err
     @page.onUrlChanged = (targetUrl) =>
       Sync =>
         try
