@@ -23,8 +23,13 @@ module.exports = (grunt) ->
       stream = Lot.find({ status: {$nin: keys} }).stream()
       stream.on 'data', (lot) ->
         save.push new Promise (resolve) ->
-          lot.status = status lot.status
-          lot.save ->
+          if lot.status?
+            lot.status = status lot.status
+            lot.save ->
+              count--
+              console.log "ETA: #{count} lots"
+              resolve()
+          else
             count--
             console.log "ETA: #{count} lots"
             resolve()
