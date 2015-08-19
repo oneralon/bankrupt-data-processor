@@ -166,7 +166,7 @@ module.exports = (html, etp, url, ismicro, cb) ->
         collector.phantom.exit()
         Promise.all(promises).then (lots) ->
           for lot in lots
-            lot.status = status(lot.status)
+            if lot.status then lot.status = status(lot.status)
           trade.lots = lots
           cb null, trade
     else cb 'Micro parser more than 50'
