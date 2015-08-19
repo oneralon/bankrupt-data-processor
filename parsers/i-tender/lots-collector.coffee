@@ -2,6 +2,9 @@ Phantom   = require 'node-phantom-simple'
 Sync      = require 'sync'
 fs        = require 'fs'
 
+jquery    = fs.readFileSync(__dirname + '/jquery.js').toString()
+jquery    = "function(){#{jquery}}"
+
 logger    = require '../../helpers/logger'
 log       = logger  'I-TENDER LOTS URL COLLECTOR'
 
@@ -62,7 +65,7 @@ module.exports =
         catch e then @close -> cb e
     Sync =>
       try
-        @page.includeJs.sync null, 'http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js'
+        @page.evaluate.sync null, jquery
         result = @page.evaluate.sync null, ->
           links = $(".pager span:not(:contains('Страницы:'))").next("a:not(:contains('<<'))")
           if links.length > 0
