@@ -49,6 +49,7 @@ module.exports =
     @page.onUrlChanged = (targetUrl) =>
       Sync =>
         try
+          @page.evaluate.sync null, jquery
           urls = @page.evaluate.sync null, ->
             urls = []
             lots = $("table[id*='ctl00_ctl00_MainContent_ContentPlaceHolderMiddle_ctl00_srLots'] tr:not([class='gridHeader'])")
