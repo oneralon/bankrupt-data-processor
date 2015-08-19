@@ -23,7 +23,8 @@ module.exports =
         @page.onError = (err) -> log.error err
         while code isnt 'success'
           code = @page.open.sync @, @url
-        @page.injectJs('jquery.js')
+        unless @page.injectJs('jquery.js')
+          log.error 'Not injected jquery'
         cb "Non 200 code page" if code isnt 'success'
         cb()
       catch e then cb e
