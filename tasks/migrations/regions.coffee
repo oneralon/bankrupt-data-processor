@@ -22,12 +22,12 @@ module.exports = (grunt) ->
         trade.region = regionize trade
         Lot.find {trade: trade}, (err, lots) ->
           done err if err?
-          lots = []
+          save_lots = []
           for lot in lots
-            lots.push new Promise (rsv) ->
+            save_lots.push new Promise (rsv) ->
               lot.region = trade.region
               lot.save(rsv)
-          Promise.all(lots).then ->
+          Promise.all(save_lots).then ->
             console.log "Save trade #{trade.url}"
             trade.save(resolve)
     stream.on 'end', ->
