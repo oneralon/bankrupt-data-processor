@@ -59,7 +59,7 @@ module.exports = (html, etp, url, ismicro, cb) ->
             when 10
               format = "DD.MM.YYYY"
               break
-          console.log value
+          console.log value.length
           date = moment(value, format)
           trade[field.field] = if date.isValid() then date.format() else undefined
           break
