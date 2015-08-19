@@ -164,11 +164,9 @@ module.exports = (html, etp, url, ismicro, cb) ->
         for lotUrl in urls
           publish promises, lotUrl, etp
         collector.phantom.exit()
-        console.log promises.length
         Promise.all(promises).then (lots) ->
-          console.log "Resolved #{lots.length}"
           for lot in lots
-            lot.status = status(status)
+            lot.status = status(lot.status)
           trade.lots = lots
           cb null, trade
     else cb 'Micro parser more than 50'
