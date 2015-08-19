@@ -27,8 +27,7 @@ module.exports =
           log.error stack
         while code isnt 'success'
           code = @page.open.sync @, @url
-        @page.includeJs jquery, ->
-          cb()
+        @page.injectJs 'jquery.js'
       catch e then cb e
   close: (cb) ->
     @phantom.exit()
