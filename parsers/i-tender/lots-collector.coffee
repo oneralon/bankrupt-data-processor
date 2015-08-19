@@ -62,6 +62,7 @@ module.exports =
         catch e then @close -> cb e
     Sync =>
       try
+        console.log jquery
         @page.evaluate.sync null, jquery
         result = @page.evaluate.sync null, ->
           links = $(".pager span:not(:contains('Страницы:'))").next("a:not(:contains('<<'))")
