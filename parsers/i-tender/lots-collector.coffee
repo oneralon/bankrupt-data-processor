@@ -27,7 +27,7 @@ module.exports =
           log.error stack
         while code isnt 'success'
           code = @page.open.sync @, @url
-        @page.injectJs 'jquery.js'
+        cb()
       catch e then cb e
   close: (cb) ->
     @phantom.exit()
@@ -64,6 +64,7 @@ module.exports =
         catch e then @close -> cb e
     Sync =>
       try
+        @page.injectJs 'jquery.js'
         result = @page.evaluate.sync null, ->
           links = $(".pager span:not(:contains('Страницы:'))").next("a:not(:contains('<<'))")
           if links.length > 0
