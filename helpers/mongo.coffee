@@ -63,6 +63,7 @@ module.exports.update = (auction, cb) ->
     auction.region = regionize(auction)
   for lot in auction.lots
     lot.region = auction.region if not lot.region or lot.region is 'Не определен'
+    console.log lot
     lot.status = status lot.status
   save = []
   regurl = new RegExp(auction.url.replace(/https?:\/\/(www.)?/, ''))
