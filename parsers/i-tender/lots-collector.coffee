@@ -22,11 +22,8 @@ module.exports =
         @page.onError = (err) -> log.error err
         while code isnt 'success'
           code = @page.open.sync @, @url
-        @phantom.libraryPath = __dirname
-        unless @page.injectJs('jquery.js')
-          log.error 'Not injected jquery'
-        cb "Non 200 code page" if code isnt 'success'
-        cb()
+        @page.includeJs 'http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js', ->
+          cb()
       catch e then cb e
   close: (cb) ->
     @phantom.exit()
@@ -44,7 +41,6 @@ module.exports =
       catch e then @close -> cb e
   proceed: (cb) ->
     log.info "Collect on page #{@current}"
-    @page.onError = (err) -> log.error err
     @page.onUrlChanged = (targetUrl) =>
       Sync =>
         try
