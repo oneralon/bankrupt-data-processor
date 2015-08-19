@@ -46,6 +46,8 @@ module.exports =
       catch e then @close -> cb e
   proceed: (cb) ->
     log.info "Collect on page #{@current}"
+    @page.onResourceReceived = (responce) =>
+      console.log responce
     @page.onUrlChanged = (targetUrl) =>
       Sync =>
         try
