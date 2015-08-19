@@ -16,12 +16,19 @@ module.exports = (grunt) ->
   grunt.registerTask 'migration:statuses', ->
     done = @async()
     keys = Object.keys status.statuses
-    Lot.find { status: {$nin: keys} }, (err, lots) ->
-      console.log "#{lots.length} lots found"
+    save = []
+    Lot.count { status: {$nin: keys} }, (err, count) ->
       done err if err?
-      save = []
-      for lot in lots
+      console.log "#{count} lots found"
+      stream = Lot.find({ status: {$nin: keys} }).stream()
+      stream.on 'data', (lot) ->
         save.push new Promise (resolve) ->
           lot.status = status lot.status
-          lot.save resolve
-      Promise.all(save).then done
+          lot.save ->
+            count--
+            console.log "ETA: #{count} lots"
+            resolve()
+      stream.on 'end', ->
+        Promise.all(save).then done
+      stream.on 'error', (err) ->
+        done err if err?
