@@ -17,14 +17,12 @@ module.exports =
     Sync =>
       try
         @phantom = Phantom.create.sync @
-        @phantom.libraryPath = __dirname + '/../../libs/'
         @phantom.onError = (err) -> cb err
         @page = @phantom.createPage.sync @
         @page.onError = (err) -> log.error err
         while code isnt 'success'
           code = @page.open.sync @, @url
-        console.log __dirname + '/../../libs'
-        unless @page.injectJs('jquery.js')
+        unless @page.injectJs(__dirname + '/../../libs/jquery.js')
           log.error 'Not injected jquery'
         cb "Non 200 code page" if code isnt 'success'
         cb()
