@@ -17,7 +17,7 @@ module.exports =
     Sync =>
       try
         @phantom = Phantom.create.sync @
-        @phantom.libraryPath = __dirname + '/../../libs'
+        @phantom.libraryPath = __dirname + '/../../libs/'
         @phantom.onError = (err) -> cb err
         @page = @phantom.createPage.sync @
         @page.onError = (err) -> log.error err
