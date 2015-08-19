@@ -29,7 +29,7 @@ module.exports.insert = (table, item, cb) ->
     cb null, res
 
 module.exports.update_etps = (cb) ->
-  Trade.distinct 'etp.name', {updated:{$exists:true},'etp.platform':{$exists:true}}, (err, result) ->
+  Trade.distinct 'etp.name', (err, result) ->
     сonnection.collection('etps').findOne { $query: {}, $orderby: { '_v' : -1 } , $limit: 1}, (err, etps) ->
       unless _.isEqual(result.sort(), etps?.list?.sort())
         сonnection.collection('etps').insert
