@@ -1,5 +1,8 @@
 Phantom   = require 'node-phantom-simple'
 Sync      = require 'sync'
+fs        = require 'fs'
+
+jquery    = fs.readFileSync './jquery.js'
 
 logger    = require '../../helpers/logger'
 log       = logger  'I-TENDER LOTS URL COLLECTOR'
@@ -22,8 +25,7 @@ module.exports =
         @page.onError = (err) -> log.error err
         while code isnt 'success'
           code = @page.open.sync @, @url
-        @page.includeJs 'http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js', ->
-          cb()
+        cb()
       catch e then cb e
   close: (cb) ->
     @phantom.exit()
@@ -60,6 +62,7 @@ module.exports =
         catch e then @close -> cb e
     Sync =>
       try
+        @page.evaluate.sync null, jquery
         result = @page.evaluate.sync null, ->
           links = $(".pager span:not(:contains('Страницы:'))").next("a:not(:contains('<<'))")
           if links.length > 0
