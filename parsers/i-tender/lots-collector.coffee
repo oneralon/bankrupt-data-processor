@@ -64,7 +64,8 @@ module.exports =
         catch e then @close -> cb e
     Sync =>
       try
-        @page.injectJs 'jquery.js'
+        unless @page.injectJs 'jquery.js'
+          log.error 'Not injected JQuery'
         result = @page.evaluate.sync null, ->
           links = $(".pager span:not(:contains('Страницы:'))").next("a:not(:contains('<<'))")
           if links.length > 0
