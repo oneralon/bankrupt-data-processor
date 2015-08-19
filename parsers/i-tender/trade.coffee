@@ -60,7 +60,7 @@ module.exports = (html, etp, url, ismicro, cb) ->
               format = "DD.MM.YYYY"
               break
           if value.length < 10
-            console.log $(@).html()
+            console.log $(@).next().html()
           date = moment(value, format)
           trade[field.field] = if date.isValid() then date.format() else undefined
           break
@@ -164,8 +164,6 @@ module.exports = (html, etp, url, ismicro, cb) ->
         for lotUrl in urls
           publish promises, lotUrl, etp
         collector.phantom.exit()
-        for p in promises
-          console.log typeof p
         Promise.all(promises).then (lots) ->
           for lot in lots
             lot.status = status(status)
