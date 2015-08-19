@@ -164,9 +164,9 @@ module.exports = (html, etp, url, ismicro, cb) ->
         for lotUrl in urls
           publish promises, lotUrl, etp
         collector.phantom.exit()
-        for p in promises
-          console.log typeof p
+        console.log promises.length
         Promise.all(promises).then (lots) ->
+          console.log "Resolved #{lots.length}"
           for lot in lots
             lot.status = status(status)
           trade.lots = lots
