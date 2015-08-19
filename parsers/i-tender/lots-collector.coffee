@@ -72,7 +72,7 @@ module.exports =
           if links.length > 0
             nextLink = links[0]
             e = document.createEvent 'MouseEvents'
-            e.initMouseEvent 'click', true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null
+            e.initMouseEvent 'click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null
             window.updating = true
             next = $(nextLink).text()
             nextLink.dispatchEvent e
