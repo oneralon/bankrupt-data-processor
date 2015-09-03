@@ -19,6 +19,7 @@
     "etag": "^1.7.0",
     "forever-monitor": "^1.6.0",
     "grunt": "^0.4.5",
+    "iconv-lite": "^0.4.11",
     "load-grunt-config": "^0.17.2",
     "lodash": "^3.10.1",
     "moment": "^2.10.6",
