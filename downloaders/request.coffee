@@ -32,6 +32,6 @@ get = (url, cb) ->
       encoding = 'win1251'
     else encoding = 'utf8'
     data = ''
-    res.on 'end', () => console.log data; a; cb null, data
+    res.on 'end', () => cb null, data
     res.on 'data', (chunk) => data += iconv.decode chunk, encoding
   .on 'timeout', -> cb()
