@@ -63,7 +63,7 @@ module.exports.update = (auction, cb) ->
     auction.region = regionize(auction)
   for lot in auction.lots
     lot.region = auction.region if not lot.region or lot.region is 'Не определен'
-    if lot.status then lot.status = status lot.status
+    if lot.status then lot.status = status lot.status else lot.status = 'Не определен'
   save = []
   regurl = new RegExp(auction.url.replace(/https?:\/\/(www.)?/, ''))
   Trade.findOne({url: regurl}).populate('lots').exec (err, trade) ->
@@ -72,13 +72,13 @@ module.exports.update = (auction, cb) ->
       trade = new Trade()
       diffpatch.trade trade, auction
       for alot in auction.lots
-        if alot.url?
-          lot = new Lot()
-          diffpatch.lot lot, alot
-          lot.trade = trade._id
-          lot.region = trade.region
-          trade.lots.push lot
-          save.push new Promise (resolve) -> lot.save resolve
+        unless alot.url? then alot.url = trade.url
+        lot = new Lot()
+        diffpatch.lot lot, alot
+        lot.trade = trade._id
+        lot.region = trade.region
+        trade.lots.push lot
+        save.push new Promise (resolve) -> lot.save resolve
     else
       log.info "UPD Trade #{auction.url}"
       diff = diffpatch.diff trade, auction, Trade
@@ -89,24 +89,24 @@ module.exports.update = (auction, cb) ->
       trade.documents = auction.documents
       auction.lots    = auction.lots or []
       for alot in auction.lots
-        if alot.url?
-          lot = _.where(trade.lots, {url: alot.url})[0]
-          if lot?
-            diff = diffpatch.diff lot, alot, Lot
-            diffpatch.patch lot, diff
-            lot.intervals = alot.intervals
-            lot.documents = alot.documents
-            lot.tagInputs = alot.tagInputs
-            lot.tags      = alot.tags
-            lot.region    = trade.region
-            save.push new Promise (resolve) -> lot.save resolve
-          else
-            lot = new Lot()
-            lot.trade = trade._id
-            lot.region = trade.region
-            diffpatch.lot lot, alot
-            trade.lots.push lot
-            save.push new Promise (resolve) -> lot.save resolve
+        unless alot.url? then alot.url = trade.url
+        lot = _.where(trade.lots, {url: alot.url, number: alot.number})[0]
+        if lot?
+          diff = diffpatch.diff lot, alot, Lot
+          diffpatch.patch lot, diff
+          lot.intervals = alot.intervals
+          lot.documents = alot.documents
+          lot.tagInputs = alot.tagInputs
+          lot.tags      = alot.tags
+          lot.region    = trade.region
+          save.push new Promise (resolve) -> lot.save resolve
+        else
+          lot = new Lot()
+          lot.trade = trade._id
+          lot.region = trade.region
+          diffpatch.lot lot, alot
+          trade.lots.push lot
+          save.push new Promise (resolve) -> lot.save resolve
     Promise.all(save).then () ->
       trade.updated = new Date()
       trade.save cb
