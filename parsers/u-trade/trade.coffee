@@ -12,12 +12,15 @@ config    = require '../../config'
 
 host      = /^https?\:\/\/[A-Za-z0-9\.\-]+/
 
+lotParser = require './lot'
+
 module.exports = (html, etp, url, ismicro, cb) ->
   log.info "Parse trade #{url}"
+
+  id = url.match(/id=(\d+)/i)[1]
   $ = cheerio.load(html)
 
   deposit_procedure = $("th:contains('Информация о торгах')").parent().parent().parent().find("td:contains('Сроки и порядок внесения и возврата задатка, реквизиты счетов, на которые вносится задаток')").next().text().trim()
-
   trade = {}
   trade.title = $("h1:contains('идентификационный номер:')").text().trim()
   trade.holding_date = $("th:contains('Информация о торгах')").parent().parent().parent().find("td:contains('Дата и время подведения результатов торгов')").next().text().trim()
@@ -54,4 +57,42 @@ module.exports = (html, etp, url, ismicro, cb) ->
   trade.debtor.arbitral_name = $("th:contains('Сведения о банкротстве')").parent().parent().parent().find("td:contains('Наименование арбитражного суда')").next().text().trim()
   trade.debtor.bankruptcy_number = $("th:contains('Сведения о банкротстве')").parent().parent().parent().find("td:contains('Номер дела о банкротстве')").next().text().trim()
 
-  console.log trade
+  docs = []
+  docs_rows = $("a[href*='/files/download/']")
+  for doc in docs_rows
+    name = $(doc).text().trim()
+    url = etp.href.match(host)[0] + $(doc).attr('href')
+    docs.push { name: name, url: url }
+  trade.documents = docs
+
+  log.info 'Parsed information'
+
+  pages = $('.paginatorNotSelectedPage')
+  if pages.length is 0
+    pages = 1
+  else
+    pages = parseInt($(pages[pages.length -1]).text() or '1')
+  lots = []
+
+  log.info "Trade has #{pages} pages"
+
+  for page in [1..pages]
+    pageUrl = etp.href.match(host)[0] + "/etp/trade/inner-view-lots.html?id=#{id}&page=#{page}"
+    lots.push new Promise (resolve, reject) ->
+      Sync =>
+        try
+          additional =
+            deposit_procedure: deposit_procedure
+            procedure: additional
+            currency: 'Российская Федерация'
+            category: 'Не определена'
+          html = request.sync null, pageUrl
+          lot = lotParser html, etp, additional
+          resolve(lot)
+        catch e then reject e
+  Promise.all(lots).catch(cb).then (lot_chunks) ->
+    trade.lots = []
+    for chunk in lot_chunks
+      for lot in chunk
+        trade.lots.push lot
+    cb null, trade

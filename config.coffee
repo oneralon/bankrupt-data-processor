@@ -6,13 +6,13 @@ module.exports =
   tradeJsonQueue:    'bankrupt-parser.tradeJson'
 
   listWorkers:       1
-  tradeUrlWorkers:   8
-  tradeHtmlWorkers:  16
+  tradeUrlWorkers:   1
+  tradeHtmlWorkers:  1
   tradeJsonWorkers:  1
   timeout:           60000
   incUpdTime:        30000
 
-  database:          'bankrot-parser'
+  database:          'bankrupt'
 
   etps: [
     name: 'ЭТП "Аукционы Сибири"'

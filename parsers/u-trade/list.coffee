@@ -18,7 +18,6 @@ module.exports = (html, etp, cb) ->
       trades = []
       for row in rows
         func = $(row).attr('onclick')
-        console.log func
         rel = func.match(/window.location=\'(\/trade\/view\/purchase\/general.html\?id=\d+)\'/i)[1]
         url = etpUrl + rel
         url = url.replace '://www.', '://'
