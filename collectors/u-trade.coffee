@@ -23,7 +23,9 @@ Sync =>
     else pages = parseInt $(links[links.length - 1]).attr('href').match(/page=(\d+)/i)[1]
     for page in [last..pages]
       log.info "Download page #{page} of #{pages}"
-      html = request.sync null, etp.href + "?page=#{page}"
+      if /\?/.test etp.href then url = etp.href + "&page=#{page}"
+      else url = etp.href + "?page=#{page}"
+      html = request.sync null, url
       amqp.publish.sync null, config.listsHtmlQueue, new Buffer(html, 'utf8'),
         headers:
           parser: 'u-trade/list'
