@@ -29,7 +29,7 @@ get = (url, cb) ->
   .on 'response', (res) ->
     encoding = res.headers['content-type'].match(/charset=(.+)/i)[1]
     encoding = if /Windows\-1251/i.test(encoding) then 'win1251' else 'utf8'
-    res.setEncoding 'binary'
+    res.setEncoding 'utf8'
     data = ''
     res.on 'end', () -> cb null, iconv.decode data, encoding
     res.on 'data', (chunk) -> data += chunk
