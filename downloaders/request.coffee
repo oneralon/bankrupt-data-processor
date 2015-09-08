@@ -6,6 +6,8 @@ config          = require '../config'
 logger          = require '../helpers/logger'
 log             = logger  'REQUEST DOWNLOADER'
 
+iconv.extendNodeEncodings()
+
 module.exports = (url, cb) ->
   Sync =>
     try
@@ -15,7 +17,6 @@ module.exports = (url, cb) ->
     catch e then cb e
 
 get = (url, cb) ->
-  iconv.extendNodeEncodings()
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0"
   request.get(url, {
     options:
@@ -27,7 +28,6 @@ get = (url, cb) ->
         'Content-Type': 'text/html; charset=utf-8'
         'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.132 Safari/537.36'
   }).on 'error', (err) ->
-    iconv.undoExtendNodeEncodings()
     cb()
   .on 'response', (res) ->
     encoding = res.headers['content-type'].match(/charset=(.+)/i)[1]
@@ -35,9 +35,7 @@ get = (url, cb) ->
     res.setEncoding encoding
     data = ''
     res.on 'end', () =>
-      iconv.undoExtendNodeEncodings()
       cb null, data
     res.on 'data', (chunk) => data += chunk
   .on 'timeout', ->
-    iconv.undoExtendNodeEncodings()
     cb()
