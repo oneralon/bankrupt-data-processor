@@ -30,7 +30,9 @@ get = (url, cb) ->
     encoding = res.headers['content-type'].match(/charset=(.+)/i)[1]
     if /Windows\-1251/i.test encoding
       encoding = 'win1251'
-    else encoding = 'utf8'
+    else
+      encoding = 'utf8'
+      res.setEncoding encoding
     data = ''
     res.on 'end', () => cb null, data
     res.on 'data', (chunk) =>
