@@ -33,5 +33,8 @@ get = (url, cb) ->
     else encoding = 'utf8'
     data = ''
     res.on 'end', () => cb null, data
-    res.on 'data', (chunk) => data += iconv.decode chunk, encoding
+    res.on 'data', (chunk) =>
+      if encoding is 'win1251'
+        data += iconv.decode chunk, encoding
+      else data += chunk
   .on 'timeout', -> cb()
