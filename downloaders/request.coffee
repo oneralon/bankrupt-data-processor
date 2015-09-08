@@ -6,8 +6,6 @@ config          = require '../config'
 logger          = require '../helpers/logger'
 log             = logger  'REQUEST DOWNLOADER'
 
-iconv.extendNodeEncodings()
-
 module.exports = (url, cb) ->
   Sync =>
     try
@@ -27,15 +25,12 @@ get = (url, cb) ->
         'Accept-Charset': 'utf-8'
         'Content-Type': 'text/html; charset=utf-8'
         'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.132 Safari/537.36'
-  }).on 'error', (err) ->
-    cb()
+  }).on 'error', (err) -> cb()
   .on 'response', (res) ->
     encoding = res.headers['content-type'].match(/charset=(.+)/i)[1]
     encoding = if /Windows\-1251/i.test(encoding) then 'win1251' else 'utf8'
-    res.setEncoding encoding
+    res.setEncoding 'binary'
     data = ''
-    res.on 'end', () =>
-      cb null, data
-    res.on 'data', (chunk) => data += chunk
-  .on 'timeout', ->
-    cb()
+    res.on 'end', () -> cb null, iconv.decode data, encoding
+    res.on 'data', (chunk) -> data += chunk
+  .on 'timeout', -> cb()
