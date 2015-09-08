@@ -32,7 +32,7 @@ module.exports = (grunt) ->
       ,
         'etp.platform': { $exists: false }
       ]
-    Trade.find(query).limit(1000).exec (err, trades) ->
+    Trade.find query, (err, trades) ->
       done(err) if err?
       Sync =>
         try
@@ -56,7 +56,7 @@ module.exports = (grunt) ->
             status: $nin: valid
           Lot.distinct 'trade', query, (err, trade_ids) ->
             done(err) if err?
-            Trade.find({_id: $in: trade_ids}).limit(1000).exec (err, trades) ->
+            Trade.find {_id: $in: trade_ids}, (err, trades) ->
               done(err) if err?
               Sync =>
                 try
