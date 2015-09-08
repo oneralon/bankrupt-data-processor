@@ -51,6 +51,7 @@ module.exports = (grunt) ->
                 queue: config.tradeHtmlQueue
                 number: trade.number
           log.info "Select for update invalid lots"
+          console.log valid
           query =
             url: new RegExp(regex)
             status: $nin: valid
