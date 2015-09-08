@@ -4,6 +4,7 @@ Sync       = require 'sync'
 
 amqp       = require '../helpers/amqp'
 mongo      = require '../helpers/mongo'
+valid      = Object.keys(require('../helpers/status').statuses)
 config     = require '../config'
 logger     = require '../helpers/logger'
 log        = logger  'TRADE UPDATER'
@@ -13,6 +14,8 @@ host       = /^https?\:\/\/(www\.)?([A-Za-z0-9\.\-]+)/
 
 require '../models/trade'
 Trade     = сonnection.model 'Trade'
+require '../models/lot'
+Lot       = сonnection.model 'Lot'
 
 module.exports = (grunt) ->
   grunt.registerTask 'update:invalid', ->
@@ -47,7 +50,33 @@ module.exports = (grunt) ->
                 parser: "#{etp.platform}/trade"
                 queue: config.tradeHtmlQueue
                 number: trade.number
-          done()
+          log.info "Select for update invalid lots"
+          query =
+            url: new RegExp(regex)
+            status: $nin: valid
+          Lot.distinct 'trade', query, (err, trade_ids) ->
+            done(err) if err?
+            Trade.find({_id: $in: trade_ids}).limit(1000).exec (err, trades) ->
+              done(err) if err?
+              Sync =>
+                try
+                  log.info "Found #{trades.length} trades"
+                  for trade in trades
+                    console.log trade.url
+                    etp = config.etps.filter( (t) ->
+                      r = new RegExp(trade.url.match(host)[2])
+                      r.test t.href
+                    )?[0]
+                    if etp?
+                      amqp.publish.sync null, config.tradeUrlsQueue, null, headers:
+                        etp: etp
+                        url: trade.url
+                        downloader: 'request'
+                        parser: "#{etp.platform}/trade"
+                        queue: config.tradeHtmlQueue
+                        number: trade.number
+                  done()
+                catch e then done(e)
         catch e then done(e)
 
   grunt.registerTask 'update:old', ->
