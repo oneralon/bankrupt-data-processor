@@ -15,10 +15,10 @@ module.exports =
   database:          'bankrot-parser'
 
   etps: [
-    name: 'ЭТП "Аукционы Сибири"'
-    href: 'http://ausib.ru/etp/trade/list.html'
-    platform: 'u-trade'
-  ,
+  #   name: 'ЭТП "Аукционы Сибири"'
+  #   href: 'http://ausib.ru/etp/trade/list.html'
+  #   platform: 'u-trade'
+  # ,
   #   name: 'ЭТП "Аукционный тендерный центр"'
   #   href: 'http://www.atctrade.ru/etp/trade/list.html'
   #   platform: 'u-trade'
@@ -59,10 +59,10 @@ module.exports =
   #   href: 'http://xn-----6kcbaifbn4di5abenic8aq7kvd6a.xn--p1ai/etp/trade/list.html'
   #   platform: 'u-trade'
   # ,
-    name: 'ЭТП "EkSystems"'
-    href: 'http://www.eksystems.ru/etp/trade/list.html?type=bankruptcySales'
-    platform: 'u-trade'
-  ,
+  #   name: 'ЭТП "EkSystems"'
+  #   href: 'http://www.eksystems.ru/etp/trade/list.html?type=bankruptcySales'
+  #   platform: 'u-trade'
+  # ,
     name: 'Открытая торговая площадка'
     href: 'http://opentp.ru/public/purchases-all/'
     platform: 'i-tender'
