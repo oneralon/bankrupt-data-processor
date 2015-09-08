@@ -81,5 +81,6 @@ module.exports = (html, etp) ->
       url: etp.href.match(host)[0] + $(@).attr('href')
       name: $(@).text()
     }
-  lot.status = $("td:contains('Статус:')").next().text().trim()
+  if not lot.status? or lot.status is ''
+    lot.status = $("td:contains('Статус')").next().text().trim()
   return lot
