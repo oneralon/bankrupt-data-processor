@@ -60,5 +60,6 @@ module.exports = (grunt) ->
       done(err) if err?
       lot_promises = []
       for lot in lots
+        console.log lot.url
         lot_promises.push proceed_lot(lot)
       Promise.all(lot_promises).catch(done).then(done)
