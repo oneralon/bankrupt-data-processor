@@ -37,18 +37,21 @@ removeLot = (trade, lot, cb) ->
   console.log e
   cb()
 
+proceed_lot = (lot) ->
+  new Promise (lot_resolve, lot_reject) -> (lot) ->
+    exists lot.url, (err, lot_exists) ->
+      lot_reject(err) if err?
+      unless lot_exists
+        console.log "Not exists lot #{lot.url}"
+        # mongo.lot_remove {url: lot.url, number: lot.number}, lot_resolve
+        lot_resolve()
+      else lot_resolve()
+
 proceed_trade = (trade) ->
   new Promise (trade_resolve, trade_reject) ->
     lot_promises = []
     for lot in trade.lots
-      lot_promises.push new Promise (lot_resolve, lot_reject) -> (lot) ->
-        exists lot.url, (err, lot_exists) ->
-          lot_reject(err) if err?
-          unless lot_exists
-            console.log "Not exists lot #{lot.url}"
-            # mongo.lot_remove {url: lot.url, number: lot.number}, lot_resolve
-            lot_resolve()
-          else lot_resolve()
+      lot_promises.push proceed_lot(lot)
     Promise.all(lot_promises).catch(trade_reject).then(trade_resolve)
 
 module.exports = (grunt) ->
