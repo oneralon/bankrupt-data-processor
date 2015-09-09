@@ -1,5 +1,5 @@
 mongoose   = require 'mongoose'
-Sync       = require 'sync'
+Promise    = require 'promise'
 request    = require 'request'
 _          = require 'lodash'
 config     = require '../../config'
@@ -47,16 +47,22 @@ module.exports = (grunt) ->
     Lot.distinct 'trade', query, (err, trade_ids) ->
       done(err) if err?
       Trade.find({_id: $in: trade_ids}).populate('lots').exec (err, trades) ->
-        Sync =>
-          try
-            for trade in trades
-              if exists.sync null, trade.url
-                for lot in trade.lots
-                  unless exists.sync null, lot.url
-                    console.log "Not exists lot #{lot.url}"
-                    # mongo.lot_remove.sync null, {url: lot.url, number: lot.number}
-              else
-                console.log "Not exists trade #{trade.url}"
-                # mongo.trade_remove.sync null, trade.url
-            done()
-          catch e then done(e)
+        trade_promises = []
+          for trade in trades
+            trade_promises.push new Promise (trade_resolve) ->
+              exists trade.url, (err, trade_exists) ->
+                if trade_exists
+                  lot_promises = []
+                  for lot in trade.lots
+                    lot_promises.push new Promise (lot_resolve) ->
+                      exists lot.url, (err, lot_exists) ->
+                        unless lot_exists
+                          console.log "Not exists lot #{lot.url}"
+                          # mongo.lot_remove {url: lot.url, number: lot.number}, lot_resolve
+                          lot_resolve()
+                        else lot_resolve()
+                else
+                  console.log "Not exists trade #{trade.url}"
+                  # mongo.trade_remove trade.url, trade_resolve
+                  trade_resolve()
+        Promise.all(trade_promises).then -> done()
