@@ -38,7 +38,7 @@ removeLot = (trade, lot, cb) ->
   cb()
 
 proceed_lot = (lot) ->
-  new Promise (lot_resolve, lot_reject) -> (lot) ->
+  new Promise (lot_resolve, lot_reject) ->
     exists lot.url, (err, lot_exists) ->
       lot_reject(err) if err?
       unless lot_exists
