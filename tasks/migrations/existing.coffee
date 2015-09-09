@@ -17,7 +17,6 @@ Lot       = сonnection.model 'Lot'
 regionize = require '../../helpers/regionize'
 
 exists = (url, cb) ->
-  console.log url
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0"
   options =
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'
@@ -29,14 +28,9 @@ exists = (url, cb) ->
     'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.132 Safari/537.36'
   request.head(url, options)
   .on 'response', (response) ->
-    if [404].indexOf(response.statusCode) isnt -1 then cb null, false
+    if [403, 404].indexOf(response.statusCode) isnt -1 then cb null, false
     else cb null, true
   .on 'error', (error) -> cb error
-
-removeLot = (trade, lot, cb) ->
-  console.log trade.lots
-  console.log e
-  cb()
 
 proceed_lot = (lot) ->
   new Promise (lot_resolve, lot_reject) ->
