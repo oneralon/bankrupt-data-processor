@@ -38,7 +38,7 @@ removeLot = (trade, lot, cb) ->
   cb()
 
 proceed_trade = (trade) ->
-  new Promise (trade_resolve) ->
+  new Promise (trade_resolve, trade_reject) ->
     lot_promises = []
     for lot in trade.lots
       lot_promises.push new Promise (lot_resolve, lot_reject) -> (lot) ->
@@ -49,7 +49,7 @@ proceed_trade = (trade) ->
             # mongo.lot_remove {url: lot.url, number: lot.number}, lot_resolve
             lot_resolve()
           else lot_resolve()
-    Promise.all(lot_promises).catch(done).then(trade_resolve)
+    Promise.all(lot_promises).catch(trade_reject).then(trade_resolve)
 
 module.exports = (grunt) ->
   grunt.registerTask 'migration:existing', ->
