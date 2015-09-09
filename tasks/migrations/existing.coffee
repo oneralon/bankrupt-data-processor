@@ -42,10 +42,12 @@ proceed_lot = (lot) ->
     exists lot.url, (err, lot_exists) ->
       lot_reject(err) if err?
       unless lot_exists
-        console.log "Not exists lot #{lot.url}"
+        console.log "=======> Not exists lot #{lot.url}"
         # mongo.lot_remove {url: lot.url, number: lot.number}, lot_resolve
         lot_resolve()
-      else lot_resolve()
+      else
+        console.log "#{lot.url}"
+        lot_resolve()
 
 module.exports = (grunt) ->
   grunt.registerTask 'migration:existing', ->
@@ -60,6 +62,5 @@ module.exports = (grunt) ->
       done(err) if err?
       lot_promises = []
       for lot in lots
-        console.log lot.url
         lot_promises.push proceed_lot(lot)
       Promise.all(lot_promises).catch(done).then(done)
