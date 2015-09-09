@@ -48,21 +48,21 @@ module.exports = (grunt) ->
       done(err) if err?
       Trade.find({_id: $in: trade_ids}).populate('lots').exec (err, trades) ->
         trade_promises = []
-          for trade in trades
-            trade_promises.push new Promise (trade_resolve) ->
-              exists trade.url, (err, trade_exists) ->
-                if trade_exists
-                  lot_promises = []
-                  for lot in trade.lots
-                    lot_promises.push new Promise (lot_resolve) ->
-                      exists lot.url, (err, lot_exists) ->
-                        unless lot_exists
-                          console.log "Not exists lot #{lot.url}"
-                          # mongo.lot_remove {url: lot.url, number: lot.number}, lot_resolve
-                          lot_resolve()
-                        else lot_resolve()
-                else
-                  console.log "Not exists trade #{trade.url}"
-                  # mongo.trade_remove trade.url, trade_resolve
-                  trade_resolve()
+        for trade in trades
+          trade_promises.push new Promise (trade_resolve) ->
+            exists trade.url, (err, trade_exists) ->
+              if trade_exists
+                lot_promises = []
+                for lot in trade.lots
+                  lot_promises.push new Promise (lot_resolve) ->
+                    exists lot.url, (err, lot_exists) ->
+                      unless lot_exists
+                        console.log "Not exists lot #{lot.url}"
+                        # mongo.lot_remove {url: lot.url, number: lot.number}, lot_resolve
+                        lot_resolve()
+                      else lot_resolve()
+              else
+                console.log "Not exists trade #{trade.url}"
+                # mongo.trade_remove trade.url, trade_resolve
+                trade_resolve()
         Promise.all(trade_promises).then -> done()
