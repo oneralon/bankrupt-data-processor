@@ -61,7 +61,7 @@ module.exports = (grunt) ->
     finished = false
     proceed_range = (skip, cb) ->
       console.log "Now: #{skip}"
-      Lot.find query, {limit: 100, skip: skip}, (err, lots) ->
+      Lot.find(query).skip(skip).limit(100).exec (err, lots) ->
         cb(err) if err?
         if lots.length is 0 then cb()
         lot_promises = []
