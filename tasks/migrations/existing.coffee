@@ -38,8 +38,7 @@ proceed_lot = (lot) ->
       lot_reject(err) if err?
       unless lot_exists
         console.log "Not exists lot #{lot.url}"
-        # mongo.lot_remove {url: lot.url, number: lot.number}, lot_resolve
-        lot_resolve()
+        mongo.lot_remove {url: lot.url, number: lot.number}, lot_resolve
       else lot_resolve()
 
 module.exports = (grunt) ->
@@ -53,12 +52,12 @@ module.exports = (grunt) ->
       status: $nin: valid
     finished = false
     proceed_range = (skip, cb) ->
-      Lot.find(query).skip(skip).limit(50).exec (err, lots) ->
+      Lot.find(query).skip(skip).limit(100).exec (err, lots) ->
         cb(err) if err?
         console.log "Skip: #{skip}       Lots: #{lots.length}"
         if lots.length is 0 then cb()
         lot_promises = []
         for lot in lots
           lot_promises.push proceed_lot(lot)
-        Promise.all(lot_promises).catch(cb).then -> proceed_range(skip + 50, cb)
+        Promise.all(lot_promises).catch(cb).then -> proceed_range(skip + 100, cb)
     proceed_range 0, done
