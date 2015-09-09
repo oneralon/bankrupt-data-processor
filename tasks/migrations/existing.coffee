@@ -17,6 +17,7 @@ Lot       = сonnection.model 'Lot'
 regionize = require '../../helpers/regionize'
 
 exists = (url, cb) ->
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0"
   options =
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'
     'Accept-Language': 'en-US,en;q=0.8'
@@ -37,25 +38,18 @@ removeLot = (trade, lot, cb) ->
   cb()
 
 proceed_trade = (trade) ->
-  new Promise (trade_resolve, trade_reject) ->
-    exists trade.url, (err, trade_exists) ->
-      trade_reject(err) if err?
-      if trade_exists
-        lot_promises = []
-        for lot in trade.lots
-          lot_promises.push new Promise (lot_resolve, lot_reject) -> (lot) ->
-            exists lot.url, (err, lot_exists) ->
-              lot_reject(err) if err?
-              unless lot_exists
-                console.log "Not exists lot #{lot.url}"
-                # mongo.lot_remove {url: lot.url, number: lot.number}, lot_resolve
-                lot_resolve()
-              else lot_resolve()
-        Promise.all(lot_promises).catch(done).then(trade_resolve)
-      else
-        console.log "Not exists trade #{trade.url}"
-        # mongo.trade_remove trade.url, trade_resolve
-        trade_resolve()
+  new Promise (trade_resolve) ->
+    lot_promises = []
+    for lot in trade.lots
+      lot_promises.push new Promise (lot_resolve, lot_reject) -> (lot) ->
+        exists lot.url, (err, lot_exists) ->
+          lot_reject(err) if err?
+          unless lot_exists
+            console.log "Not exists lot #{lot.url}"
+            # mongo.lot_remove {url: lot.url, number: lot.number}, lot_resolve
+            lot_resolve()
+          else lot_resolve()
+    Promise.all(lot_promises).catch(done).then(trade_resolve)
 
 module.exports = (grunt) ->
   grunt.registerTask 'migration:existing', ->
