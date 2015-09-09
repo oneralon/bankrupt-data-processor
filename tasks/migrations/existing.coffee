@@ -49,12 +49,12 @@ module.exports = (grunt) ->
       Trade.find({_id: $in: trade_ids}).populate('lots').exec (err, trades) ->
         trade_promises = []
         for trade in trades
-          trade_promises.push new Promise (trade_resolve) ->
+          trade_promises.push new Promise (trade_resolve) -> (trade) ->
             exists trade.url, (err, trade_exists) ->
               if trade_exists
                 lot_promises = []
                 for lot in trade.lots
-                  lot_promises.push new Promise (lot_resolve) ->
+                  lot_promises.push new Promise (lot_resolve) -> (lot) ->
                     exists lot.url, (err, lot_exists) ->
                       unless lot_exists
                         console.log "Not exists lot #{lot.url}"
