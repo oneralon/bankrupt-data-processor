@@ -23,6 +23,7 @@ exists = (url, cb) ->
     'Cache-Control': 'max-age=0'
     'Accept-Charset': 'utf-8'
     'Content-Type': 'text/html; charset=utf-8'
+    'Cookie': 'fastconnect=; ASP.NET_SessionId=jmohlxh2rrhepn5fowmvuclz'
     'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.132 Safari/537.36'
   request.head(url, options)
   .on 'response', (response) ->
