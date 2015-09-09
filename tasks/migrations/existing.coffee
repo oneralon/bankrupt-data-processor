@@ -69,5 +69,6 @@ module.exports = (grunt) ->
         done(err) if err?
         trade_promises = []
         for trade in trades
+          console.log "#{trade.url}"
           trade_promises.push proceed_trade(trade)
         Promise.all(trade_promises).catch(done).then(done)
