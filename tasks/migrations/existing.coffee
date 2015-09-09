@@ -58,9 +58,14 @@ module.exports = (grunt) ->
     query =
       url: new RegExp(etps)
       status: $nin: valid
-    Lot.find query, (err, lots) ->
-      done(err) if err?
-      lot_promises = []
-      for lot in lots
-        lot_promises.push proceed_lot(lot)
-      Promise.all(lot_promises).catch(done).then(done)
+    finished = false
+    proceed_range = (skip, cb) ->
+      console.log "Now: #{skip}"
+      Lot.find query, {limit: 100, skip: skip}, (err, lots) ->
+        cb(err) if err?
+        if lots.length is 0 then cb()
+        lot_promises = []
+        for lot in lots
+          lot_promises.push proceed_lot(lot)
+        Promise.all(lot_promises).catch(cb).then -> proceed_range(skip + 100, cb)
+    proceed_range 0, done
