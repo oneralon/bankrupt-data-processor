@@ -47,13 +47,6 @@ proceed_lot = (lot) ->
         lot_resolve()
       else lot_resolve()
 
-proceed_trade = (trade) ->
-  new Promise (trade_resolve, trade_reject) ->
-    lot_promises = []
-    for lot in trade.lots
-      lot_promises.push proceed_lot(lot)
-    Promise.all(lot_promises).catch(trade_reject).then(trade_resolve)
-
 module.exports = (grunt) ->
   grunt.registerTask 'migration:existing', ->
     done = @async()
@@ -63,12 +56,11 @@ module.exports = (grunt) ->
     query =
       url: new RegExp(etps)
       status: $nin: valid
-    Lot.distinct 'trade', query, (err, trade_ids) ->
+    Lot.find query, (err, lots) ->
       done(err) if err?
       Trade.find({_id: $in: trade_ids}).populate('lots').exec (err, trades) ->
         done(err) if err?
-        trade_promises = []
-        for trade in trades
-          console.log "#{trade.url}"
-          trade_promises.push proceed_trade(trade)
-        Promise.all(trade_promises).catch(done).then(done)
+        lot_promises = []
+        for lot in lots
+          lot_promises.push proceed_lot(lot)
+        Promise.all(lot_promises).catch(done).then(done)
