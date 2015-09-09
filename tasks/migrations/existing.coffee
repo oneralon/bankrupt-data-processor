@@ -17,6 +17,7 @@ Lot       = сonnection.model 'Lot'
 regionize = require '../../helpers/regionize'
 
 exists = (url, cb) ->
+  console.log url
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0"
   options =
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'
