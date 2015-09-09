@@ -28,6 +28,20 @@ module.exports.insert = (table, item, cb) ->
     mongoose.connection.close()
     cb null, res
 
+module.exports.trade_remove = (trade_url, cb) ->
+  Trade.findOne({url: trade_url}).populate('lots').exec (err, trade) ->
+    unless trade? then cb()
+    promises = []
+    for lot in trade.lots
+      promises.push new Promise (resolve) -> lot.remove(resolve)
+    Promise.all(promises).then -> trade.remove(cb)
+
+module.exports.lot_remove = (query, cb) ->
+  Lot.findOne(query).populate('trade').exec (err, lot) ->
+    unless lot? then cb()
+    lot.trade.lots = lot.trade.lots.filter (i) -> i.toString() isnt lot._id.toString()
+    lot.trade.save -> lot.remove(cb)
+
 module.exports.update_etps = (cb) ->
   Trade.distinct 'etp.name', (err, result) ->
     сonnection.collection('etps').findOne { $query: {}, $orderby: { '_v' : -1 } , $limit: 1}, (err, etps) ->
