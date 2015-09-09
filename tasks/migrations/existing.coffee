@@ -58,9 +58,7 @@ module.exports = (grunt) ->
       status: $nin: valid
     Lot.find query, (err, lots) ->
       done(err) if err?
-      Trade.find({_id: $in: trade_ids}).populate('lots').exec (err, trades) ->
-        done(err) if err?
-        lot_promises = []
-        for lot in lots
-          lot_promises.push proceed_lot(lot)
-        Promise.all(lot_promises).catch(done).then(done)
+      lot_promises = []
+      for lot in lots
+        lot_promises.push proceed_lot(lot)
+      Promise.all(lot_promises).catch(done).then(done)
