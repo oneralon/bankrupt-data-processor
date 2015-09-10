@@ -26,9 +26,10 @@ exists = (url, cb) ->
     'Content-Type': 'text/html; charset=utf-8'
     'Cookie': 'fastconnect=; ASP.NET_SessionId=jmohlxh2rrhepn5fowmvuclz'
     'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.132 Safari/537.36'
-  request.get(url, options)
+  request.head(url, options)
   .on 'response', (response) ->
-    if [302, 403, 404].indexOf(response.statusCode) isnt -1 then cb null, false
+    if [403, 404].indexOf(response.statusCode) isnt -1 or /\/public\/error\/?aspxerrorpath\=/i.test response.req.path
+      cb null, false
     else cb null, true
   .on 'error', (error) -> cb error
 
