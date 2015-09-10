@@ -28,7 +28,7 @@ exists = (url, cb) ->
     'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.132 Safari/537.36'
   request.head(url, options)
   .on 'response', (response) ->
-    if [403, 404].indexOf(response.statusCode) isnt -1 or /\/public\/error\/?aspxerrorpath\=/i.test response.req.path
+    if [403, 404].indexOf(response.statusCode) isnt -1 or /\/public\/error\/\?aspxerrorpath\=/i.test response.req.path
       cb null, false
     else cb null, true
   .on 'error', (error) -> cb error
