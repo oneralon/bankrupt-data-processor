@@ -53,7 +53,11 @@ module.exports = (grunt) ->
           log.info "Select for update invalid lots"
           query =
             url: new RegExp(regex)
-            status: $nin: valid
+            $or: [
+              status: $nin: valid
+            ,
+              status: $exists: false
+            ]
           Lot.distinct 'trade', query, (err, trade_ids) ->
             done(err) if err?
             Trade.find {_id: $in: trade_ids}, (err, trades) ->
