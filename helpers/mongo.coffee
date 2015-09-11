@@ -109,9 +109,10 @@ module.exports.update = (auction, cb) ->
         if lots.length > 0
           lot = lots[0]
           dublicates = []
-          for i in [1..lots.length-1]
-            dublicates.push new Promise (resolve) -> lots[i].remove(resolve)
-            trade.lots = trade.lots.filter (i) -> i._id isnt lots[i]._id
+          if lots.length > 1
+            for i in [1..lots.length-1]
+              dublicates.push new Promise (resolve) -> lots[i].remove(resolve)
+              trade.lots = trade.lots.filter (i) -> i._id isnt lots[i]._id
           diff = diffpatch.diff lot, alot, Lot
           diffpatch.patch lot, diff
           lot.intervals = alot.intervals
