@@ -104,33 +104,34 @@ module.exports.update = (auction, cb) ->
       trade.documents = auction.documents
       auction.lots    = auction.lots or []
       for alot in auction.lots
-        unless alot.url? then alot.url = trade.url
-        lots = _.where(trade.lots, {url: alot.url, number: alot.number})
-        if lots.length > 0
-          lot = lots[0]
-          dublicates = []
-          if lots.length > 1
-            for i in [1..lots.length-1]
-              rlot = lots[i]
-              trade.lots = trade.lots.filter (i) -> i._id isnt rlot._id
-              dublicates.push new Promise (resolve) -> rlot.remove(resolve)
-          diff = diffpatch.diff lot, alot, Lot
-          diffpatch.patch lot, diff
-          lot.intervals = alot.intervals
-          lot.documents = alot.documents
-          lot.tagInputs = alot.tagInputs
-          lot.tags      = alot.tags
-          lot.region    = trade.region
-          lot.updated = new Date()
-          Promise.all(dublicates).then -> save.push new Promise (resolve) -> lot.save resolve
-        else
-          lot = new Lot()
-          lot.trade = trade._id
-          lot.region = trade.region
-          diffpatch.lot lot, alot
-          lot.updated = new Date()
-          trade.lots.push lot
-          save.push new Promise (resolve) -> lot.save resolve
+        if alot.status isnt ''
+          unless alot.url? then alot.url = trade.url
+          lots = _.where(trade.lots, {url: alot.url, number: alot.number})
+          if lots.length > 0
+            lot = lots[0]
+            dublicates = []
+            if lots.length > 1
+              for i in [1..lots.length-1]
+                rlot = lots[i]
+                trade.lots = trade.lots.filter (i) -> i._id isnt rlot._id
+                dublicates.push new Promise (resolve) -> rlot.remove(resolve)
+            diff = diffpatch.diff lot, alot, Lot
+            diffpatch.patch lot, diff
+            lot.intervals = alot.intervals
+            lot.documents = alot.documents
+            lot.tagInputs = alot.tagInputs
+            lot.tags      = alot.tags
+            lot.region    = trade.region
+            lot.updated = new Date()
+            Promise.all(dublicates).then -> save.push new Promise (resolve) -> lot.save resolve
+          else
+            lot = new Lot()
+            lot.trade = trade._id
+            lot.region = trade.region
+            diffpatch.lot lot, alot
+            lot.updated = new Date()
+            trade.lots.push lot
+            save.push new Promise (resolve) -> lot.save resolve
     Promise.all(save).then () ->
       trade.updated = new Date()
       trade.save cb
