@@ -54,8 +54,7 @@ module.exports = (grunt) ->
           query =
             url: new RegExp(regex)
             $or: [
-              status: $exists: true
-              status: $nin: valid
+              status: {$exists: true, $nin: valid}
             ,
               status: $exists: false
             ]
