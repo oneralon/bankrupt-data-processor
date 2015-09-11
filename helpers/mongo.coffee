@@ -91,6 +91,7 @@ module.exports.update = (auction, cb) ->
         diffpatch.lot lot, alot
         lot.trade = trade._id
         lot.region = trade.region
+        lot.updated = new Date()
         trade.lots.push lot
         save.push new Promise (resolve) -> lot.save resolve
     else
@@ -113,12 +114,14 @@ module.exports.update = (auction, cb) ->
           lot.tagInputs = alot.tagInputs
           lot.tags      = alot.tags
           lot.region    = trade.region
+          lot.updated = new Date()
           save.push new Promise (resolve) -> lot.save resolve
         else
           lot = new Lot()
           lot.trade = trade._id
           lot.region = trade.region
           diffpatch.lot lot, alot
+          lot.updated = new Date()
           trade.lots.push lot
           save.push new Promise (resolve) -> lot.save resolve
     Promise.all(save).then () ->
