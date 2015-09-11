@@ -132,6 +132,9 @@ module.exports.update = (auction, cb) ->
             lot.updated = new Date()
             trade.lots.push lot
             save.push new Promise (resolve) -> lot.save resolve
+        else
+          console.log alot.url
+          console.log alot
     Promise.all(save).then () ->
       trade.updated = new Date()
       trade.save cb
