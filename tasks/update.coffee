@@ -54,11 +54,10 @@ module.exports = (grunt) ->
           query =
             url: new RegExp(regex)
             $or: [
-            #   status: $nin: valid
-            # ,
-            #   status: $exists: false
-            # ,
-              status: ''
+              status: $exists: true
+              status: $nin: valid
+            ,
+              status: $exists: false
             ]
           Lot.distinct 'trade', query, (err, trade_ids) ->
             done(err) if err?
