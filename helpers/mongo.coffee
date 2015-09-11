@@ -105,8 +105,13 @@ module.exports.update = (auction, cb) ->
       auction.lots    = auction.lots or []
       for alot in auction.lots
         unless alot.url? then alot.url = trade.url
-        lot = _.where(trade.lots, {url: alot.url, number: alot.number})[0]
-        if lot?
+        lots = _.where(trade.lots, {url: alot.url, number: alot.number})
+        if lots.length > 0
+          lot = lots[0]
+          dublicates = []
+          for i in [1..lots.length-1]
+            dublicates.push new Promise (resolve) -> lots[i].remove(resolve)
+            trade.lots = trade.lots.filter (i) -> i._id isnt lot[i]._id
           diff = diffpatch.diff lot, alot, Lot
           diffpatch.patch lot, diff
           lot.intervals = alot.intervals
@@ -115,7 +120,7 @@ module.exports.update = (auction, cb) ->
           lot.tags      = alot.tags
           lot.region    = trade.region
           lot.updated = new Date()
-          save.push new Promise (resolve) -> lot.save resolve
+          Promise.all(dublicates).then -> save.push new Promise (resolve) -> lot.save resolve
         else
           lot = new Lot()
           lot.trade = trade._id
