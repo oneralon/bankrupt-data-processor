@@ -59,6 +59,8 @@ module.exports = (grunt) ->
               status: {$exists: true, $nin: valid}
             ,
               status: $exists: false
+            ,
+              updated: $exists: false
             ]
           Lot.distinct 'trade', query, (err, trade_ids) ->
             done(err) if err?
