@@ -31,6 +31,8 @@ module.exports = (grunt) ->
         updated: { $exists: false }
       ,
         'etp.platform': { $exists: false }
+      ,
+        $where: 'this.lots.length == 0'
       ]
     Trade.find query, (err, trades) ->
       done(err) if err?
