@@ -41,7 +41,7 @@ uniq = (lot, cb) ->
       console.log "#{lot.url} has dublicates #{lots.length - 1}"
       for lot in lots
         if lot._id isnt saved._id
-          saved.trade.lots = saved.trade.lots.filter (i) -> i._id.toString() isnt lot._id.toString()
+          saved.trade.lots = saved.trade.lots.filter (i) -> i.toString() isnt lot._id.toString()
           save.push new Promise (resolve) -> lot.remove(resolve)
       Promise.all(save).then ->
         saved.url = lurl
