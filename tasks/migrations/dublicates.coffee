@@ -20,17 +20,17 @@ module.exports = (grunt) ->
     Lot.find({updated: {$exists: false}}).limit(5000).exec (err, lots) ->
       Sync =>
         try
-          for url in urls
-            console.log "#{urls.indexOf(url)}/#{urls.length}"
-            uniq.sync null, url
+          for lot in lots
+            console.log "#{lots.indexOf(url)}/#{lots.length}"
+            uniq.sync null, lot
           done()
         catch e then done e
 
-uniq = (url, cb) ->
+uniq = (lot, cb) ->
   save = []
-  lurl = url.replace '://www.', '://'
-  rurl = new RegExp turl.replace '://', '://(www.)?'
-  Lot.find({url:rurl}).populate('trade').exec (err, lots) ->
+  lurl = lot.url.replace '://www.', '://'
+  rurl = new RegExp lurl.replace '://', '://(www.)?'
+  Lot.find({url:rurl, number: lot.number}).populate('trade').exec (err, lots) ->
     if lots.length < 2 then cb()
     else
       saved = _.sortBy(lots, (i) ->
@@ -38,7 +38,7 @@ uniq = (url, cb) ->
         if i.status? and status isnt '' then return 1
         return 2
       )[0]
-      console.log "#{url} has dublicates #{lots.length - 1}"
+      console.log "#{lot.url} has dublicates #{lots.length - 1}"
       for lot in lots
         if lot._id isnt saved._id
           saved.trade.lots = saved.trade.lots.filter (i) -> i._id.toString() isnt lot._id.toString()
