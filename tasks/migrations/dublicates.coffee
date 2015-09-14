@@ -14,6 +14,11 @@ require '../../models/tag'
 Trade     = сonnection.model 'Trade'
 Lot       = сonnection.model 'Lot'
 
+getLots = (skip, cb) ->
+  Lot.find({updated: {$exists: false}}).skip(skip).limit(5000).exec (err, lots) ->
+    cb err if err?
+    cb null, lots
+
 module.exports = (grunt) ->
   grunt.registerTask 'migration:dublicates', ->
     done = @async()
@@ -22,7 +27,7 @@ module.exports = (grunt) ->
     Sync =>
       try
         while inProgress
-          lots = Lot.find({updated: {$exists: false}}).skip(skip).limit(5000).exec.sync null
+          lots = getLots.sync null, skip
           if lots.length is 0 then break
           for lot in lots
             console.log "#{lots.indexOf(lot)}/#{lots.length}\t\t\t Skiped: #{skip}"
