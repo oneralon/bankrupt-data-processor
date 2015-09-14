@@ -36,7 +36,9 @@ module.exports = (grunt) ->
         while inProgress
           lots = getLots.sync null, skip
           if lots.length is 0 then break
+          console.log "Now: #{lots.length} \t\t\t Skip: #{skip}"
           proceed.sync null, lots
+          console.log "Now: #{lots.length} \t\t\t Skip: #{skip} ------- OK"
           skip = skip + lots.length
         done()
       catch e then done e
