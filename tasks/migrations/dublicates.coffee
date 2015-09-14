@@ -24,7 +24,7 @@ proceed = (lots, cb) ->
   for lot in lots
     promises.push new Promise (resolve) ->
       uniq lot, resolve
-  Promise.all(promises).then(cb)
+  Promise.all(promises).then -> cb()
 
 module.exports = (grunt) ->
   grunt.registerTask 'migration:dublicates', ->
@@ -62,4 +62,4 @@ uniq = (lot, cb) ->
           save.push new Promise (resolve) -> lot.remove(resolve)
       Promise.all(save).then ->
         saved.url = lurl
-        saved.trade.save -> saved.save(cb)
+        saved.trade.save -> saved.save -> cb()
