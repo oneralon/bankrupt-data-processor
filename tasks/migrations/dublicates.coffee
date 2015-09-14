@@ -15,9 +15,16 @@ Trade     = сonnection.model 'Trade'
 Lot       = сonnection.model 'Lot'
 
 getLots = (skip, cb) ->
-  Lot.find({updated: {$exists: false}}).skip(skip).limit(5000).exec (err, lots) ->
+  Lot.find({updated: {$exists: false}}).skip(skip).limit(1000).exec (err, lots) ->
     cb err if err?
     cb null, lots
+
+proceed = (lots, cb) ->
+  promises = []
+  for lot in lots
+    promises.push new Promise (resolve) ->
+      uniq lot, resolve
+  Promise.all(promises).then(cb)
 
 module.exports = (grunt) ->
   grunt.registerTask 'migration:dublicates', ->
@@ -29,9 +36,7 @@ module.exports = (grunt) ->
         while inProgress
           lots = getLots.sync null, skip
           if lots.length is 0 then break
-          for lot in lots
-            console.log "#{lots.indexOf(lot)}/#{lots.length}\t\t\t Skiped: #{skip}"
-            uniq.sync null, lot
+          proceed.sync null, lots
           skip = skip + lots.length
         done()
       catch e then done e
