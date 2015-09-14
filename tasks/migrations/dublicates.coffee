@@ -35,7 +35,7 @@ uniq = (lot, cb) ->
     else
       saved = _.sortBy(lots, (i) ->
         if i.updated? then return 0
-        if i.status? and status isnt '' then return 1
+        if i.status? and lot.status isnt '' then return 1
         return 2
       )[0]
       console.log "#{lot.url} has dublicates #{lots.length - 1}"
