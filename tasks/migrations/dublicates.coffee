@@ -33,8 +33,8 @@ uniq = (url, cb) ->
     if lots.length < 2 then cb()
     else
       saved = _.sortBy(lots, (i) ->
-        if i.updated then return 0
-        if i.status then return 1
+        if i.updated? then return 0
+        if i.status? and status isnt '' then return 1
         return 2
       )[0]
       console.log "#{url} has dublicates #{lots.length - 1}"
