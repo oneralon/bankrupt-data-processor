@@ -17,14 +17,18 @@ Lot       = сonnection.model 'Lot'
 module.exports = (grunt) ->
   grunt.registerTask 'migration:dublicates', ->
     done = @async()
-    Lot.find({updated: {$exists: false}}).limit(5000).exec (err, lots) ->
-      Sync =>
-        try
-          for lot in lots
-            console.log "#{lots.indexOf(lot)}/#{lots.length}"
-            uniq.sync null, lot
-          done()
-        catch e then done e
+    skip = 0
+    inProgress = true
+    Sync =>
+      while inProgress
+        lots = Lot.find({updated: {$exists: false}}).skip(skip).limit(5000).exec.sync null
+        if lots.length is 0 then break
+        for lot in lots
+          console.log "#{lots.indexOf(lot)}/#{lots.length}\t\t\t Skiped: #{skip}"
+          uniq.sync null, lot
+        skip = skip + lots.length
+      done()
+    catch e then done e
 
 uniq = (lot, cb) ->
   save = []
