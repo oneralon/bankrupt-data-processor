@@ -75,7 +75,9 @@ module.exports.update_regions = (cb) ->
 module.exports.update = (auction, cb) ->
   if not auction.region? or auction.region is 'Не определен'
     auction.region = regionize(auction)
+  auction.url = auction.url.replace '//www.', '//'
   for lot in auction.lots
+    lot.url = lot.url.replace '//www.', '//'
     lot.region = auction.region if not lot.region or lot.region is 'Не определен'
     if lot.status or lot.status is '' then lot.status = status lot.status else lot.status = 'Не определен'
   save = []
