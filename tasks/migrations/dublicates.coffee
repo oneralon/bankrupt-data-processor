@@ -1,6 +1,6 @@
-Sync       = require 'sync'
 Promise    = require 'promise'
 mongoose   = require 'mongoose'
+_          = require 'lodash'
 
 config     = require '../../config'
 
@@ -16,7 +16,7 @@ Lot       = сonnection.model 'Lot'
 module.exports = (grunt) ->
   grunt.registerTask 'migration:dublicates', ->
     done = @async()
-    Trade.distinct('url').exec (err, urls) ->
+    Lot.find({updated: {$exists: false}}).limit(5000).exec (err, lots) ->
       Sync =>
         try
           for url in urls
@@ -27,22 +27,20 @@ module.exports = (grunt) ->
 
 uniq = (url, cb) ->
   save = []
-  turl = url.replace '://www.', '://'
+  lurl = url.replace '://www.', '://'
   rurl = new RegExp turl.replace '://', '://(www.)?'
-  Trade.find({url:rurl}).populate('lots').exec (err, trades) ->
-    if trades.length is 1 then cb()
+  Lot.find({url:rurl}).populate('trade').exec (err, lots) ->
+    if lots.length < 2 then cb()
     else
-      saved = trades[0]
-      console.log "#{url} has dublicates #{trades.length}"
-      for trade in trades
-        if trade._id isnt saved._id
-          save.push new Promise (resolve) -> remove(trade, resolve)
+      saved = _.sortBy(lots, (i) ->
+        if i.updated then return 0
+        if i.status then return 1
+        return 2
+      )[0]
+      console.log "#{url} has dublicates #{lots.length - 1}"
+      for lot in lots
+        if lot._id isnt saved._id
+          save.push new Promise (resolve) -> lot.remove(resolve)
       Promise.all(save).then ->
-        saved.url = turl
+        saved.url = lurl
         saved.save(cb)
-
-remove = (trade, cb) ->
-  lots = []
-  for lot in trade.lots
-    lots.push new Promise (resolve) -> lot.remove(resolve)
-  Promise.all(lots).then -> trade.remove(cb)
