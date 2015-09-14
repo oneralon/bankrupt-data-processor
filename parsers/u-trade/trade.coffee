@@ -94,5 +94,6 @@ module.exports = (html, etp, url, ismicro, cb) ->
     trade.lots = []
     for chunk in lot_chunks
       for lot in chunk
+        lot.url = lot.url.replace '//www.', '//'
         trade.lots.push lot
     cb null, trade

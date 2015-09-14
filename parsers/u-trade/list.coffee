@@ -25,7 +25,7 @@ module.exports = (html, etp, cb) ->
           num = $(row).parent().parent().find('td:nth-child(1)').text()
           trades.push
             etp: etp
-            url: url
+            url: url.replace '//www.', '//'
             downloader: 'request'
             parser: 'u-trade/trade'
             queue: config.tradeHtmlQueue
@@ -39,7 +39,7 @@ module.exports = (html, etp, cb) ->
           num = $(row).find('td:nth-child(1)').text()
           trades.push
             etp: etp
-            url: url
+            url: url.replace '//www.', '//'
             downloader: 'request'
             parser: 'u-trade/trade'
             queue: config.tradeHtmlQueue
