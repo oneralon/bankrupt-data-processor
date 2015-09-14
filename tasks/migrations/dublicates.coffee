@@ -1,4 +1,5 @@
 Promise    = require 'promise'
+Sync       = require 'sync'
 mongoose   = require 'mongoose'
 _          = require 'lodash'
 
