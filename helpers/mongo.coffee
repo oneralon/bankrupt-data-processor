@@ -123,7 +123,8 @@ module.exports.update = (auction, cb) ->
             lot.tags      = alot.tags
             lot.region    = trade.region
             lot.updated = new Date()
-            Promise.all(dublicates).then -> save.push new Promise (resolve) -> lot.save resolve
+            if lots.length > 1 then Promise.all(dublicates).then -> save.push new Promise (resolve) -> lot.save resolve
+            else save.push new Promise (resolve) -> lot.save resolve
           else
             lot = new Lot()
             lot.trade = trade._id
