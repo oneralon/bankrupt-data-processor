@@ -21,7 +21,7 @@ module.exports = (grunt) ->
       Sync =>
         try
           for lot in lots
-            console.log "#{lots.indexOf(lot.url)}/#{lots.length}"
+            console.log "#{lots.indexOf(lot)}/#{lots.length}"
             uniq.sync null, lot
           done()
         catch e then done e
