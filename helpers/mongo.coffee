@@ -74,8 +74,9 @@ module.exports.update_regions = (cb) ->
 
 module.exports.updateLot = (alot, cb) ->
   alot.url = alot.url.replace '//www.', '//'
-  rurl = new RegExp alot.url.replace('//', '//(www.)?')
-  Lot.find({url: alot.url, number: alot.number}).populate('trade').exec (err, lots) ->
+  e = alot.url.match(/^(https?:\/\/)(.+)$/)
+  rurl = new RegExp( e[1] + '(www\.)?' + e[2])
+  Lot.find({url: rurl, number: alot.number}).populate('trade').exec (err, lots) ->
     if lots.length > 0
       dublicates = []
       lot = lots[0]
