@@ -72,6 +72,34 @@ module.exports.update_regions = (cb) ->
         , cb
       else cb()
 
+module.exports.updateLot = (alot, cb) ->
+  alot.url = alot.url.replace '//www.', '//'
+  Lot.find({url: alot.url, number: alot.number}).populate('trade').exec (err, lots) ->
+    if lots.length > 0
+      dublicates = []
+      lot = lots[0]
+      if lots.length > 1
+        for i in [1..lots.length-1]
+          rlot = lots[i]
+          lot.trade.lots = lot.trade.lots.filter (i) -> i.toString() isnt rlot._id.toString()
+          dublicates.push new Promise (resolve) -> rlot.remove(resolve)
+      diff = diffpatch.diff lot, alot, Lot
+      diffpatch.patch lot, diff
+      lot.intervals = alot.intervals
+      lot.documents = alot.documents
+      lot.tagInputs = alot.tagInputs
+      lot.tags      = alot.tags
+      lot.region    = lot.trade.region
+      lot.updated = new Date()
+      if lots.length > 1
+        log.info "Updated #{lot.url} with #{lots.length - 1} dublicates"
+        Promise.all(dublicates).then -> lot.trade.save -> lot.save(cb)
+      else
+        log.info "Updated #{lot.url}"
+        lot.save(cb)
+    else
+      log.error "Not fount lot #{alot.url}, num: #{alot.number}"
+
 module.exports.update = (auction, cb) ->
   if not auction.region? or auction.region is 'Не определен'
     auction.region = regionize(auction)
