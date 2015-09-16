@@ -115,7 +115,7 @@ module.exports.update = (auction, cb) ->
             if lots.length > 1
               for i in [1..lots.length-1]
                 rlot = lots[i]
-                trade.lots = trade.lots.filter (i) -> i._id isnt rlot._id
+                trade.lots = trade.lots.filter (i) -> i._id.toString() isnt rlot._id.toString()
                 dublicates.push new Promise (resolve) -> rlot.remove(resolve)
             diff = diffpatch.diff lot, alot, Lot
             diffpatch.patch lot, diff
