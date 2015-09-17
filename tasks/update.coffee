@@ -29,6 +29,10 @@ module.exports = (grunt) ->
       url: new RegExp(regex)
       $or: [
         updated: $exists: false
+      ,
+        status: $exists: false
+      ,
+        status: ''
       ]
     Lot.find(query).limit(10000).exec (err, lots) ->
       done(err) if err?
