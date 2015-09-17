@@ -30,7 +30,28 @@ module.exports = (grunt) ->
       $or: [
         updated: $exists: false
       ]
-    Lot.find(query).limit(200).exec (err, lots) ->
+    Lot.find(query).limit(10000).exec (err, lots) ->
+      done(err) if err?
+      log.info "#{lots.length} found"
+      Sync =>
+        try
+          for lot in lots
+            amqp.publishLot.sync null, lot.url
+          done()
+        catch e then done(e)
+
+module.exports = (grunt) ->
+  grunt.registerTask 'update:old-lots', ->
+    log.info "Select for update old lots"
+    done = @async()
+    regex = ""
+    for etp in config.etps
+      regex += "(#{etp.href.match(host)[2]})|"
+    regex = regex.slice(0,-1)
+    date = moment().subtract(2, 'day')
+    query =
+      updated: { $exists: true, $lt: date }
+    Lot.find(query).limit(10000).exec (err, lots) ->
       done(err) if err?
       log.info "#{lots.length} found"
       Sync =>
