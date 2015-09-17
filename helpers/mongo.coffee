@@ -74,6 +74,9 @@ module.exports.update_regions = (cb) ->
 
 module.exports.updateLot = (alot, cb) ->
   alot.url = alot.url.replace '//www.', '//'
+  if alot.status or alot.status isnt ''
+    alot.status = status alot.status
+  else alot.status = 'Не определен'
   e = alot.url.match(/^(https?:\/\/)(.+)$/)
   rurl = new RegExp( e[1] + '(www\.)?' + e[2])
   Lot.find({url: rurl, number: alot.number}).populate('trade').exec (err, lots) ->
@@ -109,7 +112,9 @@ module.exports.update = (auction, cb) ->
   for lot in auction.lots
     lot.url = lot.url.replace '//www.', '//'
     lot.region = auction.region if not lot.region or lot.region is 'Не определен'
-    if lot.status or lot.status is '' then lot.status = status lot.status else lot.status = 'Не определен'
+    if alot.status or alot.status isnt ''
+      alot.status = status alot.status
+    else alot.status = 'Не определен'
   save = []
   regurl = new RegExp(auction.url.replace(/https?:\/\/(www.)?/, ''))
   Trade.findOne({url: regurl}).populate('lots').exec (err, trade) ->
