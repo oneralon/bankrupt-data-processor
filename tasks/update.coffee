@@ -34,9 +34,10 @@ module.exports = (grunt) ->
       ,
         status: {$exists: true, $eq: ''}
       ]
-    Lot.find(query).limit(10000).exec (err, lots) ->
+    Lot.find(query).limit(1000).exec (err, lots) ->
       done(err) if err?
       log.info "#{lots.length} found"
+      unless lots? then done()
       Sync =>
         try
           for lot in lots
@@ -44,7 +45,6 @@ module.exports = (grunt) ->
           done()
         catch e then done(e)
 
-module.exports = (grunt) ->
   grunt.registerTask 'update:old-lots', ->
     log.info "Select for update old lots"
     done = @async()
@@ -55,7 +55,7 @@ module.exports = (grunt) ->
     date = moment().subtract(2, 'day')
     query =
       updated: { $exists: true, $lt: date }
-    Lot.find(query).limit(10000).exec (err, lots) ->
+    Lot.find(query).limit(1000).exec (err, lots) ->
       done(err) if err?
       log.info "#{lots.length} found"
       Sync =>
