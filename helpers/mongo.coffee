@@ -79,7 +79,7 @@ module.exports.updateLot = (alot, cb) ->
   else alot.status = 'Не определен'
   e = alot.url.match(/^(https?:\/\/)(.+)$/)
   rurl = new RegExp( e[1] + '(www\.)?' + e[2])
-  Lot.find({url: rurl, number: alot.number}).populate('trade').exec (err, lots) ->
+  Lot.find({url: rurl, $or: [{number: alot.number},{number:{$exists:false}}]}).populate('trade').exec (err, lots) ->
     if lots.length > 0
       dublicates = []
       lot = lots[0]
