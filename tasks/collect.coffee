@@ -11,6 +11,10 @@ amqp       = require '../helpers/amqp'
 config     = require '../config'
 
 module.exports = (grunt) ->
+  grunt.registerTask 'collect:init', ->
+    done = @async()
+    amqp.init(done)
+
   grunt.registerTask 'collect:full', ->
     log.info "Start full collecting of #{config.etps.length} sources"
     done = @async()
