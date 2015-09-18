@@ -72,6 +72,39 @@ module.exports.update_regions = (cb) ->
         , cb
       else cb()
 
+module.exports.updateLot = (alot, cb) ->
+  alot.url = alot.url.replace '//www.', '//'
+  if alot.status or alot.status isnt ''
+    alot.status = status alot.status
+  else alot.status = 'Не определен'
+  e = alot.url.match(/^(https?:\/\/)(.+)$/)
+  rurl = new RegExp( e[1] + '(www\.)?' + e[2])
+  Lot.find({url: rurl, $or: [{number: alot.number},{number:{$exists:false}}]}).populate('trade').exec (err, lots) ->
+    if lots.length > 0
+      dublicates = []
+      lot = lots[0]
+      if lots.length > 1
+        for i in [1..lots.length-1]
+          rlot = lots[i]
+          lot.trade.lots = lot.trade.lots.filter (i) -> i.toString() isnt rlot._id.toString()
+          dublicates.push new Promise (resolve) -> rlot.remove(resolve)
+      diff = diffpatch.diff lot, alot, Lot
+      diffpatch.patch lot, diff
+      lot.intervals = alot.intervals
+      lot.documents = alot.documents
+      lot.tagInputs = alot.tagInputs
+      lot.tags      = alot.tags
+      lot.region    = lot.trade.region
+      lot.updated = new Date()
+      if lots.length > 1
+        log.info "Updated #{lot.url} with #{lots.length - 1} dublicates"
+        Promise.all(dublicates).then -> lot.trade.save -> lot.save(cb)
+      else
+        log.info "Updated #{lot.url}"
+        lot.save(cb)
+    else
+      log.error "Not fount lot #{alot.url}, num: #{alot.number}"
+
 module.exports.update = (auction, cb) ->
   if not auction.region? or auction.region is 'Не определен'
     auction.region = regionize(auction)
@@ -79,7 +112,9 @@ module.exports.update = (auction, cb) ->
   for lot in auction.lots
     lot.url = lot.url.replace '//www.', '//'
     lot.region = auction.region if not lot.region or lot.region is 'Не определен'
-    if lot.status or lot.status is '' then lot.status = status lot.status else lot.status = 'Не определен'
+    if alot.status or alot.status isnt ''
+      alot.status = status alot.status
+    else alot.status = 'Не определен'
   save = []
   regurl = new RegExp(auction.url.replace(/https?:\/\/(www.)?/, ''))
   Trade.findOne({url: regurl}).populate('lots').exec (err, trade) ->
@@ -115,7 +150,7 @@ module.exports.update = (auction, cb) ->
             if lots.length > 1
               for i in [1..lots.length-1]
                 rlot = lots[i]
-                trade.lots = trade.lots.filter (i) -> i._id isnt rlot._id
+                trade.lots = trade.lots.filter (i) -> i._id.toString() isnt rlot._id.toString()
                 dublicates.push new Promise (resolve) -> rlot.remove(resolve)
             diff = diffpatch.diff lot, alot, Lot
             diffpatch.patch lot, diff

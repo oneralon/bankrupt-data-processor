@@ -18,6 +18,53 @@ require '../models/lot'
 Lot       = сonnection.model 'Lot'
 
 module.exports = (grunt) ->
+  grunt.registerTask 'update:invalid-lots', ->
+    log.info "Select for update invalid lots"
+    done = @async()
+    regex = ""
+    for etp in config.etps
+      regex += "(#{etp.href.match(host)[2]})|"
+    regex = regex.slice(0,-1)
+    query =
+      url: new RegExp(regex)
+      $or: [
+        updated: $exists: false
+      ,
+        status: $exists: false
+      ,
+        status: {$exists: true, $eq: ''}
+      ]
+    Lot.find(query).limit(1000).exec (err, lots) ->
+      done(err) if err?
+      log.info "#{lots.length} found"
+      unless lots? then done()
+      Sync =>
+        try
+          for lot in lots
+            amqp.publishLot.sync null, lot.url
+          done()
+        catch e then done(e)
+
+  grunt.registerTask 'update:old-lots', ->
+    log.info "Select for update old lots"
+    done = @async()
+    regex = ""
+    for etp in config.etps
+      regex += "(#{etp.href.match(host)[2]})|"
+    regex = regex.slice(0,-1)
+    date = moment().subtract(2, 'day')
+    query =
+      updated: { $exists: true, $lt: date }
+    Lot.find(query).limit(1000).exec (err, lots) ->
+      done(err) if err?
+      log.info "#{lots.length} found"
+      Sync =>
+        try
+          for lot in lots
+            amqp.publishLot.sync null, lot.url
+          done()
+        catch e then done(e)
+
   grunt.registerTask 'update:invalid', ->
     log.info "Select for update invalid trades"
     done = @async()

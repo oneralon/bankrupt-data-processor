@@ -4,11 +4,17 @@ module.exports =
   tradeUrlsQueue:    'bankrupt-parser.tradeUrls'
   tradeHtmlQueue:    'bankrupt-parser.tradeHtml'
   tradeJsonQueue:    'bankrupt-parser.tradeJson'
+  lotsUrlsQueue:     'bankrupt-parser.lotUrls'
+  lotsHtmlQueue:     'bankrupt-parser.lotHtml'
+  lotsJsonQueue:     'bankrupt-parser.lotJson'
 
   listWorkers:       2
   tradeUrlWorkers:   16
   tradeHtmlWorkers:  8
   tradeJsonWorkers:  2
+  lotUrlWorkers:     8
+  lotHtmlWorkers:    2
+  lotJsonWorkers:    1
   timeout:           60000
   incUpdTime:        30000
 

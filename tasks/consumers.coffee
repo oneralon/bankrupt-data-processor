@@ -7,4 +7,7 @@ module.exports = (grunt) ->
     spawn 'coffee', ['consumers/trades-html.coffee'], { detached: true, stdio: ['ignore', 'ignore', 'ignore']}
     spawn 'coffee', ['consumers/trades-url.coffee'], { detached: true, stdio: ['ignore', 'ignore', 'ignore']}
     spawn 'coffee', ['consumers/trades-json.coffee'], { detached: true, stdio: ['ignore', 'ignore', 'ignore']}
+    spawn 'coffee', ['consumers/lots-url.coffee'], { detached: true, stdio: ['ignore', 'ignore', 'ignore']}
+    spawn 'coffee', ['consumers/lots-html.coffee'], { detached: true, stdio: ['ignore', 'ignore', 'ignore']}
+    spawn 'coffee', ['consumers/lots-json.coffee'], { detached: true, stdio: ['ignore', 'ignore', 'ignore']}
     done()
