@@ -2,6 +2,7 @@ mongoose   = require 'mongoose'
 Promise    = require 'promise'
 config     = require '../../config'
 mongo      = require '../../helpers/mongo'
+host       = /^https?\:\/\/(www\.)?([A-Za-z0-9\.\-]+)/
 сonnection = mongoose.createConnection "mongodb://localhost/#{config.database}"
 
 require '../../models/lot'
