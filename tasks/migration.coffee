@@ -3,3 +3,4 @@ module.exports = (grunt) ->
   require('./migrations/statuses')(grunt)
   require('./migrations/regions')(grunt)
   require('./migrations/existing')(grunt)
+  require('./migrations/last_message')(grunt)
