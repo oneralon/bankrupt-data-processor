@@ -33,6 +33,8 @@ module.exports = (grunt) ->
         status: $exists: false
       ,
         status: {$exists: true, $eq: ''}
+      ,
+        status: {$exists: true, $eq: 'Не определен'}
       ]
     Lot.find(query).limit(1000).exec (err, lots) ->
       done(err) if err?
