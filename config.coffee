@@ -63,6 +63,10 @@ module.exports =
   #   href: 'http://www.eksystems.ru/etp/trade/list.html?type=bankruptcySales'
   #   platform: 'u-trade'
   # ,
+  #   name: 'ЭТП "МЭТС"'
+  #   href: 'http://m-ets.ru/search?lots=&r_num=%D0%9E&debtor=&org=&arb=&stat='
+  #   platform: 'u-trade'
+  # ,
     name: 'Открытая торговая площадка'
     href: 'http://opentp.ru/public/purchases-all/'
     platform: 'i-tender'
