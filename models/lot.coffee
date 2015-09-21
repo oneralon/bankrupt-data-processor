@@ -57,6 +57,8 @@ lotSchema = new Schema
     type: Schema.Types.ObjectId
     ref: 'lotAlias'
   ]
+  updated: Date
+  last_event: Date
 
 # lotSchema.index {title: 'text', information: 'text'}, { default_language: "russian" }
 lotSchema.index last_message: 1

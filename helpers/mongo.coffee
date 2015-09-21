@@ -28,6 +28,20 @@ module.exports.insert = (table, item, cb) ->
     mongoose.connection.close()
     cb null, res
 
+module.exports.trade_remove = (trade_url, cb) ->
+  Trade.findOne({url: trade_url}).populate('lots').exec (err, trade) ->
+    unless trade? then cb()
+    promises = []
+    for lot in trade.lots
+      promises.push new Promise (resolve) -> lot.remove(resolve)
+    Promise.all(promises).then -> trade.remove(cb)
+
+module.exports.lot_remove = (query, cb) ->
+  Lot.findOne(query).populate('trade').exec (err, lot) ->
+    unless lot? then cb()
+    lot.trade.lots = lot.trade.lots.filter (i) -> i.toString() isnt lot._id.toString()
+    lot.trade.save -> lot.remove(cb)
+
 module.exports.update_etps = (cb) ->
   Trade.distinct 'etp.name', (err, result) ->
     сonnection.collection('etps').findOne { $query: {}, $orderby: { '_v' : -1 } , $limit: 1}, (err, etps) ->
@@ -58,12 +72,49 @@ module.exports.update_regions = (cb) ->
         , cb
       else cb()
 
+module.exports.updateLot = (alot, cb) ->
+  alot.url = alot.url.replace '//www.', '//'
+  if alot.status or alot.status isnt ''
+    alot.status = status alot.status
+  else alot.status = 'Не определен'
+  e = alot.url.match(/^(https?:\/\/)(.+)$/)
+  rurl = new RegExp( e[1] + '(www\.)?' + e[2])
+  Lot.find({url: rurl, $or: [{number: alot.number},{number:{$exists:false}}]}).populate('trade').exec (err, lots) ->
+    if lots.length > 0
+      dublicates = []
+      lot = lots[0]
+      if lots.length > 1
+        for i in [1..lots.length-1]
+          rlot = lots[i]
+          lot.trade.lots = lot.trade.lots.filter (i) -> i.toString() isnt rlot._id.toString()
+          dublicates.push new Promise (resolve) -> rlot.remove(resolve)
+      diff = diffpatch.diff lot, alot, Lot
+      diffpatch.patch lot, diff
+      lot.intervals = alot.intervals
+      lot.documents = alot.documents
+      lot.tagInputs = alot.tagInputs
+      lot.tags      = alot.tags
+      lot.region    = lot.trade.region
+      lot.updated = new Date()
+      if lots.length > 1
+        log.info "Updated #{lot.url} with #{lots.length - 1} dublicates"
+        Promise.all(dublicates).then -> lot.trade.save -> lot.save(cb)
+      else
+        log.info "Updated #{lot.url}"
+        lot.save(cb)
+    else
+      log.error "Not fount lot #{alot.url}, num: #{alot.number}"
+
 module.exports.update = (auction, cb) ->
   if not auction.region? or auction.region is 'Не определен'
     auction.region = regionize(auction)
+  auction.url = auction.url.replace '//www.', '//'
   for lot in auction.lots
+    lot.url = lot.url.replace '//www.', '//'
     lot.region = auction.region if not lot.region or lot.region is 'Не определен'
-    if lot.status then lot.status = status lot.status else lot.status = 'Не определен'
+    if alot.status or alot.status isnt ''
+      alot.status = status alot.status
+    else alot.status = 'Не определен'
   save = []
   regurl = new RegExp(auction.url.replace(/https?:\/\/(www.)?/, ''))
   Trade.findOne({url: regurl}).populate('lots').exec (err, trade) ->
@@ -77,6 +128,7 @@ module.exports.update = (auction, cb) ->
         diffpatch.lot lot, alot
         lot.trade = trade._id
         lot.region = trade.region
+        lot.updated = new Date()
         trade.lots.push lot
         save.push new Promise (resolve) -> lot.save resolve
     else
@@ -89,24 +141,38 @@ module.exports.update = (auction, cb) ->
       trade.documents = auction.documents
       auction.lots    = auction.lots or []
       for alot in auction.lots
-        unless alot.url? then alot.url = trade.url
-        lot = _.where(trade.lots, {url: alot.url, number: alot.number})[0]
-        if lot?
-          diff = diffpatch.diff lot, alot, Lot
-          diffpatch.patch lot, diff
-          lot.intervals = alot.intervals
-          lot.documents = alot.documents
-          lot.tagInputs = alot.tagInputs
-          lot.tags      = alot.tags
-          lot.region    = trade.region
-          save.push new Promise (resolve) -> lot.save resolve
+        if alot.status isnt ''
+          unless alot.url? then alot.url = trade.url
+          lots = _.where(trade.lots, {url: alot.url, number: alot.number})
+          if lots.length > 0
+            lot = lots[0]
+            dublicates = []
+            if lots.length > 1
+              for i in [1..lots.length-1]
+                rlot = lots[i]
+                trade.lots = trade.lots.filter (i) -> i._id.toString() isnt rlot._id.toString()
+                dublicates.push new Promise (resolve) -> rlot.remove(resolve)
+            diff = diffpatch.diff lot, alot, Lot
+            diffpatch.patch lot, diff
+            lot.intervals = alot.intervals
+            lot.documents = alot.documents
+            lot.tagInputs = alot.tagInputs
+            lot.tags      = alot.tags
+            lot.region    = trade.region
+            lot.updated = new Date()
+            if lots.length > 1 then Promise.all(dublicates).then -> save.push new Promise (resolve) -> lot.save resolve
+            else save.push new Promise (resolve) -> lot.save resolve
+          else
+            lot = new Lot()
+            lot.trade = trade._id
+            lot.region = trade.region
+            diffpatch.lot lot, alot
+            lot.updated = new Date()
+            trade.lots.push lot
+            save.push new Promise (resolve) -> lot.save resolve
         else
-          lot = new Lot()
-          lot.trade = trade._id
-          lot.region = trade.region
-          diffpatch.lot lot, alot
-          trade.lots.push lot
-          save.push new Promise (resolve) -> lot.save resolve
+          console.log alot.url
+          console.log alot
     Promise.all(save).then () ->
       trade.updated = new Date()
       trade.save cb
