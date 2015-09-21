@@ -112,9 +112,9 @@ module.exports.update = (auction, cb) ->
   for lot in auction.lots
     lot.url = lot.url.replace '//www.', '//'
     lot.region = auction.region if not lot.region or lot.region is 'Не определен'
-    if alot.status or alot.status isnt ''
-      alot.status = status alot.status
-    else alot.status = 'Не определен'
+    if lot.status or lot.status isnt ''
+      lot.status = status lot.status
+    else lot.status = 'Не определен'
   save = []
   regurl = new RegExp(auction.url.replace(/https?:\/\/(www.)?/, ''))
   Trade.findOne({url: regurl}).populate('lots').exec (err, trade) ->

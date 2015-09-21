@@ -11,9 +11,11 @@ Lot       = сonnection.model 'Lot'
 module.exports = (grunt) ->
   grunt.registerTask 'migration:events', ->
     done = @async()
+    etps = ''
     for etp in config.etps
       etps += "(#{etp.href.match(host)[2]})|"
     etps = etps.slice(0,-1)
+    console.log etps
     query = url: new RegExp(etps)
     perPage = 1000
     proceed_range = (skip, cb) ->
