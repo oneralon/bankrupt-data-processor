@@ -20,11 +20,11 @@ module.exports = (html, etp, additional) ->
     lot = {}
     for key, val of additional
       lot[key] = val
-    t0 = $(row).find('thead tr th').text().trim().match(/Лот №\d+:(.+)/)?[1].trim()
-    t1 = $(row).find('span.dashed_underline').text().trim().match(/Лот №\d+:(.+)/)?[1].trim()
+    t0 = $(row).find('thead tr th').first().text().trim().match(/Лот №\d+:(.+)/)?[1].trim()
+    t1 = $(row).find('span.dashed_underline').first().text().trim().match(/Лот №\d+:(.+)/)?[1].trim()
     t2 = $(row).find("td:contains('Предмет торгов')").first().next().text().trim()
     lot.title = t0 or t1 or t2
-    lot.number = $(row).find('span.dashed_underline').text().trim().match(/Лот №(\d+):.+/)?[1].trim() or '1'
+    lot.number = $(row).find('span.dashed_underline').first().text().trim().match(/Лот №(\d+):.+/)?[1].trim() or '1'
     lot.information = $(row).find("td:contains('Cведения об имуществе (предприятии) должника, выставляемом на торги, его составе, характеристиках, описание')").first().next().text().trim()
     lot.reviewing_property = $(row).find("td:contains('Порядок ознакомления с имуществом (предприятием) должника')").first().next().text().trim()
     lot.start_price = parseFloat $(row).find("td:contains('Начальная цена продажи имущества')").first().next().text().trim().match(/([\d\s]+\,\d+)/)[0].replace(/\s/g, '')
