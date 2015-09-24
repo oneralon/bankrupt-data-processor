@@ -10,7 +10,7 @@ module.exports =
 
   listWorkers:       2
   tradeUrlWorkers:   16
-  tradeHtmlWorkers:  4
+  tradeHtmlWorkers:  8
   tradeJsonWorkers:  2
   lotUrlWorkers:     8
   lotHtmlWorkers:    2
@@ -21,50 +21,50 @@ module.exports =
   database:          'bankrot-parser'
 
   etps: [
-  #   name: 'ЭТП "Аукционный тендерный центр"'
-  #   href: 'http://www.atctrade.ru/etp/trade/list.html'
-  #   platform: 'u-trade'
-  # ,
-  #   name: 'ЭТП "ВТБ Центр"'
-  #   href: 'http://vtb-center.ru/etp/trade/list.html'
-  #   platform: 'u-trade'
-  # ,
-  #   name: 'ЭТП "Новые Информацонные Сервисы"'
-  #   href: 'http://nistp.ru/etp/trade/list.html'
-  #   platform: 'u-trade'
-  # ,
-  #   name: 'ЭТП "AukcionCenter"'
-  #   href: 'http://www.aukcioncenter.ru/etp/trade/list.html'
-  #   platform: 'u-trade'
-  # ,
-  #   name: 'ЭТП "Система Электронных Торгов Имуществом"'
-  #   href: 'http://www.seltim.ru/etp/trade/list.html'
-  #   platform: 'u-trade'
-  # ,
-  #   name: 'ЭТП "Профит"'
-  #   href: 'http://www.etp-profit.ru/etp/trade/list.html'
-  #   platform: 'u-trade'
-  # ,
-  #   name: 'ЭТП "RegTorg"'
-  #   href: 'http://www.regtorg.com/etp/trade/list.html'
-  #   platform: 'u-trade'
-  # ,
-  #   name: 'ЭТП "А-КОСТА"'
-  #   href: 'http://www.akosta.info/etp/trade/list.html'
-  #   platform: 'u-trade'
-  # ,
-  #   name: 'ЭТП "Поволжский Аукционный Дом"'
-  #   href: 'http://bankrot.auction63.ru/etp/trade/list.html'
-  #   platform: 'u-trade'
-  # ,
-  #   name: 'ЭТП "ВЭТП"'
-  #   href: 'http://xn-----6kcbaifbn4di5abenic8aq7kvd6a.xn--p1ai/etp/trade/list.html'
-  #   platform: 'u-trade'
-  # ,
-  #   name: 'ЭТП "EkSystems"'
-  #   href: 'http://www.eksystems.ru/etp/trade/list.html?type=bankruptcySales'
-  #   platform: 'u-trade'
-  # ,
+    name: 'ЭТП "Аукционный тендерный центр"'
+    href: 'http://www.atctrade.ru/etp/trade/list.html'
+    platform: 'u-trade'
+  ,
+    name: 'ЭТП "ВТБ Центр"'
+    href: 'http://vtb-center.ru/etp/trade/list.html'
+    platform: 'u-trade'
+  ,
+    name: 'ЭТП "Новые Информацонные Сервисы"'
+    href: 'http://nistp.ru/etp/trade/list.html'
+    platform: 'u-trade'
+  ,
+    name: 'ЭТП "AukcionCenter"'
+    href: 'http://www.aukcioncenter.ru/etp/trade/list.html'
+    platform: 'u-trade'
+  ,
+    name: 'ЭТП "Система Электронных Торгов Имуществом"'
+    href: 'http://www.seltim.ru/etp/trade/list.html'
+    platform: 'u-trade'
+  ,
+    name: 'ЭТП "Профит"'
+    href: 'http://www.etp-profit.ru/etp/trade/list.html'
+    platform: 'u-trade'
+  ,
+    name: 'ЭТП "RegTorg"'
+    href: 'http://www.regtorg.com/etp/trade/list.html'
+    platform: 'u-trade'
+  ,
+    name: 'ЭТП "А-КОСТА"'
+    href: 'http://www.akosta.info/etp/trade/list.html'
+    platform: 'u-trade'
+  ,
+    name: 'ЭТП "Поволжский Аукционный Дом"'
+    href: 'http://bankrot.auction63.ru/etp/trade/list.html'
+    platform: 'u-trade'
+  ,
+    name: 'ЭТП "ВЭТП"'
+    href: 'http://xn-----6kcbaifbn4di5abenic8aq7kvd6a.xn--p1ai/etp/trade/list.html'
+    platform: 'u-trade'
+  ,
+    name: 'ЭТП "EkSystems"'
+    href: 'http://www.eksystems.ru/etp/trade/list.html?type=bankruptcySales'
+    platform: 'u-trade'
+  ,
     name: 'ЭТП "МЭТС"'
     href: 'http://m-ets.ru/search?lots=&r_num=%D0%9E&debtor=&org=&arb=&stat='
     platform: 'u-trade'
