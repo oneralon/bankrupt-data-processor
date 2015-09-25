@@ -93,7 +93,7 @@ module.exports = (html, etp, url, ismicro, cb) ->
   if pages is 1
     if $("table[id*='lotNumber']").length is 0
       html = ''
-      $("th:contains('Лот №')").parent().parent().parent().each -> html += $(@).html()
+      $("th:contains('Лот №')").parent().parent().parent().each (i) -> html += '<table id="lotNumber' + i + '">' + $(@).html() + '</table>'
       if html.length is 0
         $("th:contains('Сведения о предмете торгов')").parent().parent().parent().each -> html += $(@).html()
       console.log html.length
