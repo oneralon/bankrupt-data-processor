@@ -94,6 +94,7 @@ module.exports = (html, etp, url, ismicro, cb) ->
     lot_rows = $("th,span:contains('Лот №')")
     i = 1
     for lot_row in lot_rows
+      lot_row = $(lot_row)
       while lot_row[0].tagName isnt /table/i
         lot_row = $(lot_row).parent()
       $(lot_row).attr('id', 'lotNumber' + i)
