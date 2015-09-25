@@ -84,24 +84,37 @@ module.exports = (html, etp, url, ismicro, cb) ->
 
   log.info "Trade has #{pages} pages"
 
-  for page in [1..pages]
-    pageUrl = etp.href.match(host)[0] + "/etp/trade/inner-view-lots.html?id=#{id}&page=#{page}"
-    lots.push new Promise (resolve, reject) ->
-      Sync =>
-        try
-          additional =
-            deposit_procedure: deposit_procedure
-            procedure: additional
-            currency: 'Российская Федерация'
-            category: 'Не определена'
-          html = request.sync null, pageUrl
-          lot = lotParser html, etp, additional
-          resolve(lot)
-        catch e then reject e
-  Promise.all(lots).catch(cb).then (lot_chunks) ->
-    trade.lots = []
-    for chunk in lot_chunks
-      for lot in chunk
-        lot.url = if lot.url? then lot.url.replace '//www.', '//' else trade.url.replace '//www.', '//'
-        trade.lots.push lot
+  additional =
+    deposit_procedure: deposit_procedure
+    procedure: additional
+    currency: 'Российская Федерация'
+    category: 'Не определена'
+
+  if pages is 1
+    lot_rows = $("span:contains('Лот №')")
+    i = 1
+    for lot_row in lot_rows
+      while lot_row.tagName isnt /table/i
+        lot_row = lot_row.parent()
+      $(lot_row).attr('id', 'lotNumber_' + i)
+      i++
+    lots = lotParser html, etp, additional
+    trade.lots = lots
     cb null, trade
+  else
+    for page in [1..pages]
+      pageUrl = etp.href.match(host)[0] + "/etp/trade/inner-view-lots.html?id=#{id}&page=#{page}"
+      lots.push new Promise (resolve, reject) ->
+        Sync =>
+          try
+            html = request.sync null, pageUrl
+            lot = lotParser html, etp, additional
+            resolve(lot)
+          catch e then reject e
+    Promise.all(lots).catch(cb).then (lot_chunks) ->
+      trade.lots = []
+      for chunk in lot_chunks
+        for lot in chunk
+          lot.url = if lot.url? then lot.url.replace '//www.', '//' else trade.url.replace '//www.', '//'
+          trade.lots.push lot
+      cb null, trade
