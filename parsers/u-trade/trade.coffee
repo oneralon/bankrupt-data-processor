@@ -93,13 +93,10 @@ module.exports = (html, etp, url, ismicro, cb) ->
   if pages is 1
     if $("table[id*='lotNumber']").length is 0
       html = ''
-      lot_rows = $("th:contains('Лот №')").parent().parent().parent()
-      if lot_rows.length is 0 then lot_rows = $("th:contains('Сведения о предмете торгов')").parent().parent().parent()
-      console.log lot_rows.length
-      for lot_row in lot_rows
-        while lot_row.tagName isnt /table/i
-          lot_row = $(lot_row).parent()[0]
-        html = $(lot_row).html()
+      $("th:contains('Лот №')").parent().parent().parent().each (table) -> html += $(table).html()
+      if html.length is 0
+        $("th:contains('Сведения о предмете торгов')").parent().parent().parent().each (table) -> html += $(table).html()
+      console.log html.length
     lots = lotParser html, etp, additional
     trade.lots = lots
     log.info "Found #{trade.lots.length} lots"
