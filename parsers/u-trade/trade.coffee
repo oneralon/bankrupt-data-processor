@@ -91,15 +91,16 @@ module.exports = (html, etp, url, ismicro, cb) ->
     category: 'Не определена'
 
   if pages is 1
-    new_html = ''
-    lot_rows = $("span:contains('Лот №')")
-    if lot_rows.length is 0 then lot_rows = $("th:contains('Лот №')")
-    if lot_rows.length is 0 then lot_rows = $("th:contains('Сведения о предмете торгов')")
-    for lot_row in lot_rows
-      while lot_row.tagName isnt /table/i
-        lot_row = $(lot_row).parent()[0]
-      new_html = $(lot_row).html()
-    lots = lotParser new_html, etp, additional
+    if $("table[id*='lotNumber']").length is 0
+      html = ''
+      lot_rows = $("span:contains('Лот №')")
+      if lot_rows.length is 0 then lot_rows = $("th:contains('Лот №')")
+      if lot_rows.length is 0 then lot_rows = $("th:contains('Сведения о предмете торгов')")
+      for lot_row in lot_rows
+        while lot_row.tagName isnt /table/i
+          lot_row = $(lot_row).parent()[0]
+        html = $(lot_row).html()
+    lots = lotParser html, etp, additional
     trade.lots = lots
     log.info "Found #{trade.lots.length} lots"
     cb null, trade
