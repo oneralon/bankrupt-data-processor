@@ -93,8 +93,8 @@ module.exports = (html, etp, url, ismicro, cb) ->
   if pages is 1
     if $("table[id*='lotNumber']").length is 0
       html = ''
-      lot_rows = $("th:contains('Лот №')")
-      if lot_rows.length is 0 then lot_rows = $("th:contains('Сведения о предмете торгов')")
+      lot_rows = $("th:contains('Лот №')").parent().parent().parent()
+      if lot_rows.length is 0 then lot_rows = $("th:contains('Сведения о предмете торгов')").parent().parent().parent()
       console.log lot_rows.length
       for lot_row in lot_rows
         while lot_row.tagName isnt /table/i
