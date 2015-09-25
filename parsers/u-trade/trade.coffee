@@ -94,6 +94,7 @@ module.exports = (html, etp, url, ismicro, cb) ->
     new_html = ''
     lot_rows = $("span:contains('Лот №')")
     if lot_rows.length is 0 then lot_rows = $("th:contains('Лот №')")
+    if lot_rows.length is 0 then lot_rows = $("th:contains('Сведения о предмете торгов')")
     for lot_row in lot_rows
       while lot_row.tagName isnt /table/i
         lot_row = $(lot_row).parent()[0]
