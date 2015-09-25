@@ -91,7 +91,8 @@ module.exports = (html, etp, url, ismicro, cb) ->
     category: 'Не определена'
 
   if pages is 1
-    lot_rows = $("th,span:contains('Лот №')")
+    lot_rows = $("span:contains('Лот №')")
+    if lot_rows.length is 0 then lot_rows = $("th:contains('Лот №')")
     i = 1
     for lot_row in lot_rows
       while lot_row.tagName isnt /table/i
