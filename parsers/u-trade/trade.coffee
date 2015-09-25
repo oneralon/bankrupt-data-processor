@@ -99,7 +99,7 @@ module.exports = (html, etp, url, ismicro, cb) ->
         lot_row = $(lot_row).parent()[0]
       $(lot_row).attr('id', 'lotNumber' + i)
       i++
-    lots = lotParser $('body').html(), etp, additional
+    lots = lotParser $.html(), etp, additional
     trade.lots = lots
     log.info "Found #{trade.lots.length} lots"
     cb null, trade
