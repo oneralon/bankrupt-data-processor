@@ -101,7 +101,7 @@ module.exports = (html, etp, url, ismicro, cb) ->
       i++
     lots = lotParser $('body').html(), etp, additional
     trade.lots = lots
-    log.info "Found #{trade.lots} lots"
+    log.info "Found #{trade.lots.length} lots"
     cb null, trade
   else
     for page in [1..pages]
@@ -119,5 +119,5 @@ module.exports = (html, etp, url, ismicro, cb) ->
         for lot in chunk
           lot.url = if lot.url? then lot.url.replace '//www.', '//' else trade.url.replace '//www.', '//'
           trade.lots.push lot
-      log.info "Found #{trade.lots} lots"
+      log.info "Found #{trade.lots.length} lots"
       cb null, trade
