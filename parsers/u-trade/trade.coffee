@@ -103,6 +103,7 @@ module.exports = (html, etp, url, ismicro, cb) ->
     lots = lotParser html, etp, additional
     trade.lots = lots
     log.info "Found #{trade.lots.length} lots"
+    cb 'No lots1' if trade.lots.length is 0
     cb null, trade
   else
     for page in [1..pages]
@@ -121,4 +122,5 @@ module.exports = (html, etp, url, ismicro, cb) ->
           lot.url = if lot.url? then lot.url.replace '//www.', '//' else trade.url.replace '//www.', '//'
           trade.lots.push lot
       log.info "Found #{trade.lots.length} lots"
+      cb 'No lots1' if trade.lots.length is 0
       cb null, trade
