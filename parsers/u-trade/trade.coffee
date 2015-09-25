@@ -93,12 +93,10 @@ module.exports = (html, etp, url, ismicro, cb) ->
   if pages is 1
     lot_rows = $("span:contains('Лот №')")
     if lot_rows.length is 0 then lot_rows = $("th:contains('Лот №')")
-    i = 1
     for lot_row in lot_rows
       while lot_row.tagName isnt /table/i
         lot_row = $(lot_row).parent()[0]
-      $(lot_row).attr('id', 'lotNumber' + i)
-      i++
+      $(lot_row).addClass('lotNumber')
     lots = lotParser $.html(), etp, additional
     trade.lots = lots
     log.info "Found #{trade.lots.length} lots"

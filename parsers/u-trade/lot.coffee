@@ -16,6 +16,7 @@ module.exports = (html, etp, additional) ->
   $ = cheerio.load(html)
 
   rows = $("table[id*='lotNumber']")
+  if rows.length is 0 then rows = $("table.lotNumber")
   for row in rows
     lot = {}
     for key, val of additional
