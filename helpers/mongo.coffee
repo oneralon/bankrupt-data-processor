@@ -110,7 +110,8 @@ module.exports.update = (auction, cb) ->
     auction.region = regionize(auction)
   auction.url = auction.url.replace '//www.', '//'
   for lot in auction.lots
-    lot.url = lot.url.replace '//www.', '//'
+    if lot.url? then lot.url = lot.url.replace '//www.', '//'
+    else lot.url = auction.url
     lot.region = auction.region if not lot.region or lot.region is 'Не определен'
     if lot.status or lot.status isnt ''
       lot.status = status lot.status
