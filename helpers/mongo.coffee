@@ -134,13 +134,15 @@ module.exports.update = (auction, cb) ->
         save.push new Promise (resolve) -> lot.save resolve
     else
       remove.push new Promise (resolve) -> resolve()
-      for i in [1..trades.length]
-        remove.push new Promise (resolve_trade) -> 
-          promises = []
-          for lot in trades[i].lots
-            promises.push new Promise (resolve_lot) -> lot.remove(resolve_lot)
-          Promise.all(promises).then -> trades[i].remove(resolve_trade)
       trade = trades[0]
+      trades.forEach (t) ->
+        remove.push new Promise (resolve_trade) ->
+          if t._id isnt trade._id 
+            promises = []
+            for lot in t.lots
+              promises.push new Promise (resolve_lot) -> lot.remove(resolve_lot)
+            Promise.all(promises).then -> t.remove(resolve_trade)
+          else resolve_trade()
       log.info "UPD Trade #{auction.url}"
       diff = diffpatch.diff trade, auction, Trade
       diffpatch.patch trade, diff
