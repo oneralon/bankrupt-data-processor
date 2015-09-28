@@ -4,6 +4,8 @@ moment    = require 'moment'
 Promise   = require 'promise'
 Sync      = require 'sync'
 
+iconv     = require 'iconv-lite'
+
 request   = require '../../downloaders/request'
 logger    = require '../../helpers/logger'
 status    = require '../../helpers/status'
@@ -17,15 +19,19 @@ lotParser = require './lot'
 module.exports = (html, etp, url, ismicro, cb) ->
   log.info "Parse trade #{url}"
 
-  id = url.match(/id=(\d+)/i)[1]
-
   last = html.lastIndexOf('</table>') + 8
 
   substr = html.length - last
 
   html = html.substr(0, html.length - substr) + '</body></html>'
 
-  $ = cheerio.load html
+  id = url.match(/id=(\d+)/i)[1]
+
+  $ = cheerio.load html,
+    xmlMode: true
+    decodeEntities: false
+    recognizeCDATA: true
+    recognizeSelfClosing: true
 
   deposit_procedure = $("th:contains('Информация о торгах')")?.parent().parent().parent().find("td:contains('Сроки и порядок внесения и возврата задатка, реквизиты счетов, на которые вносится задаток')")?.next().text().trim()
   trade = {}
@@ -90,12 +96,7 @@ module.exports = (html, etp, url, ismicro, cb) ->
     currency: 'Российская Федерация'
     category: 'Не определена'
 
-  if pages is 1
-    if $("table[id*='lotNumber']").length is 0
-      html = ''
-      $("th:contains('Лот №')").parent().parent().parent().each (i) -> html += '<table id="lotNumber' + i + '">' + $(@).html() + '</table>'
-      if html.length is 0
-        $("th:contains('Сведения о предмете торгов')").parent().parent().parent().each -> html += '<table id="lotNumber' + 1 + '">' + $(@).html() + '</table>'
+  if pages is 1 and ($('table[id*=lotNumber]').length > 0 or $("th:contains('Сведения о предмете торгов')").length > 0)
     lots = lotParser html, etp, additional
     trade.lots = lots
     log.info "Found #{trade.lots.length} lots"
