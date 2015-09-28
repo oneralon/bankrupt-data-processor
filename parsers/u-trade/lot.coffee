@@ -18,7 +18,7 @@ module.exports = (html, etp, additional) ->
     recognizeCDATA: true
     recognizeSelfClosing: true
 
-  $("table[id*=lotNumber], table.data:contains('Лот №'), table.data:contains('Сведения о предмете торгов')").each ->
+  $("table[id*=lotNumber], table.data:contains('Лот №'), table.data:contains('Сведения о предмете торгов'), table.data:contains('Информация о предмете торгов')").each ->
     lot = {}
     for key, val of additional
       lot[key] = val
