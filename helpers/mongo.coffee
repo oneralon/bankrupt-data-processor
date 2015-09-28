@@ -154,7 +154,7 @@ module.exports.update = (auction, cb) ->
       for alot in auction.lots
         if alot.status isnt ''
           unless alot.url? then alot.url = trade.url
-          lots = _.where(trade.lots, {url: alot.url, number: alot.number})
+          lots = trade.lots.filter (i) -> i.url is alot.url and i.number.toString() is alot.number.toString()
           if lots.length > 0
             lot = lots[0]
             dublicates = []
