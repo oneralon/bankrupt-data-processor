@@ -133,6 +133,9 @@ module.exports.update = (auction, cb) ->
         lot.updated = new Date()
         trade.lots.push lot
         save.push new Promise (resolve) -> lot.save resolve
+        Promise.all(save).then ->
+          trade.updated = new Date()
+          trade.save cb
     else
       remove.push new Promise (resolve) -> resolve()
       trade = trades[0]
