@@ -116,7 +116,7 @@ module.exports.update = (auction, cb) ->
       lot.status = status lot.status
     else lot.status = 'Не определен'
   save = []
-  regurl = new RegExp(auction.url.replace(/https?:\/\/(www.)?/, ''))
+  regurl = new RegExp(auction.url.replace(/https?:\/\/(www.)?/, '').replace(/[.?*+^$[\]\\(){}|-]/g, "\\$&"))
   Trade.find({url: regurl}).populate('lots').exec (err, trades) ->
     remove = []
     if trades.length is 0
