@@ -21,6 +21,10 @@ module.exports =
   database:          'bankrot-parser'
 
   etps: [
+    name: 'ЭТП "Аукционы Сибири"'
+    href: 'http://ausib.ru/etp/trade/list.html'
+    platform: 'u-trade'
+  ,
     name: 'ЭТП "Аукционный тендерный центр"'
     href: 'http://www.atctrade.ru/etp/trade/list.html'
     platform: 'u-trade'
