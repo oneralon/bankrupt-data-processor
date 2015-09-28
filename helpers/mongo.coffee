@@ -57,7 +57,7 @@ module.exports.update_statuses = (cb) ->
     сonnection.collection('statuses').findOne { $query: {}, $orderby: { '_v' : -1 } , $limit: 1}, (err, statuses) ->
       unless _.isEqual(result.sort(), statuses?.list?.sort())
         сonnection.collection('statuses').insert
-          list: result
+          list: result.filter (i) -> i isnt 'Не определен'
           _v: statuses?._v+1 or 0
         , cb
       else cb()
