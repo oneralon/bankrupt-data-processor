@@ -30,14 +30,14 @@ module.exports = (html, etp, additional) ->
     lot.number = $(@).find('span.dashed_underline')?.text().trim().match(/Лот №(\d+):.+/)?[1].trim() or '1'
     lot.information = $(@).find("td:contains('Cведения об имуществе (предприятии) должника, выставляемом на торги, его составе, характеристиках, описание')")?.next().text().trim()
     lot.reviewing_property = $(@).find("td:contains('Порядок ознакомления с имуществом (предприятием) должника')")?.next().text().trim()
-    lot.start_price = parseFloat $(@).find("td:contains('Начальная цена продажи имущества')")?.next().text().trim().match(/([\d\s]+\,\d+)/)[0].replace(/\s/g, '')
+    lot.start_price = parseFloat $(@).find("td:contains('Начальная цена продажи имущества')")?.next().text().trim().match(/([\d\s]+\,\d+)/)?[0]?.replace(/\s/g, '')
     step = $(@).find("td:contains('Величина повышения начальной цены')")?.next().text().trim()
     lot.step_percent = parseFloat step.match(/(\d+\,\d+)%/)
     lot.step_sum = parseFloat step.match(/\(([\d\s]+\,\d+)\sруб\.\)/)?[1].replace(/\s/, '')
     lot.status = status $(@).find("td:contains('Статус торгов')")?.next().text().trim()
     deposit_size = $(@).find("td:contains('Размер задатка')")?.next().text().trim()
     if /[\d\s]+\,\d+\s+руб\./.test deposit_size
-      lot.deposit_size = parseFloat deposit_size.match(/([\d\s]+\,\d+)/)?[0].replace(/\s/g, '')
+      lot.deposit_size = parseFloat deposit_size.match(/([\d\s]+\,\d+)/)?[0]?.replace(/\s/g, '')
     else
       deposit_percent = parseFloat deposit_size.match(/(\d+(\,\d+)?)/)?[1]
       lot.deposit_size = lot.start_price * deposit_percent / 100
@@ -48,7 +48,7 @@ module.exports = (html, etp, additional) ->
     docs_rows = $(@).find("a[href*='/files/download/']")
     $(@).find("a[href*='/files/download/']").each ->
       name = $(@).text().trim()
-      url = etp.href.match(host)[0] + $(@).attr('href')
+      url = etp.href.match(host)?[0] + $(@).attr('href')
       docs.push { name: name, url: url }
     lot.documents = docs
     lots.push lot
