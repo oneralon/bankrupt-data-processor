@@ -117,62 +117,76 @@ module.exports.update = (auction, cb) ->
     else lot.status = 'Не определен'
   save = []
   regurl = new RegExp(auction.url.replace(/https?:\/\/(www.)?/, ''))
-  Trade.findOne({url: regurl}).populate('lots').exec (err, trade) ->
-    unless trade?
-      log.info "NEW Trade #{auction.url}"
-      trade = new Trade()
-      diffpatch.trade trade, auction
-      for alot in auction.lots
-        unless alot.url? then alot.url = trade.url
-        lot = new Lot()
-        diffpatch.lot lot, alot
-        lot.trade = trade._id
-        lot.region = trade.region
-        lot.updated = new Date()
-        trade.lots.push lot
-        save.push new Promise (resolve) -> lot.save resolve
+  Trade.find({url: regurl}).populate('lots').exec (err, trades) ->
+    remove = []
+    if trades.length > 1
+      for i in [1..trades.length]
+        remove.push new Promise (resolve_trade) -> 
+          promises = []
+          for lot in trades[i].lots
+            promises.push new Promise (resolve_lot) -> lot.remove(resolve_lot)
+          Promise.all(promises).then -> trades[i].remove(resolve_trade)
+      trade = trades[0]
     else
-      log.info "UPD Trade #{auction.url}"
-      diff = diffpatch.diff trade, auction, Trade
-      diffpatch.patch trade, diff
-      trade.owner     = auction.owner
-      trade.debtor    = auction.debtor
-      trade.etp       = auction.etp
-      trade.documents = auction.documents
-      auction.lots    = auction.lots or []
-      for alot in auction.lots
-        if alot.status isnt ''
+      if trades.length > 0 then trade = trades[0]
+      else trade = null
+      remove.push new Promise (resolve) -> resolve()
+    Promise.all(remove).then ->
+      unless trade?
+        log.info "NEW Trade #{auction.url}"
+        trade = new Trade()
+        diffpatch.trade trade, auction
+        for alot in auction.lots
           unless alot.url? then alot.url = trade.url
-          lots = _.where(trade.lots, {url: alot.url, number: alot.number})
-          if lots.length > 0
-            lot = lots[0]
-            dublicates = []
-            if lots.length > 1
-              for i in [1..lots.length-1]
-                rlot = lots[i]
-                trade.lots = trade.lots.filter (i) -> i._id.toString() isnt rlot._id.toString()
-                dublicates.push new Promise (resolve) -> rlot.remove(resolve)
-            diff = diffpatch.diff lot, alot, Lot
-            diffpatch.patch lot, diff
-            lot.intervals = alot.intervals
-            lot.documents = alot.documents
-            lot.tagInputs = alot.tagInputs
-            lot.tags      = alot.tags
-            lot.region    = trade.region
-            lot.updated = new Date()
-            if lots.length > 1 then Promise.all(dublicates).then -> save.push new Promise (resolve) -> lot.save resolve
-            else save.push new Promise (resolve) -> lot.save resolve
+          lot = new Lot()
+          diffpatch.lot lot, alot
+          lot.trade = trade._id
+          lot.region = trade.region
+          lot.updated = new Date()
+          trade.lots.push lot
+          save.push new Promise (resolve) -> lot.save resolve
+      else
+        log.info "UPD Trade #{auction.url}"
+        diff = diffpatch.diff trade, auction, Trade
+        diffpatch.patch trade, diff
+        trade.owner     = auction.owner
+        trade.debtor    = auction.debtor
+        trade.etp       = auction.etp
+        trade.documents = auction.documents
+        auction.lots    = auction.lots or []
+        for alot in auction.lots
+          if alot.status isnt ''
+            unless alot.url? then alot.url = trade.url
+            lots = _.where(trade.lots, {url: alot.url, number: alot.number})
+            if lots.length > 0
+              lot = lots[0]
+              dublicates = []
+              if lots.length > 1
+                for i in [1..lots.length-1]
+                  rlot = lots[i]
+                  trade.lots = trade.lots.filter (i) -> i._id.toString() isnt rlot._id.toString()
+                  dublicates.push new Promise (resolve) -> rlot.remove(resolve)
+              diff = diffpatch.diff lot, alot, Lot
+              diffpatch.patch lot, diff
+              lot.intervals = alot.intervals
+              lot.documents = alot.documents
+              lot.tagInputs = alot.tagInputs
+              lot.tags      = alot.tags
+              lot.region    = trade.region
+              lot.updated = new Date()
+              if lots.length > 1 then Promise.all(dublicates).then -> save.push new Promise (resolve) -> lot.save resolve
+              else save.push new Promise (resolve) -> lot.save resolve
+            else
+              lot = new Lot()
+              lot.trade = trade._id
+              lot.region = trade.region
+              diffpatch.lot lot, alot
+              lot.updated = new Date()
+              trade.lots.push lot
+              save.push new Promise (resolve) -> lot.save resolve
           else
-            lot = new Lot()
-            lot.trade = trade._id
-            lot.region = trade.region
-            diffpatch.lot lot, alot
-            lot.updated = new Date()
-            trade.lots.push lot
-            save.push new Promise (resolve) -> lot.save resolve
-        else
-          console.log alot.url
-          console.log alot
-    Promise.all(save).then () ->
-      trade.updated = new Date()
-      trade.save cb
+            console.log alot.url
+            console.log alot
+      Promise.all(save).then () ->
+        trade.updated = new Date()
+        trade.save cb
