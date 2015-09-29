@@ -10,7 +10,7 @@ module.exports =
 
   listWorkers:       2
   tradeUrlWorkers:   16
-  tradeHtmlWorkers:  1
+  tradeHtmlWorkers:  4
   tradeJsonWorkers:  2
   lotUrlWorkers:     8
   lotHtmlWorkers:    2
@@ -21,6 +21,10 @@ module.exports =
   database:          'bankrot-parser'
 
   etps: [
+    name: 'ЭТП "МЭТС"'
+    href: 'http://m-ets.ru/search?r_num=О&lots=&debtor=&org=&arb=&arb_org=&stat=&sort=&desc='
+    platform: 'u-trade'
+  ,
     name: 'ЭТП "Аукционы Сибири"'
     href: 'http://ausib.ru/etp/trade/list.html'
     platform: 'u-trade'
@@ -67,10 +71,6 @@ module.exports =
   ,
     name: 'ЭТП "EkSystems"'
     href: 'http://www.eksystems.ru/etp/trade/list.html?type=bankruptcySales'
-    platform: 'u-trade'
-  ,
-    name: 'ЭТП "МЭТС"'
-    href: 'http://m-ets.ru/search?lots=&r_num=%D0%9E&debtor=&org=&arb=&stat='
     platform: 'u-trade'
   ,
     name: 'Открытая торговая площадка'
