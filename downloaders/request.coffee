@@ -27,7 +27,7 @@ get = (url, cb) ->
         'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.132 Safari/537.36'
   }).on 'error', (err) -> cb()
   .on 'response', (res) ->
-    encoding = res.headers['content-type'].match(/charset=(.+)/i)?[1]
+    encoding = res.headers['content-type']?.match(/charset=(.+)/i)?[1]
     encoding = if encoding? and /Windows\-1251/i.test(encoding) then 'win1251' else 'utf8'
     chunks = []
     res.on 'end', () -> cb null, iconv.decode Buffer.concat(chunks), encoding
