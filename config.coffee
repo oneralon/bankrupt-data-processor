@@ -21,6 +21,10 @@ module.exports =
   database:          'bankrot-parser'
 
   etps: [
+    name: 'ЭТП "Аукционы Дальнего Востока"'
+    href: 'http://torgidv.ru/etp/trade/list.html'
+    platform: 'u-trade'
+  ,
     name: 'ЭТП "МЭТС"'
     href: 'http://m-ets.ru/search?r_num=О&lots=&debtor=&org=&arb=&arb_org=&stat=&sort=&desc='
     platform: 'u-trade'
@@ -72,6 +76,11 @@ module.exports =
     name: 'ЭТП "EkSystems"'
     href: 'http://www.eksystems.ru/etp/trade/list.html?type=bankruptcySales'
     platform: 'u-trade'
+  ,
+  #---------------------------------------------------------------------------------
+    name: 'ЭТП "Банкротство"'
+    href: 'http://etp-bankrotstvo.ru/public/purchases-all/'
+    platform: 'i-tender'
   ,
     name: 'Открытая торговая площадка'
     href: 'http://opentp.ru/public/purchases-all/'
