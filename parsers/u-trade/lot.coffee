@@ -45,6 +45,19 @@ module.exports = (html, etp, additional) ->
     lot.price_reduction_type = $(@).find("td:contains('Порядок снижения цены')")?.next().text().trim()
     lot.current_sum = lot.start_price
 
+    interval_rows = $('div:contains("Интервалы снижения цены:")').next().find('tr')
+    interval_rows.filter -> /\d{2}\.\d{2}\.\d{4} \d{2}:\d{2}/.test $(@).find('td').first().text().trim()
+    interval_rows.each ->
+      lot.intervals = lot.intervals or []
+      $(@).find('td').each (i) ->
+        interval = {}
+        switch i
+          when 1 then interval.interval_start_date = moment(interval.request_start_date = $(@).text().trim(), "DD.MM.YYYY HH:mm")
+          when 2 then interval.interval_end_date = moment(interval.request_end_date = $(@).text().trim(), "DD.MM.YYYY HH:mm")
+          when 3 then interval.interval_price = parseFloat $(@).text().trim().match(/([\d\s]+\,\d+)/)?[1].replace(/\s/, '')
+          when 4 then interval.deposit_sum = parseFloat $(@).text().trim().match(/([\d\s]+\,\d+)/)?[1].replace(/\s/, '')
+      lot.intervals.push interval
+
     docs = []
     docs_rows = $(@).find("a[href*='/files/download/']")
     $(@).find("a[href*='/files/download/']").each ->
