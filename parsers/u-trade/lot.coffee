@@ -46,7 +46,7 @@ module.exports = (html, etp, additional) ->
     lot.current_sum = lot.start_price
 
     interval_rows = $('div:contains("Интервалы снижения цены"), td:contains("График снижения цены")').next().find('tr')
-    interval_rows.filter -> /\d{2}\.\d{2}\.\d{4} \d{2}:\d{2}/.test $(@).find('td').first().next().text().trim()
+    interval_rows = interval_rows.filter -> /\d{2}\.\d{2}\.\d{4} \d{2}:\d{2}/.test $(@).find('td').first().next().text().trim()
     interval_rows.each ->
       lot.intervals = lot.intervals or []
       interval = {}
