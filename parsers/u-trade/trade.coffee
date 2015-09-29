@@ -96,7 +96,7 @@ module.exports = (html, etp, url, ismicro, cb) ->
     currency: 'Российская Федерация'
     category: 'Не определена'
 
-  if pages is 1 and $("table[id*=lotNumber], table.data:contains('Лот №'), table.data:contains('Сведения о предмете торгов'), table.data:contains('Информация о предмете торгов')").length > 0
+  if pages is 1 and $("table[id*=lotNumber], table.data:contains('Лот №'), table.data:contains('Сведения о предмете торгов'), table.data:contains('Информация о предмете торгов'), table:contains('Сведения по лоту №')").length > 0
     lots = lotParser html, etp, additional
     trade.lots = lots
     log.info "Found #{trade.lots.length} lots"

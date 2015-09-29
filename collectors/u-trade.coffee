@@ -18,7 +18,7 @@ Sync =>
     last = parseInt redis.get.sync(null, etp.href) or '1'
     html = request.sync null, etp.href
     $ = cheerio.load html
-    links = $("a[href *= '/etp/trade/list.html']")
+    links = $("a[href *= '/etp/trade/list.html'], a[href*='r_num']")
     if links.length is 0 then pages = 1
     else pages = parseInt $(links[links.length - 1]).attr('href').match(/page=(\d+)/i)[1]
     for page in [last..pages]

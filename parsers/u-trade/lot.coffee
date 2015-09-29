@@ -18,7 +18,7 @@ module.exports = (html, etp, additional) ->
     recognizeCDATA: true
     recognizeSelfClosing: true
 
-  $("table[id*=lotNumber], table.data:contains('Лот №'), table.data:contains('Сведения о предмете торгов'), table.data:contains('Информация о предмете торгов')").each ->
+  $("table[id*=lotNumber], table.data:contains('Лот №'), table.data:contains('Сведения о предмете торгов'), table.data:contains('Информация о предмете торгов'), table:contains('Сведения по лоту №')").each ->
     lot = {}
     for key, val of additional
       lot[key] = val
@@ -26,8 +26,9 @@ module.exports = (html, etp, additional) ->
     t1 = $(@).find('span.dashed_underline')?.text().trim().match(/Лот №\d+:(.+)/)?[1].trim()
     t2 = $(@).find("td:contains('Предмет торгов')")?.next().text().trim()
     t3 = $(@).find("span:contains('Лот №')")?.text().replace(/Лот №\d+:/i, '').trim()
-    lot.title = t0 or t1 or t2 or t3
-    lot.number = $(@).find('span.dashed_underline')?.text().trim().match(/Лот №(\d+):.+/)?[1].trim() or '1'
+    t4 = $(@).find('td:contains("Краткие сведения об имуществе (предприятии) должника (наименование лота) ")')?.next().text().trim()
+    lot.title = t0 or t1 or t2 or t3 or t4
+    lot.number = $(@).find('span.dashed_underline, th:contains("лоту №")')?.text().trim().match(/Лоту? №(\d+)/i)?[1].trim() or '1'
     lot.information = $(@).find("td:contains('Cведения об имуществе (предприятии) должника, выставляемом на торги, его составе, характеристиках, описание')")?.next().text().trim()
     lot.reviewing_property = $(@).find("td:contains('Порядок ознакомления с имуществом (предприятием) должника')")?.next().text().trim()
     lot.start_price = parseFloat $(@).find("td:contains('Начальная цена продажи имущества')")?.next().text().trim().match(/([\d\s]+\,\d+)/)?[0]?.replace(/\s/g, '')
