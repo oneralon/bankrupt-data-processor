@@ -51,7 +51,11 @@ module.exports = (html, etp, additional) ->
       lot.intervals = lot.intervals or []
       $(@).find('td').each (i) ->
         interval = {}
-        switch i
+        if etp.name is 'ЭТП "МЭТС"' then switch i
+          when 2 then interval.interval_start_date = moment(interval.request_start_date = $(@).text().trim(), "DD.MM.YYYY HH:mm")
+          when 3 then interval.interval_end_date = moment(interval.request_end_date = $(@).text().trim(), "DD.MM.YYYY HH:mm")
+          when 4 then interval.interval_price = parseFloat $(@).text().trim().match(/([\d\s]+\,\d+)/)?[1].replace(/\s/, '')
+        else switch i
           when 1 then interval.interval_start_date = moment(interval.request_start_date = $(@).text().trim(), "DD.MM.YYYY HH:mm")
           when 2 then interval.interval_end_date = moment(interval.request_end_date = $(@).text().trim(), "DD.MM.YYYY HH:mm")
           when 3 then interval.interval_price = parseFloat $(@).text().trim().match(/([\d\s]+\,\d+)/)?[1].replace(/\s/, '')
