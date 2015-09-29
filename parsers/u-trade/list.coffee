@@ -34,7 +34,7 @@ module.exports = (html, etp, cb) ->
         for row in rows
           func = $(row).attr('onclick')
           rel = func.match(/window.location=\'(\/trade\/view\/purchase\/general.html\?id=\d+)\'/i)?[1]
-          unless rel? then rel = func.match(/^location\.href=(.+)$/)[1]
+          unless rel? then rel = func.match(/^location\.href='?(.+)$/)[1]
           url = etpUrl + rel
           url = url.replace '://www.', '://'
           num = $(row).find('td:nth-child(1)').text()
