@@ -141,7 +141,7 @@ module.exports.update = (auction, cb) ->
       trade = trades[0]
       trades.forEach (t) ->
         remove.push new Promise (resolve_trade) ->
-          if t._id isnt trade._id 
+          if t._id isnt trade._id
             promises = []
             for lot in t.lots
               promises.push new Promise (resolve_lot) -> lot.remove(resolve_lot)
@@ -158,7 +158,10 @@ module.exports.update = (auction, cb) ->
       for alot in auction.lots
         if alot.status isnt ''
           unless alot.url? then alot.url = trade.url
-          lots = trade.lots.filter (i) -> i.url is alot.url and i.number.toString() is alot.number.toString()
+          lots = trade.lots.filter (i) ->
+            if alot.url isnt trade.url
+              i.url is alot.url
+            else i.url is alot.url and i.number.toString() is alot.number.toString()
           if lots.length > 0
             lot = lots[0]
             dublicates = []
