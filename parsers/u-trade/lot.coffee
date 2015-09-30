@@ -9,6 +9,53 @@ config    = require '../../config'
 
 host      = /^https?\:\/\/[A-Za-z0-9\.\-]+/
 
+intervals_fieldsets =
+  'http://m-ets.ru/search?r_num=О&lots=&debtor=&org=&arb=&arb_org=&stat=&sort=&desc=':
+    2:
+      fields: ['interval_start_date', 'request_start_date']
+      type: Date
+    3:
+      fields: ['interval_end_date', 'request_end_date']
+      type: Date
+    4:
+      fields: ['interval_price']
+      type: Number
+
+  'http://nistp.ru/etp/trade/list.html':
+    1:
+      fields: ['interval_start_date']
+      type: Date
+    2:
+      fields: ['request_start_date']
+      type: Date
+    3:
+      fields: ['request_end_date']
+      type: Date
+    4:
+      fields: ['interval_end_date']
+      type: Date
+    5:
+      fields: ['interval_price']
+      type: Number
+    6:
+      fields: ['deposit_sum']
+      type: Number
+
+  '*':
+    1:
+      fields: ['interval_start_date', 'request_start_date']
+      type: Date
+    2:
+      fields: ['interval_end_date', 'request_end_date']
+      type: Date
+    3:
+      fields: ['interval_price']
+      type: Number
+    4:
+      fields: ['deposit_sum']
+      type: Number
+
+
 module.exports = (html, etp, additional) ->
   lots = []
 
@@ -47,19 +94,18 @@ module.exports = (html, etp, additional) ->
 
     interval_rows = $('div:contains("Интервалы снижения цены"), td:contains("График снижения цены")').next().find('tr')
     interval_rows = interval_rows.filter -> /\d{2}\.\d{2}\.\d{4} \d{2}:\d{2}/.test $(@).find('td').first().next().text().trim()
+    fieldsets = intervals_fieldsets[etp.href] or intervals_fieldsets['*']
     interval_rows.each ->
       lot.intervals = lot.intervals or []
       interval = {}
       $(@).find('td').each (i) ->
-        if etp.name is 'ЭТП "МЭТС"' then switch i
-          when 2 then interval.interval_start_date = moment(interval.request_start_date = $(@).text().trim(), "DD.MM.YYYY HH:mm")
-          when 3 then interval.interval_end_date = moment(interval.request_end_date = $(@).text().trim(), "DD.MM.YYYY HH:mm")
-          when 4 then interval.interval_price = parseFloat $(@).text().trim().match(/([\d\s]+\,\d+)/)?[1].replace(/\s/, '')
-        else switch i
-          when 1 then interval.interval_start_date = moment(interval.request_start_date = $(@).text().trim(), "DD.MM.YYYY HH:mm")
-          when 2 then interval.interval_end_date = moment(interval.request_end_date = $(@).text().trim(), "DD.MM.YYYY HH:mm")
-          when 3 then interval.interval_price = parseFloat $(@).text().trim().match(/([\d\s]+\,\d+)/)?[1].replace(/\s/, '')
-          when 4 then interval.deposit_sum = parseFloat $(@).text().trim().match(/([\d\s]+\,\d+)/)?[1].replace(/\s/, '')
+        fieldset = fieldsets[i]
+        if fieldset?
+          switch fieldset.type
+            when Date then value = momment $(@).text().trim(), "DD.MM.YYYY"
+            when Number then value = parseFloat $(@).text().trim().match(/([\d\s]+\,\d+)/)?.pop().replace(/\s/g, '')
+          for field in fieldset.fields
+            interval[field] = value
       lot.intervals.push interval
 
     docs = []

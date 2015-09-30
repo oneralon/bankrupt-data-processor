@@ -92,7 +92,7 @@ module.exports = (html, etp, url, ismicro, cb) ->
 
   additional =
     deposit_procedure: deposit_procedure
-    procedure: additional
+    procedure: trade.additional
     currency: 'Российская Федерация'
     category: 'Не определена'
 
