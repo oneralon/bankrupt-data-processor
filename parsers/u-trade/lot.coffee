@@ -102,7 +102,7 @@ module.exports = (html, etp, additional) ->
         fieldset = fieldsets[i]
         if fieldset?
           switch fieldset.type
-            when Date then value = momment $(@).text().trim(), "DD.MM.YYYY"
+            when Date then value = moment $(@).text().trim(), "DD.MM.YYYY"
             when Number then value = parseFloat $(@).text().trim().match(/([\d\s]+\,\d+)/)?.pop().replace(/\s/g, '')
           for field in fieldset.fields
             interval[field] = value
