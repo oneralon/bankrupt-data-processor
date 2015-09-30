@@ -20,6 +20,14 @@ module.exports =
 
   database:          'bankrot-parser'
 
+Переименовать:
+ЭТП "AukcionCenter" (http://www.aukcioncenter.ru/) в ЭТП "Аукцион-центр"
+ЭТП "EkSystems" (http://www.eksystems.ru/) в Электронный капитал
+ЭТП "RegTorg" (http://www.regtorg.com/) в Региональная торговая площадка
+ЭТП "ВЭТП" (http://xn-----6kcbaifbn4di5abenic8aq7kvd6a.xn--p1ai/) в Всероссийская Электронная Торговая Площадка
+ЭТП "Комерсантъ Картотека" (http://etp.kartoteka.ru/) в ЭТП "KARTOTEKA.RU"
+
+
   etps: [
     name: 'ЭТП "Аукционы Дальнего Востока"'
     href: 'http://torgidv.ru/etp/trade/list.html'
@@ -45,7 +53,7 @@ module.exports =
     href: 'http://nistp.ru/etp/trade/list.html'
     platform: 'u-trade'
   ,
-    name: 'ЭТП "AukcionCenter"'
+    name: 'ЭТП "Аукцион-центр"'
     href: 'http://aukcioncenter.ru/etp/trade/list.html'
     platform: 'u-trade'
   ,
@@ -57,7 +65,7 @@ module.exports =
     href: 'http://etp-profit.ru/etp/trade/list.html'
     platform: 'u-trade'
   ,
-    name: 'ЭТП "RegTorg"'
+    name: 'Региональная торговая площадка'
     href: 'http://regtorg.com/etp/trade/list.html'
     platform: 'u-trade'
   ,
@@ -69,11 +77,11 @@ module.exports =
     href: 'http://bankrot.auction63.ru/etp/trade/list.html'
     platform: 'u-trade'
   ,
-    name: 'ЭТП "ВЭТП"'
+    name: 'Всероссийская Электронная Торговая Площадка'
     href: 'http://xn-----6kcbaifbn4di5abenic8aq7kvd6a.xn--p1ai/etp/trade/list.html'
     platform: 'u-trade'
   ,
-    name: 'ЭТП "EkSystems"'
+    name: 'Электронный капитал'
     href: 'http://eksystems.ru/etp/trade/list.html?type=bankruptcySales'
     platform: 'u-trade'
   ,
@@ -142,7 +150,7 @@ module.exports =
     href: 'http://vertrades.ru/bankrupt/public/purchases-all/'
     platform: 'i-tender'
   ,
-    name: 'ЭТП "Комерсантъ Картотека"'
+    name: 'ЭТП "KARTOTEKA.RU"'
     href: 'http://etp.kartoteka.ru/public/purchases-all/'
     platform: 'i-tender'
   ,
