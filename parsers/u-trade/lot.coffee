@@ -11,47 +11,47 @@ host      = /^https?\:\/\/[A-Za-z0-9\.\-]+/
 
 intervals_fieldsets =
   'http://m-ets.ru/search?r_num=О&lots=&debtor=&org=&arb=&arb_org=&stat=&sort=&desc=':
-    2:
+    1:
       fields: ['interval_start_date', 'request_start_date']
       type: Date
-    3:
+    2:
       fields: ['interval_end_date', 'request_end_date']
       type: Date
-    4:
+    3:
       fields: ['interval_price']
       type: Number
 
   'http://nistp.ru/etp/trade/list.html':
-    1:
+    0:
       fields: ['interval_start_date']
       type: Date
-    2:
+    1:
       fields: ['request_start_date']
       type: Date
-    3:
+    2:
       fields: ['request_end_date']
       type: Date
-    4:
+    3:
       fields: ['interval_end_date']
       type: Date
-    5:
+    4:
       fields: ['interval_price']
       type: Number
-    6:
+    5:
       fields: ['deposit_sum']
       type: Number
 
   '*':
-    1:
+    0:
       fields: ['interval_start_date', 'request_start_date']
       type: Date
-    2:
+    1:
       fields: ['interval_end_date', 'request_end_date']
       type: Date
-    3:
+    2:
       fields: ['interval_price']
       type: Number
-    4:
+    3:
       fields: ['deposit_sum']
       type: Number
 
