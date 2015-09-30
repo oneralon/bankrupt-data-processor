@@ -20,14 +20,6 @@ module.exports =
 
   database:          'bankrot-parser'
 
-Переименовать:
-ЭТП "AukcionCenter" (http://www.aukcioncenter.ru/) в ЭТП "Аукцион-центр"
-ЭТП "EkSystems" (http://www.eksystems.ru/) в Электронный капитал
-ЭТП "RegTorg" (http://www.regtorg.com/) в Региональная торговая площадка
-ЭТП "ВЭТП" (http://xn-----6kcbaifbn4di5abenic8aq7kvd6a.xn--p1ai/) в Всероссийская Электронная Торговая Площадка
-ЭТП "Комерсантъ Картотека" (http://etp.kartoteka.ru/) в ЭТП "KARTOTEKA.RU"
-
-
   etps: [
     name: 'ЭТП "Аукционы Дальнего Востока"'
     href: 'http://torgidv.ru/etp/trade/list.html'
