@@ -25,18 +25,20 @@ module.exports = (grunt) ->
         if lots.length is 0 then cb()
         lot_promises = []
         for lot in lots
-          if lot.intervals.length is 0
-            lot.last_event = lot.trade.holding_date
-            lot_promises.push new Promise (resolve) -> lot.save(resolve)
-          else
-            intervals = lot.intervals.filter (i) -> i.interval_start_date > new Date()
-            if intervals.length > 0
-              lot.last_event = intervals[0].interval_start_date
+          if lot.trade?
+            if lot.intervals.length is 0
+              lot.last_event = lot.trade.holding_date
               lot_promises.push new Promise (resolve) -> lot.save(resolve)
             else
-              lot.last_event = lot.intervals[lot.intervals.length - 1].interval_start_date
-              lot.present = new Date() < lot.last_event
-              lot_promises.push new Promise (resolve) -> lot.save(resolve)
+              intervals = lot.intervals.filter (i) -> i.interval_start_date > new Date()
+              if intervals.length > 0
+                lot.last_event = intervals[0].interval_start_date
+                lot_promises.push new Promise (resolve) -> lot.save(resolve)
+              else
+                lot.last_event = lot.intervals[lot.intervals.length - 1].interval_start_date
+                lot.present = new Date() < lot.last_event
+                lot_promises.push new Promise (resolve) -> lot.save(resolve)
+          else lot_promises.push new Promise (resolve) -> lot.remove(resolve)
         Promise.all(lot_promises).catch(cb).then -> proceed_range(skip + perPage, cb)
 
     proceed_range 0, done
