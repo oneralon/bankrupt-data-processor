@@ -15,7 +15,6 @@ module.exports = (grunt) ->
     for etp in config.etps
       etps += "(#{etp.href.match(host)[2]})|"
     etps = etps.slice(0,-1)
-    console.log etps
     query = url: new RegExp(etps)
     perPage = 1000
     proceed_range = (skip, cb) ->
@@ -40,7 +39,9 @@ module.exports = (grunt) ->
                 lot.last_event = lot.intervals[lot.intervals.length - 1].interval_start_date
                 lot.present = new Date() < lot.last_event
                 lot_promises.push new Promise (resolve) -> lot.save(resolve)
-          else lot_promises.push new Promise (resolve) -> lot.remove(resolve)
+          else
+            console.log "Removing lot #{lot._id}"
+            lot_promises.push new Promise (resolve) -> lot.remove(resolve)
         Promise.all(lot_promises).catch(cb).then -> proceed_range(skip + perPage, cb)
 
     proceed_range 0, done
