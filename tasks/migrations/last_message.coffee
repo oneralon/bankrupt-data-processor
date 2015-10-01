@@ -35,6 +35,7 @@ module.exports = (grunt) ->
               lot_promises.push new Promise (resolve) -> lot.save(resolve)
             else
               lot.last_event = lot.intervals[lot.intervals.length - 1].interval_start_date
+              lot.present = new Date() < lot.last_event
               lot_promises.push new Promise (resolve) -> lot.save(resolve)
         Promise.all(lot_promises).catch(cb).then -> proceed_range(skip + perPage, cb)
 
