@@ -25,17 +25,18 @@ module.exports = (grunt) ->
         lot_promises = []
         for lot in lots
           unless lot.trade._id? then lot_promises.push new Promise (resolve) -> lot.remove(resolve)
-          if lot.intervals.length is 0
-            lot.last_event = lot.trade.results_date or lot.trade.holding_date or lot.trade.requests_end_date
-            lot_promises.push new Promise (resolve) -> lot.save(resolve)
           else
-            intervals = lot.intervals.filter (i) -> i.interval_start_date > new Date()
-            if intervals.length > 0
-              lot.last_event = intervals[0].interval_start_date
+            if lot.intervals.length is 0
+              lot.last_event = lot.trade.results_date or lot.trade.holding_date or lot.trade.requests_end_date
               lot_promises.push new Promise (resolve) -> lot.save(resolve)
             else
-              lot.last_event = lot.trade.results_date or lot.trade.holding_date or lot.trade.requests_end_date or lot.last_event = lot.last_event = lot.trade.results_date or lot.trade.holding_date or lot.trade.requests_end_date or lot.intervals[lot.intervals.length - 1].interval_start_date
-              lot_promises.push new Promise (resolve) -> lot.save(resolve)
+              intervals = lot.intervals.filter (i) -> i.interval_start_date > new Date()
+              if intervals.length > 0
+                lot.last_event = intervals[0].interval_start_date
+                lot_promises.push new Promise (resolve) -> lot.save(resolve)
+              else
+                lot.last_event = lot.trade.results_date or lot.trade.holding_date or lot.trade.requests_end_date or lot.last_event = lot.last_event = lot.trade.results_date or lot.trade.holding_date or lot.trade.requests_end_date or lot.intervals[lot.intervals.length - 1].interval_start_date
+                lot_promises.push new Promise (resolve) -> lot.save(resolve)
         Promise.all(lot_promises).catch(cb).then -> proceed_range(skip + perPage, cb)
 
     proceed_range 0, done
