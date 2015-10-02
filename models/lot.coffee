@@ -59,6 +59,7 @@ lotSchema = new Schema
   ]
   updated: Date
   last_event: Date
+  present: Boolean
 
 # lotSchema.index {title: 'text', information: 'text'}, { default_language: "russian" }
 lotSchema.index last_message: 1

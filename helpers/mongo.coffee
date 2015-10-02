@@ -126,6 +126,7 @@ module.exports.update = (auction, cb) ->
       trade = new Trade()
       diffpatch.trade trade, auction
       for alot in auction.lots
+        alot = diffpatch.intervalize alot, trade
         unless alot.url? then alot.url = trade.url
         lot = new Lot()
         diffpatch.lot lot, alot
@@ -159,6 +160,7 @@ module.exports.update = (auction, cb) ->
       for alot in auction.lots
         if alot.status isnt ''
           unless alot.url? then alot.url = trade.url
+          alot = diffpatch.intervalize alot, trade
           lots = trade.lots.filter (i) ->
             if alot.url isnt trade.url
               i.url is alot.url
