@@ -24,6 +24,7 @@ module.exports = (grunt) ->
         if lots.length is 0 then cb()
         lot_promises = []
         for lot in lots
+          unless lot.trade._id? then lot_promises.push new Promise (resolve) -> lot.remove(resolve)
           if lot.intervals.length is 0
             lot.last_event = lot.trade.results_date or lot.trade.holding_date or lot.trade.requests_end_date
             lot_promises.push new Promise (resolve) -> lot.save(resolve)
