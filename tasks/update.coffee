@@ -38,7 +38,7 @@ module.exports = (grunt) ->
       ,
         status: {$exists: true, $eq: 'Не определен'}
       ]
-    Lot.find(query).limit(10000).populate('trade').exec (err, lots) ->
+    Lot.find(query).limit(1000).populate('trade').exec (err, lots) ->
       done(err) if err?
       log.info "#{lots.length} found"
       unless lots? then done()
@@ -47,6 +47,8 @@ module.exports = (grunt) ->
           for lot in lots
             if lot.trade.etp.platform is 'i-tender'
               amqp.publishLot.sync null, lot.url
+            else
+              amqp.publishLot.sync null, lot.trade.url
           done()
         catch e then done(e)
 
@@ -86,7 +88,7 @@ module.exports = (grunt) ->
       ,
         $where: 'this.lots.length == 0'
       ]
-    Trade.find query, (err, trades) ->
+    Trade.find(query).limit(1000).exec (err, trades) ->
       done(err) if err?
       Sync =>
         try

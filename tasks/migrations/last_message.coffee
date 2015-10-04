@@ -39,4 +39,5 @@ module.exports = (grunt) ->
                 lot_promises.push new Promise (resolve) -> lot.save(resolve)
         Promise.all(lot_promises).catch(cb).then -> proceed_range(skip + perPage, cb)
 
-    proceed_range 0, done
+    proceed_range 0, ->
+      Lot.update {present:true, last_event:{$lte:new Date()}}, {$set:{present:false}}, {multi:1}, done
