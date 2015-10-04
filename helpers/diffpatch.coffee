@@ -1,15 +1,18 @@
 moment     = require 'moment'
 
 module.exports.intervalize = (lot, trade) ->
-  if lot.intervals.length is 0
-    lot.last_event = lot.trade.holding_date
+  if lot.intervals?
+    if lot.intervals.length > 0
+      intervals = lot.intervals.filter (i) -> i.interval_start_date > new Date()
+      if intervals.length > 0
+        last = intervals[intervals.length - 1]
+        lot.last_event = last.request_end_date or last.interval_end_date
+  unless lot.last_event? then lot.last_event = lot.trade.holding_date or lot.trade.trade.results_date or lot.trade.requests_end_date
+  unless lot.last_event?
+    lot.present = false
+    log.error "No last event present"
   else
-    intervals = lot.intervals.filter (i) -> i.interval_start_date > new Date()
-    if intervals.length > 0
-      lot.last_event = intervals[0].interval_start_date
-    else
-      lot.last_event = lot.intervals[lot.intervals.length - 1].interval_start_date
-  lot.present = new Date() < lot.last_event
+    lot.present = new Date() < lot.last_event
   lot
 
 module.exports.diff = (left, right, model) ->

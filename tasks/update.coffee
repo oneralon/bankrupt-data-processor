@@ -28,6 +28,8 @@ module.exports = (grunt) ->
     query =
       url: new RegExp(regex)
       $or: [
+        last_event: null, intervals: {$eq:[]}
+      ,
         updated: $exists: false
       ,
         status: $exists: false
