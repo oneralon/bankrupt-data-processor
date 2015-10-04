@@ -10,7 +10,7 @@ module.exports.intervalize = (lot, trade) ->
   unless lot.last_event? then lot.last_event = trade.holding_date or trade.results_date or trade.requests_end_date
   unless lot.last_event?
     lot.present = false
-    log.error "No last event present"
+    console.log "No last event present"
   else
     lot.present = new Date() < lot.last_event
   lot
