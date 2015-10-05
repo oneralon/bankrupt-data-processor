@@ -43,12 +43,11 @@ module.exports.lot_remove = (query, cb) ->
     lot.trade.save -> lot.remove(cb)
 
 module.exports.update_etps = (cb) ->
-  etps = config.etps.map (i) -> i.name
   Trade.distinct 'etp.name', (err, result) ->
     сonnection.collection('etps').findOne { $query: {}, $orderby: { '_v' : -1 } , $limit: 1}, (err, etps) ->
       unless _.isEqual(result.sort(), etps?.list?.sort())
         сonnection.collection('etps').insert
-          list: result.filter (i) -> etps.indexOf(i) isnt -1
+          list: result.filter (i) -> i isnt 'Не определен'
           _v: etps?._v+1 or 0
         , cb
       else cb()
