@@ -19,7 +19,7 @@ module.exports = (grunt) ->
     query = url: new RegExp(etps)
     perPage = 1000
     proceed_range = (skip, cb) ->
-      Lot.find({last_event:{$or: [{$exists: false}, {$eq: null}, {$lte: new Date()}], present: true}).skip(skip).limit(perPage).populate('trade').exec (err, lots) ->
+      Lot.find({last_event:{$or: [{$exists: false}, {$eq: null}, {$lte: new Date()}]}, present: true}).skip(skip).limit(perPage).populate('trade').exec (err, lots) ->
         cb(err) if err?
         console.log "Skip: #{skip}       Lots: #{lots.length}"
         if lots.length is 0 then cb()
