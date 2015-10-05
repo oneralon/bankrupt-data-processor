@@ -59,13 +59,16 @@ collector =
               json = xmlParser.parseString xml
               rows = json.childs[0].childs
               urls = []
+              result = []
               rows.forEach (row) ->
                 lot = {}
                 for field in row.childs
                   lot[field.name] = field.childs[0]
                 url = "http://utp.sberbank-ast.ru/Bankruptcy/NBT/PurchaseView/#{lot.TypeId}/0/0/#{lot.PurchaseId}"
-                if urls.indexOf(url) is -1 then urls.push url
-              amqp.publish.sync null, config.listsHtmlQueue, new Buffer(JSON.stringify(urls), 'utf8'),
+                if urls.indexOf(url) is -1
+                  urls.push url
+                  result.push url: url, number: lot.PurchaseCode
+              amqp.publish.sync null, config.listsHtmlQueue, new Buffer(JSON.stringify(result), 'utf8'),
                 headers:
                   parser: 'sberbank-ast/list'
                   etp: @etp
