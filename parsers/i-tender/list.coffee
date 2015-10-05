@@ -1,5 +1,6 @@
 Sync            = require 'sync'
 cheerio         = require 'cheerio'
+_               = require 'lodash'
 
 redis     = require '../../helpers/redis'
 logger    = require '../../helpers/logger'
@@ -11,39 +12,27 @@ host      = /^https?\:\/\/[A-Za-z0-9\.\-]+/
 module.exports = (html, etp, cb) ->
   Sync =>
     try
-      result =
-        trades: []
-        lots: []
       $ = cheerio.load(html)
       rows = $("[id*='ctl00_ctl00_MainContent'] > tbody > tr.gridRow")
       log.info "Rows #{rows.length}"
+      trades = []
       for row in rows
-        lot = $(row).find("td.gridColumn a.tip-lot")
-        lotUrl = etp.url.match(host)[0] + lot.attr('href')
-        lotUrl += '/' unless /\/$/.test lotUrl
-        lotName = lot.text()
         trade = $(row).find("td.gridAltColumn a[class*='purchase-type-']")
-        tradeUrl = etp.url.match(host)[0] + trade.attr('href')
+        tradeUrl = etp.href.match(host)[0] + trade.attr('href')
         tradeUrl += '/' unless /\/$/.test tradeUrl
+        tradeUrl = tradeUrl.replace '://www.', '://'
         tradeNum = trade.text()
-        if typeof lotUrl is 'undefined'
-          log.error "LOT: #{lotUrl}"
-        else
-          if redis.check.sync(null, lotUrl)
-            result.lots.push
-              etp: etp
-              url: lotUrl
-              tradeUrl: tradeUrl
-              downloader: 'request'
-              parser: 'i-tender/lot'
-              queue: config.lotsHtmlQueue
-        if redis.check.sync(null, tradeUrl)
-          result.trades.push
+        if _.where(trades, {url: tradeUrl}).length is 0
+          trades.push
             etp: etp
-            url: tradeUrl
+            url: tradeUrl.replace '//www.', '//'
             downloader: 'request'
             parser: 'i-tender/trade'
             queue: config.tradeHtmlQueue
             number: tradeNum
+      result = []
+      for trade in trades
+        if redis.check.sync(null, trade.url)
+          result.push trade
       cb null, result
     catch e then cb e

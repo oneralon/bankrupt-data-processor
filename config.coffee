@@ -3,105 +3,162 @@ module.exports =
   listsHtmlQueue:    'bankrupt-parser.listHtmls'
   tradeUrlsQueue:    'bankrupt-parser.tradeUrls'
   tradeHtmlQueue:    'bankrupt-parser.tradeHtml'
-  lotsUrlsQueue:     'bankrupt-parser.lotsUrls'
-  lotsHtmlQueue:     'bankrupt-parser.lotsHtml'
+  tradeJsonQueue:    'bankrupt-parser.tradeJson'
+  lotsUrlsQueue:     'bankrupt-parser.lotUrls'
+  lotsHtmlQueue:     'bankrupt-parser.lotHtml'
+  lotsJsonQueue:     'bankrupt-parser.lotJson'
 
-  listWorkers:       4
-  lotUrlWorkers:     16
+  listWorkers:       2
   tradeUrlWorkers:   16
+  tradeHtmlWorkers:  8
+  tradeJsonWorkers:  2
+  lotUrlWorkers:     8
   lotHtmlWorkers:    4
-  tradeHtmlWorkers:  4
-  timeout: 600000
+  lotJsonWorkers:    2
+  timeout:           60000
+  incUpdTime:        30000
 
-  tmpDB:             'tmp-bankrupt-parser'
-  prodDB:            'bankrot-parser'
+  database:          'bankrot-parser'
 
   etps: [
-  #   name: 'ЭТП "Банкротство"' #6
-  #   url: 'http://etp-bankrotstvo.ru/public/purchases-all/'
-  #   platform: 'i-tender'
-  # ,
-  #   name: 'Открытая торговая площадка' #77
-  #   url: 'http://opentp.ru/public/purchases-all/'
-  #   platform: 'i-tender'
-  # ,
-  #   name: 'ЭТП "Регион"' #112
-  #   url: 'https://www.gloriaservice.ru/public/purchases-all/'
-  #   platform: 'i-tender'
-  # ,
-  #   name: 'ЭТП "UralBidIn"' #307
-  #   url: 'http://www.uralbidin.ru/public/purchases-all/'
-  #   platform: 'i-tender'
-  # ,
-  #   name: 'ЭТП "Property Trade"' #692
-  #   url: 'http://propertytrade.ru/public/purchases-all/'
-  #   platform: 'i-tender'
-  # ,
-  #   name: 'ЭТП "Агенда"' #1244
-  #   url: 'http://bankrupt.etp-agenda.ru/public/purchases-all/'
-  #   platform: 'i-tender'
-  # ,
-  #   name: 'ЭТП "Мета-Инвест"' #1288
-  #   url: 'http://meta-invest.ru/public/purchases-all/'
-  #   platform: 'i-tender'
-  # ,
-  #   name: 'Уральская ЭТП' #1430
-  #   url: 'http://bankrupt.etpu.ru/public/purchases-all/'
-  #   platform: 'i-tender'
-  # ,
-  #   name: 'ЭТП "ТендерСтандарт"' #2176
-  #   url: 'http://tenderstandart.ru/public/purchases-all/'
-  #   platform: 'i-tender'
-  # ,
-  #   name: 'ЭТП "Electro-Torgi"' #2191
-  #   url: 'http://bankrupt.electro-torgi.ru/public/purchases-all/'
-  #   platform: 'i-tender'
-  # ,
-  #   name: 'ЭТП "Арбитат"' #2455
-  #   url: 'http://arbitat.ru/public/purchases-all/'
-  #   platform: 'i-tender'
-  # ,
-  #   name: 'Южная ЭТП' #4004
-  #   url: 'http://torgibankrot.ru/public/purchases-all/'
-  #   platform: 'i-tender'
-  # ,
-  #   name: 'Балтийская ЭТП' #4099
-  #   url: 'http://www.bepspb.ru/public/purchases-all/'
-  #   platform: 'i-tender'
-  # ,
-  #   name: 'ЭТП "Альфалот"' #4469
-  #   url: 'http://alfalot.ru/public/purchases-all/'
-  #   platform: 'i-tender'
-  # ,
-  #   name: 'Объединенная торговая площадка' #5524
-  #   url: 'http://www.utpl.ru/public/purchases-all/'
-  #   platform: 'i-tender'
-  # ,
-  #   name: 'ЭТП "Вердиктъ"' #5446
-  #   url: 'http://www.vertrades.ru/bankrupt/public/purchases-all/'
-  #   platform: 'i-tender'
-  # ,
-  #   name: 'ЭТП "Комерсантъ Картотека"' #11461
-  #   url: 'http://etp.kartoteka.ru/public/purchases-all/'
-  #   platform: 'i-tender'
-  # ,
-  #   name: 'Электронная площадка Центра реализации' #94395
-  #   url: 'http://www.bankrupt.centerr.ru/public/purchases-all/'
-  #   platform: 'i-tender'
-  # ,
-  #   name: 'ЭТП "uTender"' #136013
-  #   url: 'http://www.utender.ru/public/purchases-all/'
-  #   platform: 'i-tender'
-  # ,
-  #   name: 'Электронная площадка №1' #0
-  #   url: 'http://etp1.ru/public/purchases-all/'
-  #   platform: 'i-tender'
-  # ,
-  #   name: '"ТЕНДЕР ГАРАНТ"' #??? < 300
-  #   url: 'http://tendergarant.com/public/purchases-all/'
-  #   platform: 'i-tender'
-  # ,
-    name: 'Сбербанк АСТ'
-    url: 'http://utp.sberbank-ast.ru/Bankruptcy/List/BidList'
-    platform: 'sberbank-ast'
+    name: 'ЭТП "Аукционы Дальнего Востока"'
+    href: 'http://torgidv.ru/etp/trade/list.html'
+    platform: 'u-trade'
+  ,
+    name: 'ЭТП "МЭТС"'
+    href: 'http://m-ets.ru/search?r_num=О&lots=&debtor=&org=&arb=&arb_org=&stat=&sort=&desc='
+    platform: 'u-trade'
+  ,
+    name: 'ЭТП "Аукционы Сибири"'
+    href: 'http://ausib.ru/etp/trade/list.html'
+    platform: 'u-trade'
+  ,
+    name: 'ЭТП "Аукционный тендерный центр"'
+    href: 'http://atctrade.ru/etp/trade/list.html'
+    platform: 'u-trade'
+  ,
+    name: 'ЭТП "ВТБ Центр"'
+    href: 'http://vtb-center.ru/etp/trade/list.html'
+    platform: 'u-trade'
+  ,
+    name: 'ЭТП "Новые Информацонные Сервисы"'
+    href: 'http://nistp.ru/etp/trade/list.html'
+    platform: 'u-trade'
+  ,
+    name: 'ЭТП "Аукцион-центр"'
+    href: 'http://aukcioncenter.ru/etp/trade/list.html'
+    platform: 'u-trade'
+  ,
+    name: 'ЭТП "Система Электронных Торгов Имуществом"'
+    href: 'http://seltim.ru/etp/trade/list.html'
+    platform: 'u-trade'
+  ,
+    name: 'ЭТП "Профит"'
+    href: 'http://etp-profit.ru/etp/trade/list.html'
+    platform: 'u-trade'
+  ,
+    name: 'Региональная торговая площадка'
+    href: 'http://regtorg.com/etp/trade/list.html'
+    platform: 'u-trade'
+  ,
+    name: 'ЭТП "А-КОСТА"'
+    href: 'http://akosta.info/etp/trade/list.html'
+    platform: 'u-trade'
+  ,
+    name: 'ЭТП "Поволжский Аукционный Дом"'
+    href: 'http://bankrot.auction63.ru/etp/trade/list.html'
+    platform: 'u-trade'
+  ,
+    name: 'Всероссийская Электронная Торговая Площадка'
+    href: 'http://xn-----6kcbaifbn4di5abenic8aq7kvd6a.xn--p1ai/etp/trade/list.html'
+    platform: 'u-trade'
+  ,
+    name: 'Электронный капитал'
+    href: 'http://eksystems.ru/etp/trade/list.html?type=bankruptcySales'
+    platform: 'u-trade'
+  ,
+  #---------------------------------------------------------------------------------
+    name: 'ЭТП "Банкротство"'
+    href: 'http://etp-bankrotstvo.ru/public/purchases-all/'
+    platform: 'i-tender'
+  ,
+    name: 'Открытая торговая площадка'
+    href: 'http://opentp.ru/public/purchases-all/'
+    platform: 'i-tender'
+  ,
+    name: 'ЭТП "Регион"'
+    href: 'https://gloriaservice.ru/public/purchases-all/'
+    platform: 'i-tender'
+  ,
+    name: 'ЭТП "UralBidIn"'
+    href: 'http://uralbidin.ru/public/purchases-all/'
+    platform: 'i-tender'
+  ,
+    name: 'ЭТП "Property Trade"'
+    href: 'http://propertytrade.ru/public/purchases-all/'
+    platform: 'i-tender'
+  ,
+    name: 'ЭТП "Агенда"'
+    href: 'http://bankrupt.etp-agenda.ru/public/purchases-all/'
+    platform: 'i-tender'
+  ,
+    name: 'ЭТП "Мета-Инвест"'
+    href: 'http://meta-invest.ru/public/purchases-all/'
+    platform: 'i-tender'
+  ,
+    name: 'Уральская ЭТП'
+    href: 'http://bankrupt.etpu.ru/public/purchases-all/'
+    platform: 'i-tender'
+  ,
+    name: 'ЭТП "ТендерСтандарт"'
+    href: 'http://tenderstandart.ru/public/purchases-all/'
+    platform: 'i-tender'
+  ,
+    name: 'ЭТП "Electro-Torgi"'
+    href: 'http://bankrupt.electro-torgi.ru/public/purchases-all/'
+    platform: 'i-tender'
+  ,
+    name: 'ЭТП "Арбитат"'
+    href: 'http://arbitat.ru/public/purchases-all/'
+    platform: 'i-tender'
+  ,
+    name: 'Южная ЭТП'
+    href: 'http://torgibankrot.ru/public/purchases-all/'
+    platform: 'i-tender'
+  ,
+    name: 'Балтийская ЭТП'
+    href: 'http://bepspb.ru/public/purchases-all/'
+    platform: 'i-tender'
+  ,
+    name: 'ЭТП "Альфалот"'
+    href: 'http://alfalot.ru/public/purchases-all/'
+    platform: 'i-tender'
+  ,
+    name: 'Объединенная торговая площадка'
+    href: 'http://utpl.ru/public/purchases-all/'
+    platform: 'i-tender'
+  ,
+    name: 'ЭТП "Вердиктъ"'
+    href: 'http://vertrades.ru/bankrupt/public/purchases-all/'
+    platform: 'i-tender'
+  ,
+    name: 'ЭТП "KARTOTEKA.RU"'
+    href: 'http://etp.kartoteka.ru/public/purchases-all/'
+    platform: 'i-tender'
+  ,
+    name: 'Электронная площадка Центра реализации'
+    href: 'http://bankrupt.centerr.ru/public/purchases-all/'
+    platform: 'i-tender'
+  ,
+    name: 'ЭТП "uTender"'
+    href: 'http://utender.ru/public/purchases-all/'
+    platform: 'i-tender'
+  ,
+    name: 'Электронная площадка №1'
+    href: 'http://etp1.ru/public/purchases-all/'
+    platform: 'i-tender'
+  ,
+    name: 'ЭТП "ТЕНДЕР ГАРАНТ"'
+    href: 'http://tendergarant.com/public/purchases-all/'
+    platform: 'i-tender'
   ]

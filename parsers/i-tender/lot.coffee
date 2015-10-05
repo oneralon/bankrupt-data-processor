@@ -52,7 +52,7 @@ module.exports = (html, etp) ->
     fields = $(@).find('td')
     values = fields.map -> $(@).text().trim()
     for i in [0..fieldNames.length - 1]
-      field = _.where(fieldsets.interval, title: fieldNames.eq(@).text().replace(/(:|\(\*\))/g, '').trim())?[0]
+      field = _.where(fieldsets.interval, title: $(fieldNames[i]).text().replace(/(:|\(\*\))/g, '').trim())?[0]
       if field?
         value = values[i]
         switch field.type
@@ -78,7 +78,9 @@ module.exports = (html, etp) ->
   lot.documents = []
   fieldset.each ->
     lot.documents.push {
-      url: etp.url.match(host)[0] + $(@).attr('href')
+      url: etp.href.match(host)[0] + $(@).attr('href')
       name: $(@).text()
     }
+  if not lot.status? or lot.status is ''
+    lot.status = $("td:contains('Статус')").next().text().trim()
   return lot

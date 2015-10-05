@@ -52,6 +52,7 @@ tradeSchema = new Schema
   etp:
     href: String
     name: String
+    platform: String
     _id: false
   documents: [
     name: String
@@ -62,6 +63,7 @@ tradeSchema = new Schema
     type: Schema.Types.ObjectId
     ref: 'Lot'
   ]
+  updated: Date
 ,
   versionKey: false
 

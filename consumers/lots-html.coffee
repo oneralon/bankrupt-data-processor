@@ -32,7 +32,7 @@ else
           lot = parser html, etp
           lot.url = headers.url
           lot.tradeUrl = headers.tradeUrl
-          mongo.insert.sync null, 'lots', lot
+          amqp.publish.sync null, config.lotsJsonQueue, JSON.stringify(lot), headers: headers
           cb()
         catch e
           log.error e

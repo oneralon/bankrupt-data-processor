@@ -111,6 +111,10 @@ module.exports.interval = [
     type: Number
     title: 'Снижение цены предыдущего интервала на процент от начальной цены, проценты'
   ,
+    field: 'deposit_sum'
+    type: Number
+    title: 'Задаток на интервале, руб.'
+  ,
     field: 'price_reduction_percent'
     type: Number
     title: 'Снижение от предыдущей цены, проценты'
@@ -118,10 +122,6 @@ module.exports.interval = [
     field: 'price_reduction_percent'
     type: Number
     title: 'Снижение от предыдущей цены, рубли'
-  ,
-    field: 'deposit_sum'
-    type: Number
-    title: 'Задаток на интервале, руб.'
   ,
     field: 'interval_price'
     type: Number

@@ -30,9 +30,7 @@ else
         cb err if err?
         Sync =>
           try
-            for lot in result.lots
-              amqp.publish.sync null, config.lotsUrlsQueue, null, headers: lot
-            for trade in result.trades
+            for trade in result
               amqp.publish.sync null, config.tradeUrlsQueue, null, headers: trade
             cb()
           catch e

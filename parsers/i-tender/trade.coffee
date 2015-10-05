@@ -1,17 +1,36 @@
 _         = require 'lodash'
 cheerio   = require 'cheerio'
 moment    = require 'moment'
+Promise   = require 'promise'
+Sync      = require 'sync'
 
+request   = require '../../downloaders/request'
+parseLot  = require './lot'
 logger    = require '../../helpers/logger'
+status    = require '../../helpers/status'
 log       = logger  'I-TENDER TRADE PARSER'
 config    = require '../../config'
 
 host      = /^https?\:\/\/[A-Za-z0-9\.\-]+/
 
 fieldsets = require './trade-fieldset'
+collector = require './lots-collector'
 
-module.exports = (html, etp) ->
+publish = (container, url, etp) ->
+  container.push new Promise (resolve, reject) ->
+    request url, (err, html) ->
+      unless err?
+        lot = parseLot html, etp
+        lot.url = url.replace '//www.', '//'
+        log.info "Resolved #{url}"
+        resolve(lot)
+      else
+        log.error "Resolved #{url}"
+        resolve()
+
+module.exports = (html, etp, url, ismicro, cb) ->
   $ = cheerio.load(html)
+  log.info "Parse trade #{url}"
   trade = {}
   fieldset = $("fieldset").filter(->
     /информация о(б аук| пуб| кон)/i.test $(@).find("legend").text().trim()
@@ -40,6 +59,8 @@ module.exports = (html, etp) ->
             when 10
               format = "DD.MM.YYYY"
               break
+          if value.length < 10
+            console.log $(@).next().html()
           date = moment(value, format)
           trade[field.field] = if date.isValid() then date.format() else undefined
           break
@@ -47,7 +68,7 @@ module.exports = (html, etp) ->
   trade.documents = []
   fieldset.each ->
     trade.documents.push {
-      url: etp.url.match(host)[0] + $(@).attr('href')
+      url: etp.href.match(host)[0] + $(@).attr('href')
       name: $(@).text()
     }
   fieldset = $("fieldset").filter(->
@@ -120,4 +141,32 @@ module.exports = (html, etp) ->
           date = moment(value, format)
           trade.owner.contact[field.field] = if date.isValid() then date.format() else undefined
           break
-  return trade
+
+  promises = []
+  urls = []
+  lotsJQ = $("table[id*='ctl00_ctl00_MainContent_ContentPlaceHolderMiddle_ctl00_srLots'] tr:not([class='gridHeader'])")
+  for lotJQ in lotsJQ
+    rel = $(lotJQ).find('td.gridAltColumn a').attr('href')
+    urls.push etp.href.match(host)[0] + rel if rel?
+  if $("table[id*='ctl00_ctl00_MainContent_ContentPlaceHolderMiddle_ctl00_srLots'] .pager span:not(:contains('Страницы:'))").next("a:not(:contains('<<'))").length is 0
+    for lotUrl in urls
+      publish promises, lotUrl, etp
+    Promise.all(promises).then (lots) ->
+      trade.lots = lots
+      cb null, trade
+  else
+    if not ismicro
+      log.info 'More than 50 lots in trade'
+      collector.collect url, (err, relatives) ->
+        cb err if err?
+        for rel in relatives
+          urls.push etp.href.match(host)[0] + rel
+        for lotUrl in urls
+          publish promises, lotUrl, etp
+        collector.phantom.exit()
+        Promise.all(promises).then (lots) ->
+          for lot in lots
+            if lot.status then lot.status = status(lot.status)
+          trade.lots = lots
+          cb null, trade
+    else cb 'Micro parser more than 50'

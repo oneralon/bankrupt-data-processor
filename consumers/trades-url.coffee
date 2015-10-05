@@ -7,7 +7,7 @@ log        = logger  'TRADE URL CONSUMER'
 
 if cluster.isMaster
   i = 0
-  while i < config.lotUrlWorkers
+  while i < config.tradeUrlWorkers
     cluster.fork()
     i++
   cluster.on 'disconnect', (worker) ->

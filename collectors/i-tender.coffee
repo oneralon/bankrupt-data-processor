@@ -1,4 +1,6 @@
 phantom   = require 'node-phantom-simple'
+etag      = require 'etag'
+cheerio   = require 'cheerio'
 Sync      = require 'sync'
 
 amqp      = require '../helpers/amqp'
@@ -7,7 +9,7 @@ redis     = require '../helpers/redis'
 log       = logger  'I-TENDER LIST COLLECTOR'
 config    = require '../config'
 
-inject    = (to, from)->
+inject = (to, from)->
   for key, val of from
     to[key] = val
 
@@ -59,11 +61,11 @@ collector =
         @close -> cb e
 
   proceed: (etp, cb) ->
-    log.info "Start collect #{etp.url}"
-    @url = etp.url
+    log.info "Start collect #{etp.href}"
+    @url = etp.href
     @etp = etp
     @current = 1
-    @page.open @etp.url, (err, res) =>
+    @page.open @etp.href, (err, res) =>
       if err?
         log.error err
         cb e
@@ -73,7 +75,7 @@ collector =
           inject @, @nextPage.sync(@)
           while @next isnt null
             inject @, @nextPage.sync(@)
-          log.info "Complete collect #{etp.url}"
+          log.info "Complete collect #{etp.href}"
           cb()
         catch e
           log.error e
@@ -81,6 +83,7 @@ collector =
 
   nextPage: (cb) ->
     log.info "Start page #{@current} of #{@url}"
+    @page.onError = (err) -> log.error err
     @page.onConsoleMessage = (message) =>
       if message is 'UPDATED_NEW_DATA'
         log.info "Complete page #{@current} of #{@url}"
@@ -88,7 +91,7 @@ collector =
     Sync =>
       try
         if @retry
-          state = redis.get.sync null, @etp.url
+          state = redis.get.sync null, @etp.href
           @retry = false
           if state?
             if state is 'complete'
@@ -96,11 +99,21 @@ collector =
             else
               log.info 'Return to collect'
               @page.evaluate.sync null, "function(){document.aspnetForm.__CVIEWSTATE.value = '#{state}'}"
-        html = @page.get.sync null, 'content'
-        amqp.publish.sync null, config.listsHtmlQueue, new Buffer(html, 'utf8'),
-          headers:
-            parser: 'i-tender/list'
-            etp: @etp
+        data = @page.evaluate.sync null, """
+          function() {
+            var data = '';
+            $("[id*='ctl00_ctl00_MainContent'] tr.gridRow").each(function() {
+              data = data + $(this).html().replace(/\\n|\\s/gi, '');
+            });
+            return data;
+          }"""
+        nonstored = redis.check.sync(null, @url + etag(data))
+        if nonstored
+          html = @page.get.sync null, 'content'
+          amqp.publish.sync null, config.listsHtmlQueue, new Buffer(html, 'utf8'),
+            headers:
+              parser: 'i-tender/list'
+              etp: @etp
         result = @page.evaluate.sync null, ->
           next = $($('.pager span').filter(->
             $(@).text().indexOf('Страниц') is -1
@@ -115,10 +128,12 @@ collector =
           if nextLink?
             nextLink.dispatchEvent e
             window.updating = true
-            $("[id*='ctl00_ctl00_MainContent']").bind 'DOMNodeRemoved', ->
-              if window.updating
+            $("[id*='ctl00_ctl00_MainContent']").bind 'DOMNodeInserted', ->
+              if window.updating and $("[id*='ctl00_ctl00_MainContent'] tr.gridRow").length > 0
                 window.updating = false
-                console.log 'UPDATED_NEW_DATA'
+                setTimeout ->
+                  console.log 'UPDATED_NEW_DATA'
+                , 50
           state = document.aspnetForm.__CVIEWSTATE.value
           if next?
             return JSON.stringify {next: next, state: state}
@@ -126,20 +141,20 @@ collector =
         if result?
           result = JSON.parse(result)
           if result.state? and result.state.length > 30 and result.next is '>>'
-            state = redis.get.sync null, @etp.url
+            state = redis.get.sync null, @etp.href
             if state isnt result.state
-              redis.set.sync null, @etp.url, result.state
+              redis.set.sync null, @etp.href, result.state
           @next = result.next
           @result = result.next
         if @next is null
-          redis.set.sync null, @etp.url, 'complete'
+          redis.set.sync null, @etp.href, 'complete'
           cb(null, {page: @page, next: null})
       catch e
         log.error e
         @close -> cb e
 
 argv = require('optimist').argv
-etp = {name: argv.name, url: argv.url, platform: argv.platform}
+etp = {name: argv.name, href: argv.href, platform: argv.platform}
 collector.collect etp, (err) ->
   if err?
     log.error err
