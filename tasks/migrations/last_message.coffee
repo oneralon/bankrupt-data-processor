@@ -27,7 +27,7 @@ module.exports = (grunt) ->
         for lot in lots
           unless lot.trade._id? then lot_promises.push new Promise (resolve) -> lot.remove(resolve)
           else
-            diffpatch lot, diffpatch.diff(lot, diffpatch.intervalize(lot, lot.trade), Lot)
+            diffpatch.patch lot, diffpatch.diff(lot, diffpatch.intervalize(lot, lot.trade), Lot)
             lot_promises.push new Promise (resolve) -> lot.save(resolve)
         Promise.all(lot_promises).catch(cb).then -> proceed_range(skip + perPage, cb)
     proceed_range 0, ->
