@@ -1,6 +1,6 @@
 phantom   = require 'node-phantom-simple'
 Sync      = require 'sync'
-
+xmlParser = require 'node-xml-lite'
 amqp      = require '../helpers/amqp'
 logger    = require '../helpers/logger'
 redis     = require '../helpers/redis'
@@ -37,7 +37,7 @@ collector =
       try
         @init.sync @
         result = @proceed.sync @, @current
-        while result > 1
+        while result isnt null
           @current += 1
           result = @proceed.sync @, @current
         @close.sync @
@@ -47,30 +47,36 @@ collector =
 
   proceed: (number, cb) ->
     loaded = false
-    saved = false
+    @page.evaluate "function(){pageChange(#{@current});}"
     @page.onResourceReceived = (response) =>
       if not loaded and response.url is 'http://utp.sberbank-ast.ru/Bankruptcy/List/BidList'
         loaded = true
-        @page.evaluate """function(){$('#tbl > tbody').bind('DOMSubtreeModified',function(){console.log('UPDATED_NEW_DATA')});}"""
-    @page.onConsoleMessage = (message) =>
-      if not saved and message is 'UPDATED_NEW_DATA'
-        saved = true
         Sync =>
           try
-            html = @page.get.sync null, 'content'
-            amqp.publish.sync null, config.listsHtmlQueue, new Buffer(html, 'utf8'),
-              headers:
-                parser: 'sberbank-ast/list'
-                etp: @etp
-            rows = @page.evaluate.sync null, 'function(){return $("#tbl > tbody > tr").length;}'
-            log.info "Complete page #{@current} of #{@etp.url} with #{rows} rows"
-            redis.set.sync null, @etp.url, @current
-            cb(null, rows)
+            while not xml?
+              xml = @page.evaluate.sync null, -> $('#xmlData').val()
+            if xml isnt "<List />"
+              json = xmlParser.parseString xml
+              rows = json.childs[0].childs
+              urls = []
+              rows.forEach (row) ->
+                lot = {}
+                for field in row.childs
+                  lot[field.name] = field.childs[0]
+                url = "http://utp.sberbank-ast.ru/Bankruptcy/NBT/PurchaseView/#{lot.TypeId}/0/0/#{lot.PurchaseId}"
+                if urls.indexOf(url) is -1 then urls.push url
+              amqp.publish.sync null, config.listsHtmlQueue, new Buffer(JSON.stringify(urls), 'utf8'),
+                headers:
+                  parser: 'sberbank-ast/list'
+                  etp: @etp
+              log.info "Complete page #{@current} of #{@etp.url} with #{rows.length} rows"
+              redis.set.sync null, @etp.url, @current
+              cb(null, rows)
+            else cb()
           catch e then @close -> cb e
-    @page.evaluate "function(){pageChange(#{@current});}"
 
 argv = require('optimist').argv
-etp = {name: argv.name, url: argv.url, platform: argv.platform}
+etp = {name: argv.name, url: argv.href, platform: argv.platform}
 collector.collect etp, (err) ->
   if err?
     log.error err
