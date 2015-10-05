@@ -2,6 +2,7 @@ mongoose   = require 'mongoose'
 Promise    = require 'promise'
 config     = require '../../config'
 mongo      = require '../../helpers/mongo'
+diffpatch  = require '../../helpers/diffpatch'
 host       = /^https?\:\/\/(www\.)?([A-Za-z0-9\.\-]+)/
 сonnection = mongoose.createConnection "mongodb://localhost/#{config.database}"
 
@@ -26,17 +27,8 @@ module.exports = (grunt) ->
         for lot in lots
           unless lot.trade._id? then lot_promises.push new Promise (resolve) -> lot.remove(resolve)
           else
-            if lot.intervals.length is 0
-              lot.last_event = lot.trade.results_date or lot.trade.holding_date or lot.trade.requests_end_date
-              lot_promises.push new Promise (resolve) -> lot.save(resolve)
-            else
-              intervals = lot.intervals.filter (i) -> i.interval_start_date > new Date()
-              if intervals.length > 0
-                lot.last_event = intervals[0].interval_start_date
-                lot_promises.push new Promise (resolve) -> lot.save(resolve)
-              else
-                lot.last_event = lot.trade.results_date or lot.trade.holding_date or lot.trade.requests_end_date or lot.last_event = lot.last_event = lot.trade.results_date or lot.trade.holding_date or lot.trade.requests_end_date or lot.intervals[lot.intervals.length - 1].interval_start_date
-                lot_promises.push new Promise (resolve) -> lot.save(resolve)
+            diffpatch lot, diffpatch.diff(diffpatch.intervalize(lot, trade), lot, Lot)
+            lot_promises.push new Promise (resolve) -> lot.save(resolve)
         Promise.all(lot_promises).catch(cb).then -> proceed_range(skip + perPage, cb)
 
     proceed_range 0, ->
