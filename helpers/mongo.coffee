@@ -8,7 +8,6 @@ regionize  = require './regionize'
 diffpatch  = require './diffpatch'
 status     = require './status'
 logger     = require './logger'
-mongo      = require './mongo'
 log        = logger  'MONGODB'
 
 сonnection = mongoose.createConnection "mongodb://localhost/#{config.database}"
