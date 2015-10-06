@@ -14,7 +14,7 @@ module.exports = (content, etp, cb) ->
           result.push
             etp: etp
             url: trade.url.replace '//www.', '//'
-            downloader: 'request'
+            downloader: 'request-sber'
             parser: 'sberbank-ast/trade'
             queue: config.tradeHtmlQueue
             number: trade.number
