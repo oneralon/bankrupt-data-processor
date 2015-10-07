@@ -21,6 +21,10 @@ module.exports =
   database:          'bankrot-parser'
 
   etps: [
+    name: 'Cбербанк. Автоматизированная система торгов'
+    href: 'http://utp.sberbank-ast.ru/Bankruptcy/List/BidList'
+    platform: 'sberbank-ast'
+  ,
     name: 'ЭТП "Аукционы Дальнего Востока"'
     href: 'http://torgidv.ru/etp/trade/list.html'
     platform: 'u-trade'

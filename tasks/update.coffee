@@ -38,7 +38,7 @@ module.exports = (grunt) ->
       ,
         status: {$exists: true, $eq: 'Не определен'}
       ]
-    Lot.find(query).limit(1000).populate('trade').exec (err, lots) ->
+    Lot.find(query).limit(100).populate('trade').exec (err, lots) ->
       done(err) if err?
       log.info "#{lots.length} found"
       unless lots? then done()
@@ -62,7 +62,7 @@ module.exports = (grunt) ->
     date = moment().subtract(2, 'day')
     query =
       updated: { $exists: true, $lt: date }
-    Lot.find(query).limit(1000).exec (err, lots) ->
+    Lot.find(query).limit(100).exec (err, lots) ->
       done(err) if err?
       log.info "#{lots.length} found"
       Sync =>
@@ -88,7 +88,7 @@ module.exports = (grunt) ->
       ,
         $where: 'this.lots.length == 0'
       ]
-    Trade.find(query).limit(1000).exec (err, trades) ->
+    Trade.find(query).limit(100).exec (err, trades) ->
       done(err) if err?
       Sync =>
         try
@@ -152,7 +152,7 @@ module.exports = (grunt) ->
       regex += "#{etp.href.match(host)[2]}|"
     regex = regex.slice(0,-1)
     query.url = new RegExp(regex)
-    Trade.find(query).limit(1000).exec (err, trades) ->
+    Trade.find(query).limit(100).exec (err, trades) ->
       done(err) if err?
       Sync =>
         try

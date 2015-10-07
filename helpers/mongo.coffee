@@ -7,6 +7,7 @@ config     = require '../config'
 regionize  = require './regionize'
 diffpatch  = require './diffpatch'
 status     = require './status'
+tagger     = require './tagger'
 logger     = require './logger'
 log        = logger  'MONGODB'
 
@@ -98,10 +99,11 @@ module.exports.updateLot = (alot, cb) ->
       lot.updated = new Date()
       if lots.length > 1
         log.info "Updated #{lot.url} with #{lots.length - 1} dublicates"
-        Promise.all(dublicates).then -> lot.trade.save -> lot.save(cb)
+        Promise.all(dublicates).then -> lot.trade.save ->
+          tagger lot, (err, nlot) -> nlot.save(cb)
       else
         log.info "Updated #{lot.url}"
-        lot.save(cb)
+        tagger lot, (err, nlot) -> nlot.save(cb)
     else
       log.error "Not fount lot #{alot.url}, num: #{alot.number}"
 
@@ -133,7 +135,8 @@ module.exports.update = (auction, cb) ->
         lot.region = trade.region
         lot.updated = new Date()
         trade.lots.push lot
-        save.push new Promise (resolve) -> lot.save resolve
+        save.push new Promise (resolve) ->
+          tagger lot, (err, nlot) -> nlot.save(resolve)
         Promise.all(save).then ->
           trade.updated = new Date()
           trade.save cb
@@ -180,8 +183,9 @@ module.exports.update = (auction, cb) ->
             lot.tags      = alot.tags
             lot.region    = trade.region
             lot.updated = new Date()
-            if lots.length > 1 then Promise.all(dublicates).then -> save.push new Promise (resolve) -> lot.save resolve
-            else save.push new Promise (resolve) -> lot.save resolve
+            if lots.length > 1 then Promise.all(dublicates).then -> save.push new Promise (resolve) ->
+              tagger lot, (err, nlot) -> nlot.save(resolve)
+            else save.push new Promise (resolve) -> tagger lot, (err, nlot) -> nlot.save(resolve)
           else
             lot = new Lot()
             lot.trade = trade._id
@@ -189,7 +193,7 @@ module.exports.update = (auction, cb) ->
             diffpatch.lot lot, alot
             lot.updated = new Date()
             trade.lots.push lot
-            save.push new Promise (resolve) -> lot.save resolve
+            save.push new Promise (resolve) -> tagger lot, (err, nlot) -> nlot.save(resolve)
         else
           console.log alot.url
           console.log alot

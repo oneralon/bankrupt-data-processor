@@ -20,13 +20,13 @@ module.exports = (grunt) ->
     done = @async()
     Sync =>
       try
+        redis.clear.sync null
+        amqp.init.sync null
         for etp in config.etps
-          redis.clear.sync null
-          amqp.init.sync null
           collector.sync null, etp, null
-        exec 'pkill phantomjs', ->
-          log.info "Complete full collecting of #{config.etps.length} sources"
-          done()
+          exec 'pkill phantomjs'
+        log.info "Complete full collecting of #{config.etps.length} sources"
+        done()
       catch e
         log.error e
         done(e)
