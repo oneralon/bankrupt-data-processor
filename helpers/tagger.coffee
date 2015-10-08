@@ -14,7 +14,7 @@ require '../models/tag'
 Tag        = сonnection.model 'Tag'
 
 module.exports = tagger = (lot, cb) ->
-  Tag.find {}, (err, keymap) ->
+  Tag.find {system: true}, (err, keymap) ->
     cb err if err?
     lot.tags = []
     lot.tagInputs = []
