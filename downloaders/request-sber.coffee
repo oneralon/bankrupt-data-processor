@@ -1,19 +1,26 @@
 Sync            = require 'sync'
-request         = require 'request'
-Phantom         = require 'node-phantom-simple'
+needle          = require 'needle'
+cheerio         = require 'cheerio'
+
+options =
+  compressed: true
+  accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'
+  user_agent: 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.132 Safari/537.36'
+  follow_max: 10
+  follow_set_cookies: true
+  follow_set_referer: true
 
 module.exports = (url, cb) ->
-  phantom = null
-  page = null
   Sync =>
     try
-      phantom = Phantom.create.sync null
-      phantom.onError = (err) ->
-        log.info err
-        cb err
-      page = phantom.createPage.sync null
-      res = page.open.sync null, url
-      cb "Non 200 code page" unless res is 'success'
-      xml = page.evaluate.sync null, -> $('#xmlData').val()
-      phantom.exit -> cb(null, xml)
-    catch e then phantom.exit -> cb e
+      while typeof data is 'undefined' or not data? or data.length < 10000
+        data = get.sync null, url
+      cb null, data
+    catch e then cb e
+
+get = (url, cb) ->
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0"
+  needle.get url, options, (err, resp) -> 
+    cb(err) if err?
+    $ = cheerio.load resp.body
+    cb null, $('#xmlData').val()
