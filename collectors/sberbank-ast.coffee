@@ -36,6 +36,10 @@ collector =
     Sync =>
       try
         @init.sync @
+        @watchdog = setInterval =>
+          if @phantom.exitCode isnt null
+            @close -> cb 'Killed phantom'
+        , 120000
         result = @proceed.sync @, @current
         while result isnt null
           @current += 1
