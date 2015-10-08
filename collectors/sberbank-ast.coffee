@@ -50,9 +50,9 @@ proceed = (number, etp, cb) ->
     try
       form.hdnPageNum = number
       resp = needle.post.sync null, 'http://utp.sberbank-ast.ru/Bankruptcy/List/BidList', form, options
-      $ = cheerio.load resp[0]?.body or resp.body
+      $ = cheerio.load resp['0'].body
       xml = $('#xmlData').val()
-      if xml isnt "<List />"
+      if xml? and xml isnt "<List />"
         json = xmlParser.parseString.sync xmlParser, xml
         rows = json.List.data.row
         urls = []
