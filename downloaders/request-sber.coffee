@@ -13,7 +13,7 @@ options =
 module.exports = (url, cb) ->
   Sync =>
     try
-      while typeof data is 'undefined' or not data? or data.length < 10
+      while typeof data is 'undefined' or not data? or data.length < 1000
         data = get.sync null, url
       cb null, data
     catch e then cb e
