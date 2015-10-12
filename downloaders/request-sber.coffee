@@ -25,5 +25,3 @@ get = (url, cb) ->
     cb(err) if err?
     $ = cheerio.load resp.body
     cb null, $('#xmlData').val()
-
-get('http://mail.ru' (err, res)-> console.log res)
