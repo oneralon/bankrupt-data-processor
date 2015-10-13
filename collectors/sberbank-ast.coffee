@@ -37,7 +37,7 @@ etp = {name: argv.name, url: argv.href, platform: argv.platform}
 collect = (etp, cb) ->
   Sync =>
     try
-      current = parseInt(redis.get.sync null, etp.url) or 1085
+      current = parseInt(redis.get.sync null, etp.url) or 1
       result = proceed.sync null, current, etp
       while result isnt null
         current += 1
