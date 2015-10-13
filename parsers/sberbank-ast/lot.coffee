@@ -54,6 +54,6 @@ module.exports = (xml, trade, etp, cb) ->
             deposit_sum: Number(item.ReservationCoverAmount.trim().replace(/\s/g, '').replace(/,/g, '.').trim())
             interval_price: Number(item.BidAmount.trim().replace(/\s/g, '').replace(/,/g, '.').trim())
           }
-      lot.status = lot_status.sync, null trade.number, lot.title
+      lot.status = lot_status.sync null trade.number, lot.title
       cb null, lot
     catch e then cb(e)
