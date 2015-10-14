@@ -22,6 +22,6 @@ module.exports = (url, cb) ->
 get = (url, cb) ->
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0"
   needle.get url, options, (err, resp) -> 
-    cb(err) if err?
+    cb() if err?
     $ = cheerio.load resp.body
     cb null, $('#xmlData').val()
