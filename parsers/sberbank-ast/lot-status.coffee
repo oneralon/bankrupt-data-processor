@@ -28,17 +28,23 @@ module.exports = (trade, title, number, cb) ->
 
   Sync =>
     try
-      resp = needle.post.sync null, 'http://utp.sberbank-ast.ru/Bankruptcy/List/BidList', form, options
-      $ = cheerio.load resp['0'].body
-      xml = $('#xmlData').val()
-      if xml? and xml isnt "<List />"
-        json = xmlParser.parseString.sync xmlParser, xml
-        if json.List.data.row.length > 0
-          row = json.List.data.row.filter( (i) ->
-            i.BidNo.toString() is number.toString()
-          )[0]
-          cb null, row.PurchaseState
-        else
-          cb null, json.List.data.row.PurchaseState
-      else cb("Empty list")
-    catch e then cb(e)
+      while typeof data is 'undefined' or not data? or data.length < 1000
+        data = get.sync null, form
+      cb null, data
+    catch e then cb e
+
+get = (form, cb)
+  needle.post 'http://utp.sberbank-ast.ru/Bankruptcy/List/BidList', form, options, (err, resp) ->
+    cb () if err? or not resp?
+    $ = cheerio.load resp.body
+    xml = $('#xmlData').val()
+    if xml? and xml isnt "<List />"
+      json = xmlParser.parseString.sync xmlParser, xml
+      if json.List.data.row.length > 0
+        row = json.List.data.row.filter( (i) ->
+          i.BidNo.toString() is number.toString()
+        )[0]
+        cb null, row.PurchaseState
+      else
+        cb null, json.List.data.row.PurchaseState
+    else cb()
