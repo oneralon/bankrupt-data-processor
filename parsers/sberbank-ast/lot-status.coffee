@@ -29,11 +29,11 @@ module.exports = (trade, title, number, cb) ->
   Sync =>
     try
       while typeof data is 'undefined' or not data? or data.length < 1000
-        data = get.sync null, form
+        data = get.sync null, form, number
       cb null, data
     catch e then cb e
 
-get = (form, cb) ->
+get = (form, number, cb) ->
   needle.post 'http://utp.sberbank-ast.ru/Bankruptcy/List/BidList', form, options, (err, resp) ->
     cb() if err? or not resp?
     $ = cheerio.load resp.body
