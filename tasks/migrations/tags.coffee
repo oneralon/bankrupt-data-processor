@@ -15,7 +15,7 @@ module.exports = (grunt) ->
       done = @async()
       perPage = 100
       proceed_range = (skip, cb) ->
-        Lot.find().skip(skip).limit(100).exec (err, lots) ->
+        Lot.find({tags:{$eq:[]}}).skip(skip).limit(100).exec (err, lots) ->
           cb(err) if err?
           if not lots? or lots.length is 0 then cb()
           console.log "Skip: #{skip}       Lots: #{lots.length}"
