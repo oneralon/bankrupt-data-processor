@@ -35,7 +35,7 @@ module.exports = (trade, title, number, cb) ->
 
 get = (form, cb) ->
   needle.post 'http://utp.sberbank-ast.ru/Bankruptcy/List/BidList', form, options, (err, resp) ->
-    cb () if err? or not resp?
+    cb() if err? or not resp?
     $ = cheerio.load resp.body
     xml = $('#xmlData').val()
     if xml? and xml isnt "<List />"
