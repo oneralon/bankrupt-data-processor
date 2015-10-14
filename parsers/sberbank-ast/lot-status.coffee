@@ -28,7 +28,7 @@ module.exports = (trade, title, number, cb) ->
 
   Sync =>
     try
-      while typeof data is 'undefined' or not data? or data.length < 1000
+      while typeof data is 'undefined' or not data? or data is ''
         data = get.sync null, form, number
       cb null, data
     catch e then cb e
