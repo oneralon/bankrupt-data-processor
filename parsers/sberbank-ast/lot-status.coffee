@@ -33,7 +33,7 @@ module.exports = (trade, title, number, cb) ->
       cb null, data
     catch e then cb e
 
-get = (form, cb)
+get = (form, cb) ->
   needle.post 'http://utp.sberbank-ast.ru/Bankruptcy/List/BidList', form, options, (err, resp) ->
     cb () if err? or not resp?
     $ = cheerio.load resp.body
