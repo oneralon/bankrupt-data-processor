@@ -23,8 +23,8 @@ module.exports = (xml, etp, url, ismicro, cb) ->
       trade.type = data.Purchase?.PurchaseTypeInfo?.PurchaseTypeName
       types = data.Purchase?.PurchaseTypeInfo?.PurchaseTypeName.split ' с '
       trade.trade_type = /(аукцион|конкурс|публичное предложение)/.exec(data.Purchase?.PurchaseTypeInfo?.PurchaseTypeName)[1]
-      trade.membership_type = if types[0].indexOf('Открыт') isnt -1 then 'открытая' else 'закрытая'
-      trade.price_submission_type = if types[1].indexOf('открыт') isnt -1 then 'открытая' else 'закрытая'
+      trade.membership_type = if types[0]?.indexOf('Открыт') isnt -1 then 'открытая' else 'закрытая'
+      trade.price_submission_type = if types[1]?.indexOf('открыт') isnt -1 then 'открытая' else 'закрытая'
       trade.title = data.Purchase?.PurchaseInfo?.PurchaseName
       trade.additional = ""
       if data.Purchase?.PurchaseInfo?.IsPledge is 'Yes'
