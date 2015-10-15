@@ -43,11 +43,11 @@ module.exports = (xml, etp, url, ismicro, cb) ->
         trade.requests_start_date = moment(data.Purchase?.RequestInfo?.RequestStartDate, 'DD.MM.YYYY HH:mm').format()
       if data.Purchase?.RequestInfo?.RequestStopDate?
         trade.requests_end_date = moment(data.Purchase?.RequestInfo?.RequestStopDate, 'DD.MM.YYYY HH:mm').format()
-      if data.Purchase?.PurchaseInfo?.EfrPublicDate.length is 10
+      if data.Purchase?.PurchaseInfo?.EfrPublicDate?.length is 10
         trade.official_publish_date = moment(data.Purchase?.PurchaseInfo?.PaperPublicDate, 'DD.MM.YYYY').format()
       else
         trade.official_publish_date = moment(data.Purchase?.PurchaseInfo?.PaperPublicDate, 'DD.MM.YYYY HH:mm').format()
-      if data.Purchase?.PurchaseInfo?.EfrPublicDate.length is 10
+      if data.Purchase?.PurchaseInfo?.EfrPublicDate?.length is 10
         trade.bankrot_date = moment(data.Purchase?.PurchaseInfo?.EfrPublicDate, 'DD.MM.YYYY').format()
       else
         trade.bankrot_date = moment(data.Purchase?.PurchaseInfo?.EfrPublicDate, 'DD.MM.YYYY HH:mm').format()
