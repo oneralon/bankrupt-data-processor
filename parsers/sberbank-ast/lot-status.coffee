@@ -36,9 +36,9 @@ module.exports = (trade, title, number, cb) ->
 get = (form, number, cb) ->
   needle.post 'http://utp.sberbank-ast.ru/Bankruptcy/List/BidList', form, options, (err, resp, body) ->
     cb() if err? or not body?
-    $ = cheerio.load body.toString()
+    $ = cheerio.load body
     xml = $('#xmlData').val()
-    if xml? and xml isnt "<List />"
+    if xml? and xml.length > 0 and xml isnt "<List />" and xml[0] is '<'
       json = xmlParser.parseString.sync xmlParser, xml
       if json.List.data.row.length > 0
         row = json.List.data.row.filter( (i) ->

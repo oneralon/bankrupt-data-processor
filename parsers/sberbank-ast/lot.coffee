@@ -17,36 +17,36 @@ module.exports = (xml, trade, etp, cb) ->
       lot = {}
       data = xmlParser.parseString.sync xmlParser, xml
 
-      lot.number = Number data.BidView.Bids.BidInfo.BidNo
-      lot.title = data.BidView.Bids.BidInfo.BidName.trim()
-      lot.region = data.BidView.Bids.BidDebtorInfo.BidRegion
-      lot.status = data.BidView.BidChangeLog.BidChangeLogString[0].BidChangeLogComment
+      lot.number = Number data.BidView?.Bids?.BidInfo?.BidNo
+      lot.title = data.BidView?.Bids?.BidInfo?.BidName.trim()
+      lot.region = data.BidView?.Bids?.BidDebtorInfo.BidRegion
+      lot.status = data.BidView?.BidChangeLog.BidChangeLogString[0].BidChangeLogComment
       lot.procedure = trade.Purchase.RequestInfo.RegistrationDocuments
-      if data.BidView.Bids.BidDebtorInfo?.BidCategoryInfo?.bidcategorys?
-        if data.BidView.Bids.BidDebtorInfo?.BidCategoryInfo?.bidcategorys?.length
-          lot.category = (data.BidView.Bids.BidDebtorInfo.BidCategoryInfo.bidcategorys.map (item) -> item.bidcategoryname).join ' '
+      if data.BidView?.Bids?.BidDebtorInfo?.BidCategoryInfo?.bidcategorys?
+        if data.BidView?.Bids?.BidDebtorInfo?.BidCategoryInfo?.bidcategorys?.length
+          lot.category = (data.BidView?.Bids?.BidDebtorInfo.BidCategoryInfo.bidcategorys.map (item) -> item.bidcategoryname).join ' '
         else
-          lot.category = data.BidView.Bids.BidDebtorInfo.BidCategoryInfo.bidcategorys.bidcategoryname
+          lot.category = data.BidView?.Bids?.BidDebtorInfo.BidCategoryInfo.bidcategorys.bidcategoryname
       else
         lot.category = ''
-      lot.information = data.BidView.Bids.BidDebtorInfo.DebtorBidName
+      lot.information = data.BidView?.Bids?.BidDebtorInfo.DebtorBidName
       lot.tags = []
-      lot.information = lot.information + ' . Порядок ознакомления с имуществом (предприятием) должника: ' + data.BidView.Bids.BidDebtorInfo.BidInventoryResearchType
-      lot.start_price = data.BidView.Bids.BidTenderInfo.BidPrice
-      if data.BidView.Bids.BidTenderInfo?.BidAuctionStepPercent?
-        lot.step_percent = data.BidView.Bids.BidTenderInfo.BidAuctionStepPercent
-      if data.BidView.Bids.BidDepositInfo?.BidDepositRefund?
-        lot.deposit_procedure = data.BidView.Bids.BidDepositInfo.BidDepositRefund
-      if data.BidView.Bids.BidInfo.BidTenderInfo?.BidAuctionStepPercent?
-        lot.step_percent = data.BidView.Bids.BidInfo.BidTenderInfo.BidAuctionStepPercent
-      if data.BidView.Bids.BidInfo.BidTenderInfo?.BidPrice?
-        lot.start_price = data.BidView.Bids.BidInfo.BidTenderInfo?.BidPrice
+      lot.information = lot.information + ' . Порядок ознакомления с имуществом (предприятием) должника: ' + data.BidView?.Bids?.BidDebtorInfo.BidInventoryResearchType
+      lot.start_price = data.BidView?.Bids?.BidTenderInfo.BidPrice
+      if data.BidView?.Bids?.BidTenderInfo?.BidAuctionStepPercent?
+        lot.step_percent = data.BidView?.Bids?.BidTenderInfo.BidAuctionStepPercent
+      if data.BidView?.Bids?.BidDepositInfo?.BidDepositRefund?
+        lot.deposit_procedure = data.BidView?.Bids?.BidDepositInfo.BidDepositRefund
+      if data.BidView?.Bids?.BidInfo?.BidTenderInfo?.BidAuctionStepPercent?
+        lot.step_percent = data.BidView?.Bids?.BidInfo?.BidTenderInfo.BidAuctionStepPercent
+      if data.BidView?.Bids?.BidInfo?.BidTenderInfo?.BidPrice?
+        lot.start_price = data.BidView?.Bids?.BidInfo?.BidTenderInfo?.BidPrice
 
-      if data.BidView.BidReductionPeriod?.Periods?
-        if data.BidView.BidReductionPeriod?.Periods?.length
-          data = data.BidView.BidReductionPeriod?.Periods
+      if data.BidView?.BidReductionPeriod?.Periods?
+        if data.BidView?.BidReductionPeriod?.Periods?.length
+          data = data.BidView?.BidReductionPeriod?.Periods
         else
-          data = [data.BidView.BidReductionPeriod?.Periods]
+          data = [data.BidView?.BidReductionPeriod?.Periods]
         lot.intervals = data.map (item) ->
           {
             interval_start_date: moment(item.PeriodStartDate, 'DD.MM.YYYY HH:mm').format()

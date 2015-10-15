@@ -24,4 +24,5 @@ get = (url, cb) ->
   needle.get url, options, (err, resp, body) -> 
     cb() if err? or not body?
     $ = cheerio.load body
-    cb null, $('#xmlData').val()
+    xml = $('#xmlData').val()
+    if xml? then cb(null, xml) else cb()
