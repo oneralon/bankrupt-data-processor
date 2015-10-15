@@ -36,15 +36,17 @@ module.exports = (trade, title, number, cb) ->
 get = (form, number, cb) ->
   needle.post 'http://utp.sberbank-ast.ru/Bankruptcy/List/BidList', form, options, (err, resp, body) ->
     cb() if err? or not body?
-    $ = cheerio.load body
-    xml = $('#xmlData').val()
-    if xml? and xml.length > 0 and xml isnt "<List />" and xml[0] is '<'
-      json = xmlParser.parseString.sync xmlParser, xml
-      if json.List.data.row.length > 0
-        row = json.List.data.row.filter( (i) ->
-          i.BidNo.toString() is number.toString()
-        )[0]
-        cb null, row.PurchaseState
-      else
-        cb null, json.List.data.row.PurchaseState
+    if typeof body isnt 'undefined'
+      $ = cheerio.load body
+      xml = $('#xmlData').val()
+      if xml? and xml.length > 0 and xml isnt "<List />" and xml[0] is '<'
+        json = xmlParser.parseString.sync xmlParser, xml
+        if json.List.data.row.length > 0
+          row = json.List.data.row.filter( (i) ->
+            i.BidNo.toString() is number.toString()
+          )[0]
+          cb null, row.PurchaseState
+        else
+          cb null, json.List.data.row.PurchaseState
+      else cb()
     else cb()
