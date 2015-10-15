@@ -15,9 +15,10 @@ options =
   follow_set_cookies: true
   follow_set_referer: true
 
-module.exports = (trade, title, number, cb) ->
+module.exports = (trade, lot, cb) ->
+  price = Math.round(lot.start_price)
   form =
-    xmlFilter: "<query><purchcode>#{trade}</purchcode><purchname>#{title}</purchname><typeid></typeid><typename></typename><bidstatusid></bidstatusid><haspicture></haspicture><repurchase></repurchase><ispledge></ispledge><amountstart>0</amountstart><amountend>1000000000000</amountend><currentamountstart></currentamountstart><currentamountend></currentamountend><orgid></orgid><orgname></orgname><debtorinn></debtorinn><debtorname></debtorname><requeststartdatestart></requeststartdatestart><requeststartdateend></requeststartdateend><requestdatestart></requestdatestart><requestdateend></requestdateend><auctionstartdatestart></auctionstartdatestart><auctionstartdateend></auctionstartdateend><purchdescription></purchdescription><regionid></regionid><regionname></regionname><purchasegroupid></purchasegroupid><purchasegroupname></purchasegroupname></query>"
+    xmlFilter: "<query><purchcode>#{trade}</purchcode><purchname>#{lot.title}</purchname><typeid></typeid><typename></typename><bidstatusid></bidstatusid><haspicture></haspicture><repurchase></repurchase><ispledge></ispledge><amountstart>#{price - 1}</amountstart><amountend>#{price + 1}</amountend><currentamountstart></currentamountstart><currentamountend></currentamountend><orgid></orgid><orgname></orgname><debtorinn></debtorinn><debtorname></debtorname><requeststartdatestart></requeststartdatestart><requeststartdateend></requeststartdateend><requestdatestart></requestdatestart><requestdateend></requestdateend><auctionstartdatestart></auctionstartdatestart><auctionstartdateend></auctionstartdateend><purchdescription></purchdescription><regionid></regionid><regionname></regionname><purchasegroupid></purchasegroupid><purchasegroupname></purchasegroupname></query>"
     hdnPageNum: 1
     RequestStartDateStart: null
     RequestStartDateEnd: null
