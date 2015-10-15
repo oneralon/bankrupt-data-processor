@@ -45,7 +45,7 @@ get = (form, number, cb) ->
           row = json.List.data.row.filter( (i) ->
             i.BidNo.toString() is number.toString()
           )[0]
-          cb null, row.PurchaseState
+          if row? then cb null, row.PurchaseState else cb()
         else
           cb null, json.List.data.row.PurchaseState
       else cb()
