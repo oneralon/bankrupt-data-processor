@@ -43,8 +43,7 @@ module.exports = (trade, lot, cb) ->
 
 get = (form, number, cb) ->
   needle.post 'http://utp.sberbank-ast.ru/Bankruptcy/List/BidList', form, options, (err, resp, body) ->
-    if err? or not body?
-      cb()
+    cb() if err? or not body?
     if typeof body isnt 'undefined'
       $ = cheerio.load body
       xml = $('#xmlData').val()
@@ -58,5 +57,5 @@ get = (form, number, cb) ->
           else cb(null, '')
         else
           cb null, json.List.data.row.PurchaseState
-      else console.log(form);cb()
-    else console.log(form);cb()
+      else cb()
+    else cb()

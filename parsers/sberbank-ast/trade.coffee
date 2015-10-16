@@ -99,7 +99,7 @@ module.exports = (xml, etp, url, ismicro, cb) ->
       trade.owner.contact = {}
       trade.owner.contact.phone = data.Purchase?.OrganizatorInfo?.orgphone
       trade.owner.contact.internet_address = data.Purchase?.OrganizatorInfo?.orgemail
-      console.log url
+
       trade.lots = []
       if _.isArray(data.Purchase?.Bids.Bid)
         bids = data.Purchase?.Bids.Bid

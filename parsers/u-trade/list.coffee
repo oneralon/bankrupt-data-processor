@@ -15,7 +15,7 @@ module.exports = (html, etp, cb) ->
       $ = cheerio.load(html)
       trades = []
       etpUrl = etp.href.match(host)[0]
-      rows = $('tr[onclick *= "/trade/view/purchase/general.html?id="]')
+      rows = $('tr[onclick *= "/trade/view/purchase/general.html?id="], tr[onclick *= "location.href=\'generalView?id="]')
       if rows.length is 0
         rows = $('a[href *= "/trade/view/purchase/general.html?id="]')
         for row in rows
@@ -25,7 +25,7 @@ module.exports = (html, etp, cb) ->
           num = $(row).parent().parent().find('td:nth-child(1)').text()
           trades.push
             etp: etp
-            url: url
+            url: url.replace '//www.', '//'
             downloader: 'request'
             parser: 'u-trade/trade'
             queue: config.tradeHtmlQueue
@@ -33,13 +33,14 @@ module.exports = (html, etp, cb) ->
       else
         for row in rows
           func = $(row).attr('onclick')
-          rel = func.match(/window.location=\'(\/trade\/view\/purchase\/general.html\?id=\d+)\'/i)[1]
+          rel = func.match(/window.location=\'(\/trade\/view\/purchase\/general.html\?id=\d+)\'/i)?[1]
+          unless rel? then rel = '/' + func.match(/^location\.href=\'(.+)\'$/)[1]
           url = etpUrl + rel
           url = url.replace '://www.', '://'
           num = $(row).find('td:nth-child(1)').text()
           trades.push
             etp: etp
-            url: url
+            url: url.replace '//www.', '//'
             downloader: 'request'
             parser: 'u-trade/trade'
             queue: config.tradeHtmlQueue

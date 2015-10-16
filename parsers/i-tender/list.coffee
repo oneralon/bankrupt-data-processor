@@ -25,7 +25,7 @@ module.exports = (html, etp, cb) ->
         if _.where(trades, {url: tradeUrl}).length is 0
           trades.push
             etp: etp
-            url: tradeUrl
+            url: tradeUrl.replace '//www.', '//'
             downloader: 'request'
             parser: 'i-tender/trade'
             queue: config.tradeHtmlQueue

@@ -4,75 +4,98 @@ module.exports =
   tradeUrlsQueue:    'bankrupt-parser.tradeUrls'
   tradeHtmlQueue:    'bankrupt-parser.tradeHtml'
   tradeJsonQueue:    'bankrupt-parser.tradeJson'
+  lotsUrlsQueue:     'bankrupt-parser.lotUrls'
+  lotsHtmlQueue:     'bankrupt-parser.lotHtml'
+  lotsJsonQueue:     'bankrupt-parser.lotJson'
 
   listWorkers:       2
   tradeUrlWorkers:   16
   tradeHtmlWorkers:  64
   tradeJsonWorkers:  2
+  lotUrlWorkers:     8
+  lotHtmlWorkers:    4
+  lotJsonWorkers:    2
   timeout:           60000
   incUpdTime:        30000
 
   database:          'bankrot-parser'
 
   etps: [
-  #   name: 'ЭТП "Аукционы Сибири"'
-  #   href: 'http://ausib.ru/etp/trade/list.html'
-  #   platform: 'u-trade'
-  # ,
-  #   name: 'ЭТП "Аукционный тендерный центр"'
-  #   href: 'http://www.atctrade.ru/etp/trade/list.html'
-  #   platform: 'u-trade'
-  # ,
-  #   name: 'ЭТП "ВТБ Центр"'
-  #   href: 'http://vtb-center.ru/etp/trade/list.html'
-  #   platform: 'u-trade'
-  # ,
-  #   name: 'ЭТП "Новые Информаионные Сервисы"'
-  #   href: 'http://nistp.ru/etp/trade/list.html'
-  #   platform: 'u-trade'
-  # ,
-  #   name: 'ЭТП "AukcionCenter"'
-  #   href: 'http://www.aukcioncenter.ru/etp/trade/list.html'
-  #   platform: 'u-trade'
-  # ,
-  #   name: 'ЭТП "Система Электронных Торгов Имуществом"'
-  #   href: 'http://www.seltim.ru/etp/trade/list.html'
-  #   platform: 'u-trade'
-  # ,
-  #   name: 'ЭТП "Профит"'
-  #   href: 'http://www.etp-profit.ru/etp/trade/list.html'
-  #   platform: 'u-trade'
-  # ,
-  #   name: 'ЭТП "RegTorg"'
-  #   href: 'http://www.regtorg.com/etp/trade/list.html'
-  #   platform: 'u-trade'
-  # ,
-  #   name: 'ЭТП "А-КОСТА"'
-  #   href: 'http://www.akosta.info/etp/trade/list.html'
-  #   platform: 'u-trade'
-  # ,
-  #   name: 'ЭТП "Поволжский Аукционный Дом"'
-  #   href: 'http://bankrot.auction63.ru/etp/trade/list.html'
-  #   platform: 'u-trade'
-  # ,
-  #   name: 'ЭТП "ВЭТП"'
-  #   href: 'http://xn-----6kcbaifbn4di5abenic8aq7kvd6a.xn--p1ai/etp/trade/list.html'
-  #   platform: 'u-trade'
-  # ,
-  #   name: 'ЭТП "EkSystems"'
-  #   href: 'http://www.eksystems.ru/etp/trade/list.html?type=bankruptcySales'
-  #   platform: 'u-trade'
-  # ,
+    name: 'Cбербанк. Автоматизированная система торгов'
+    href: 'http://utp.sberbank-ast.ru/Bankruptcy/List/BidList'
+    platform: 'sberbank-ast'
+  ,
+    name: 'ЭТП "Аукционы Дальнего Востока"'
+    href: 'http://torgidv.ru/etp/trade/list.html'
+    platform: 'u-trade'
+  ,
+    name: 'ЭТП "МЭТС"'
+    href: 'http://m-ets.ru/search?r_num=О&lots=&debtor=&org=&arb=&arb_org=&stat=&sort=&desc='
+    platform: 'u-trade'
+  ,
+    name: 'ЭТП "Аукционы Сибири"'
+    href: 'http://ausib.ru/etp/trade/list.html'
+    platform: 'u-trade'
+  ,
+    name: 'ЭТП "Аукционный тендерный центр"'
+    href: 'http://atctrade.ru/etp/trade/list.html'
+    platform: 'u-trade'
+  ,
+    name: 'ЭТП "ВТБ Центр"'
+    href: 'http://vtb-center.ru/etp/trade/list.html'
+    platform: 'u-trade'
+  ,
+    name: 'ЭТП "Новые Информацонные Сервисы"'
+    href: 'http://nistp.ru/etp/trade/list.html'
+    platform: 'u-trade'
+  ,
+    name: 'ЭТП "Аукцион-центр"'
+    href: 'http://aukcioncenter.ru/etp/trade/list.html'
+    platform: 'u-trade'
+  ,
+    name: 'ЭТП "Система Электронных Торгов Имуществом"'
+    href: 'http://seltim.ru/etp/trade/list.html'
+    platform: 'u-trade'
+  ,
+    name: 'ЭТП "Профит"'
+    href: 'http://etp-profit.ru/etp/trade/list.html'
+    platform: 'u-trade'
+  ,
+    name: 'Региональная торговая площадка'
+    href: 'http://regtorg.com/etp/trade/list.html'
+    platform: 'u-trade'
+  ,
+    name: 'ЭТП "А-КОСТА"'
+    href: 'http://akosta.info/etp/trade/list.html'
+    platform: 'u-trade'
+  ,
+    name: 'ЭТП "Поволжский Аукционный Дом"'
+    href: 'http://bankrot.auction63.ru/etp/trade/list.html'
+    platform: 'u-trade'
+  ,
+    name: 'Всероссийская Электронная Торговая Площадка'
+    href: 'http://xn-----6kcbaifbn4di5abenic8aq7kvd6a.xn--p1ai/etp/trade/list.html'
+    platform: 'u-trade'
+  ,
+    name: 'Электронный капитал'
+    href: 'http://eksystems.ru/etp/trade/list.html?type=bankruptcySales'
+    platform: 'u-trade'
+  ,
+  #---------------------------------------------------------------------------------
+    name: 'ЭТП "Банкротство"'
+    href: 'http://etp-bankrotstvo.ru/public/purchases-all/'
+    platform: 'i-tender'
+  ,
     name: 'Открытая торговая площадка'
     href: 'http://opentp.ru/public/purchases-all/'
     platform: 'i-tender'
   ,
     name: 'ЭТП "Регион"'
-    href: 'https://www.gloriaservice.ru/public/purchases-all/'
+    href: 'https://gloriaservice.ru/public/purchases-all/'
     platform: 'i-tender'
   ,
     name: 'ЭТП "UralBidIn"'
-    href: 'http://www.uralbidin.ru/public/purchases-all/'
+    href: 'http://uralbidin.ru/public/purchases-all/'
     platform: 'i-tender'
   ,
     name: 'ЭТП "Property Trade"'
@@ -108,7 +131,7 @@ module.exports =
     platform: 'i-tender'
   ,
     name: 'Балтийская ЭТП'
-    href: 'http://www.bepspb.ru/public/purchases-all/'
+    href: 'http://bepspb.ru/public/purchases-all/'
     platform: 'i-tender'
   ,
     name: 'ЭТП "Альфалот"'
@@ -116,23 +139,23 @@ module.exports =
     platform: 'i-tender'
   ,
     name: 'Объединенная торговая площадка'
-    href: 'http://www.utpl.ru/public/purchases-all/'
+    href: 'http://utpl.ru/public/purchases-all/'
     platform: 'i-tender'
   ,
     name: 'ЭТП "Вердиктъ"'
-    href: 'http://www.vertrades.ru/bankrupt/public/purchases-all/'
+    href: 'http://vertrades.ru/bankrupt/public/purchases-all/'
     platform: 'i-tender'
   ,
-    name: 'ЭТП "Комерсантъ Картотека"'
+    name: 'ЭТП "KARTOTEKA.RU"'
     href: 'http://etp.kartoteka.ru/public/purchases-all/'
     platform: 'i-tender'
   ,
     name: 'Электронная площадка Центра реализации'
-    href: 'http://www.bankrupt.centerr.ru/public/purchases-all/'
+    href: 'http://bankrupt.centerr.ru/public/purchases-all/'
     platform: 'i-tender'
   ,
     name: 'ЭТП "uTender"'
-    href: 'http://www.utender.ru/public/purchases-all/'
+    href: 'http://utender.ru/public/purchases-all/'
     platform: 'i-tender'
   ,
     name: 'Электронная площадка №1'

@@ -21,7 +21,7 @@ publish = (container, url, etp) ->
     request url, (err, html) ->
       unless err?
         lot = parseLot html, etp
-        lot.url = url
+        lot.url = url.replace '//www.', '//'
         log.info "Resolved #{url}"
         resolve(lot)
       else

@@ -18,6 +18,60 @@ require '../models/lot'
 Lot       = сonnection.model 'Lot'
 
 module.exports = (grunt) ->
+  grunt.registerTask 'update:invalid-lots', ->
+    log.info "Select for update invalid lots"
+    done = @async()
+    regex = ""
+    for etp in config.etps
+      regex += "(#{etp.href.match(host)[2]})|"
+    regex = regex.slice(0,-1)
+    query =
+      url: new RegExp(regex)
+      $or: [
+        last_event: null, intervals: {$eq:[]}
+      ,
+        updated: $exists: false
+      ,
+        status: $exists: false
+      ,
+        status: {$exists: true, $eq: ''}
+      ,
+        status: {$exists: true, $eq: 'Не определен'}
+      ]
+    Lot.find(query).limit(100).populate('trade').exec (err, lots) ->
+      done(err) if err?
+      log.info "#{lots.length} found"
+      unless lots? then done()
+      Sync =>
+        try
+          for lot in lots
+            if lot.trade.etp.platform is 'i-tender'
+              amqp.publishLot.sync null, lot.url
+            else
+              amqp.publishLot.sync null, lot.trade.url
+          done()
+        catch e then done(e)
+
+  grunt.registerTask 'update:old-lots', ->
+    log.info "Select for update old lots"
+    done = @async()
+    regex = ""
+    for etp in config.etps
+      regex += "(#{etp.href.match(host)[2]})|"
+    regex = regex.slice(0,-1)
+    date = moment().subtract(2, 'day')
+    query =
+      updated: { $exists: true, $lt: date }
+    Lot.find(query).limit(100).exec (err, lots) ->
+      done(err) if err?
+      log.info "#{lots.length} found"
+      Sync =>
+        try
+          for lot in lots
+            amqp.publishLot.sync null, lot.url
+          done()
+        catch e then done(e)
+
   grunt.registerTask 'update:invalid', ->
     log.info "Select for update invalid trades"
     done = @async()
@@ -31,8 +85,10 @@ module.exports = (grunt) ->
         updated: { $exists: false }
       ,
         'etp.platform': { $exists: false }
+      ,
+        $where: 'this.lots.length == 0'
       ]
-    Trade.find query, (err, trades) ->
+    Trade.find(query).limit(100).exec (err, trades) ->
       done(err) if err?
       Sync =>
         try
@@ -53,7 +109,13 @@ module.exports = (grunt) ->
           log.info "Select for update invalid lots"
           query =
             url: new RegExp(regex)
-            status: $nin: valid
+            $or: [
+              status: {$exists: true, $nin: valid}
+            ,
+              status: $exists: false
+            ,
+              updated: $exists: false
+            ]
           Lot.distinct 'trade', query, (err, trade_ids) ->
             done(err) if err?
             Trade.find {_id: $in: trade_ids}, (err, trades) ->
@@ -90,7 +152,7 @@ module.exports = (grunt) ->
       regex += "#{etp.href.match(host)[2]}|"
     regex = regex.slice(0,-1)
     query.url = new RegExp(regex)
-    Trade.find(query).limit(1000).exec (err, trades) ->
+    Trade.find(query).limit(100).exec (err, trades) ->
       done(err) if err?
       Sync =>
         try
