@@ -87,6 +87,8 @@ module.exports = (grunt) ->
         'etp.platform': { $exists: false }
       ,
         $where: 'this.lots.length == 0'
+      ,
+        trade_type: null
       ]
     Trade.find(query).limit(100).exec (err, trades) ->
       done(err) if err?
