@@ -7,7 +7,7 @@ module.exports =
 
   listWorkers:       2
   tradeUrlWorkers:   16
-  tradeHtmlWorkers:  8
+  tradeHtmlWorkers:  64
   tradeJsonWorkers:  2
   timeout:           60000
   incUpdTime:        30000
