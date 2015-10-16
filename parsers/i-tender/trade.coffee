@@ -32,6 +32,29 @@ module.exports = (html, etp, url, ismicro, cb) ->
   $ = cheerio.load(html)
   log.info "Parse trade #{url}"
   trade = {}
+  trade_type = $('legend:contains("№")').text().trim()
+  if /аукцион/i.match(trade_type)
+    trade.trade_type = 'аукцион'
+    trade_form = $('td.tdTitle:contains("Форма торга по составу участников")').next().text()
+    trade_form = if /открыт/i.test(trade_form) then 'Открытый' else 'Закрытый'
+    trade_reqt = $('td.tdTitle:contains("Форма представления предложений о цене")').next().text()
+    trade_reqt = if /открыт/i.test(trade_form) then 'открытой' else 'закрытой'
+    trade.type = [trade_form, trade.trade_type, 'c', trade_reqt, 'формой представления предложений о цене'].join(' ')
+  if /публичном предложении/i.match(trade_type)
+    trade.trade_type = 'публичное предложение'
+    trade_form = $('td.tdTitle:contains("Форма торга по составу участников")').next().text()
+    trade_form = if /открыт/i.test(trade_form) then 'Открытое' else 'Закрытое'
+    trade_reqt = $('td.tdTitle:contains("Форма представления предложений о цене")').next().text()
+    trade_reqt = if /открыт/i.test(trade_form) then 'открытой' else 'закрытой'
+    trade.type = [trade_form, trade.trade_type, 'c', trade_reqt, 'формой представления предложений о цене'].join(' ')
+  if /конкурсе/i.match(trade_type)
+    trade.trade_type = 'конкурс'
+    trade_form = $('td.tdTitle:contains("Форма торга по составу участников")').next().text()
+    trade_form = if /открыт/i.test(trade_form) then 'Открытый' else 'Закрытый'
+    trade_reqt = $('td.tdTitle:contains("Форма представления предложений о цене")').next().text()
+    trade_reqt = if /открыт/i.test(trade_form) then 'открытой' else 'закрытой'
+    trade.type = [trade_form, trade.trade_type, 'c', trade_reqt, 'формой представления предложений о цене'].join(' ')
+  trade.trade_type = ''
   fieldset = $("fieldset").filter(->
     /информация о(б аук| пуб| кон)/i.test $(@).find("legend").text().trim()
   ).find("td.tdTitle")
