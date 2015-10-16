@@ -16,10 +16,18 @@ module.exports = (grunt) ->
     for etp in config.etps
       etps += "(#{etp.href.match(host)[2]})|"
     etps = etps.slice(0,-1)
-    query = url: new RegExp(etps)
+    query =
+      url: new RegExp(etps)
+      $or: [
+        present: true, last_date: $lte: new Date()
+      ,
+        present: $exists: false
+      , 
+        last_date: $exists: false
+      ]
     perPage = 1000
     proceed_range = (skip, cb) ->
-      Lot.find({present: true, last_date: {$lte: new Date()}}).skip(skip).limit(perPage).populate('trade').exec (err, lots) ->
+      Lot.find({}).skip(skip).limit(perPage).populate('trade').exec (err, lots) ->
         cb(err) if err?
         if not lots? or lots.length is 0 then cb()
         console.log "Skip: #{skip}       Lots: #{lots.length}"
