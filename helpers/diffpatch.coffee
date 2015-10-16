@@ -7,10 +7,9 @@ module.exports.intervalize = (lot, trade) ->
       if intervals.length > 0
         last = intervals[intervals.length - 1]
         lot.last_event = last.request_end_date or last.interval_end_date
-  unless lot.last_event? then lot.last_event = trade.holding_date or trade.results_date or trade.requests_end_date
-  unless lot.last_event?
+  unless lot.last_event? then lot.last_event = trade.holding_date or trade.results_date or trade.requests_end_date or trade.official_publish_date or trade.print_publish_date
     lot.present = false
-    console.log "No last event present"
+    console.log "No last event present"print_publish_date
   else
     lot.present = new Date() < lot.last_event
   lot
