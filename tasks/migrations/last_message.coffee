@@ -19,11 +19,11 @@ module.exports = (grunt) ->
     query =
       url: new RegExp(etps)
       $or: [
-        present: true, last_date: $lte: new Date()
+        present: true, last_date: $gte: new Date()
       ,
         present: $exists: false
       , 
-        last_date: $exists: false
+        last_event: $exists: false
       ]
     perPage = 1000
     proceed_range = (skip, cb) ->
