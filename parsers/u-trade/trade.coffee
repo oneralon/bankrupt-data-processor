@@ -36,6 +36,13 @@ module.exports = (html, etp, url, ismicro, cb) ->
   deposit_procedure = $("th:contains('Информация о торгах')")?.parent().parent().parent().find("td:contains('Сроки и порядок внесения и возврата задатка, реквизиты счетов, на которые вносится задаток')")?.next().text().trim()
   trade = {}
   trade.url = url
+  trade.type = $('td:contains("Форма проведения торгов и подачи предложений")').next().text().trim()
+  if /аукцион/i.test(trade.type)
+    trade.trade_type = 'аукцион'
+  if /публичное предложение/i.test(trade.type) or /публичного предложения/i.test(trade.type)
+    trade.trade_type = trade.trade_type = 'публичное предложение'
+  if /конкурс/i.test(trade.type)
+    trade.trade_type = 'конкурс'
   trade.title = $("h1:contains('идентификационный номер:'),h3:contains('идентификационный номер:')")?.text().trim()
   trade.holding_date = $("th:contains('Информация о торгах')")?.parent().parent().parent().find("td:contains('Дата и время подведения результатов торгов')")?.next().text().trim()
   trade.holding_date = moment(trade.holding_date, "DD.MM.YYYY HH:mm")
