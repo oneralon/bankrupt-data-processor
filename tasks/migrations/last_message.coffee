@@ -27,7 +27,7 @@ module.exports = (grunt) ->
       ]
     perPage = 1000
     proceed_range = (skip, cb) ->
-      Lot.find({}).skip(skip).limit(perPage).populate('trade').exec (err, lots) ->
+      Lot.find(query).skip(skip).limit(perPage).populate('trade').exec (err, lots) ->
         cb(err) if err?
         if not lots? or lots.length is 0 then cb()
         console.log "Skip: #{skip}       Lots: #{lots.length}"
