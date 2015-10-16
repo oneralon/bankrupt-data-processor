@@ -33,10 +33,12 @@ module.exports = (grunt) ->
         console.log "Skip: #{skip}       Lots: #{lots.length}"
         lot_promises = []
         for lot in lots
-          unless lot.trade._id? then lot_promises.push new Promise (resolve) -> lot.remove(resolve)
+          unless lot.trade? then lot_promises.push new Promise (resolve) -> mongo.lot_remove({_id: lot._id}, resolve)
           else
-            diffpatch.patch lot, diffpatch.diff(lot, diffpatch.intervalize(lot, lot.trade), Lot)
-            lot_promises.push new Promise (resolve) -> lot.save(resolve)
+            unless lot.trade._id? then lot_promises.push new Promise (resolve) -> lot.remove(resolve)
+            else
+              diffpatch.patch lot, diffpatch.diff(lot, diffpatch.intervalize(lot, lot.trade), Lot)
+              lot_promises.push new Promise (resolve) -> lot.save(resolve)
         Promise.all(lot_promises).catch(cb).then -> proceed_range(skip + perPage, cb)
     proceed_range 0, ->
       Lot.update {present:true, last_event:{$lte:new Date()}}, {$set:{present:false}}, {multi:1}, done
