@@ -33,7 +33,7 @@ module.exports = (grunt) ->
         console.log "Skip: #{skip}       Lots: #{lots.length}"
         lot_promises = []
         for lot in lots
-          unless lot.trade? then lot_promises.push new Promise (resolve) -> mongo.lot_remove({_id: lot._id}, resolve)
+          unless lot.trade? then lot_promises.push new Promise (resolve) -> lot.remove(resolve)
           else
             unless lot.trade._id? then lot_promises.push new Promise (resolve) -> lot.remove(resolve)
             else
