@@ -1,6 +1,6 @@
 mongoose   = require 'mongoose'
 Sync       = require 'sync'
-exec       = require('child_process').exec
+exec       = require('child_process').execSync
 collector  = require '../helpers/collector'
 redis      = require '../helpers/redis'
 amqp       = require '../helpers/amqp'
@@ -33,3 +33,11 @@ module.exports = (grunt) ->
       catch e
         log.error e
         done(e)
+
+  grunt.registerTask 'cron:reload', ->
+    console.log "Reload all services"
+    done = @async()
+    exec 'sudo service mongodb restart'
+    exec 'sudo service rabbitmq-server restart'
+    exec 'sudo service redis-server restart'
+    done()
