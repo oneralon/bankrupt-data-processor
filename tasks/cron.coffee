@@ -1,7 +1,7 @@
 mongoose   = require 'mongoose'
 Sync       = require 'sync'
 Promise    = require 'promise'
-exec       = require('exec-sync').exec
+sh         = require 'child_process'
 collector  = require '../helpers/collector'
 redis      = require '../helpers/redis'
 amqp       = require '../helpers/amqp'
@@ -38,31 +38,32 @@ module.exports = (grunt) ->
   grunt.registerTask 'cron:reload-server', ->
     console.log "Reloading server and services..."
     done = @async()
-    exec 'sudo service mongodb restart'
-    exec 'pkill -9 -f \'SCREEN grunt production\''
-    exec 'cd ~/projects/bankrupt-server && screen grunt production'
+    sh.execSync 'sudo service mongodb restart'
+    sh.execSync 'pkill -9 -f \'SCREEN grunt production\''
+    sh.execSync 'cd ~/projects/bankrupt-server && screen grunt production'
     console.log "Reload server done"
     done()
 
   grunt.registerTask 'cron:reload-consumers', ->
     console.log "Reloading consumers..."
     done = @async()
-    exec 'sudo service rabbitmq-server restart'
-    exec 'sudo service redis-server restart'
-    exec 'pkill -9 -f \'SCREEN coffee consumers/lists-html.coffee\''
-    exec 'pkill -9 -f \'SCREEN coffee consumers/trades-url.coffee\''
-    exec 'pkill -9 -f \'SCREEN coffee consumers/trades-html.coffee\''
-    exec 'pkill -9 -f \'SCREEN coffee consumers/trades-json.coffee\''
-    exec 'pkill -9 -f \'SCREEN coffee consumers/lot-url.coffee\''
-    exec 'pkill -9 -f \'SCREEN coffee consumers/lot-html.coffee\''
-    exec 'pkill -9 -f \'SCREEN coffee consumers/lot-json.coffee\''
-    exec 'cd /opt/bdp && screen coffee consumers/lists-html.coffee'
-    exec 'cd /opt/bdp && screen coffee consumers/trades-url.coffee'
-    exec 'cd /opt/bdp && screen coffee consumers/trades-html.coffee'
-    exec 'cd /opt/bdp && screen coffee consumers/trades-json.coffee'
-    exec 'cd /opt/bdp && screen coffee consumers/lot-url.coffee'
-    exec 'cd /opt/bdp && screen coffee consumers/lot-html.coffee'
-    exec 'cd /opt/bdp && screen coffee consumers/lot-json.coffee'
+    sh.execSync 'sudo service rabbitmq-server restart'
+    sh.execSync 'sudo service redis-server restart'
+    sh.execSync 'pkill -9 -f \'SCREEN coffee consumers/lists-html.coffee\''
+    sh.execSync 'pkill -9 -f \'SCREEN coffee consumers/trades-url.coffee\''
+    sh.execSync 'pkill -9 -f \'SCREEN coffee consumers/trades-html.coffee\''
+    sh.execSync 'pkill -9 -f \'SCREEN coffee consumers/trades-json.coffee\''
+    sh.execSync 'pkill -9 -f \'SCREEN coffee consumers/lot-url.coffee\''
+    sh.execSync 'pkill -9 -f \'SCREEN coffee consumers/lot-html.coffee\''
+    sh.execSync 'pkill -9 -f \'SCREEN coffee consumers/lot-json.coffee\''
+    sh.execSync 'cd /opt/bdp'
+    sh.spawn 'screen', ['coffee consumers/lists-html.coffee'], { detached: true, stdio: ['ignore', 'ignore', 'ignore']} 
+    sh.spawn 'screen', ['coffee consumers/trades-url.coffee'], { detached: true, stdio: ['ignore', 'ignore', 'ignore']}
+    sh.spawn 'screen', ['coffee consumers/trades-html.coffee'], { detached: true, stdio: ['ignore', 'ignore', 'ignore']}
+    sh.spawn 'screen', ['coffee consumers/trades-json.coffee'], { detached: true, stdio: ['ignore', 'ignore', 'ignore']}
+    sh.spawn 'screen', ['coffee consumers/lot-url.coffee'], { detached: true, stdio: ['ignore', 'ignore', 'ignore']}
+    sh.spawn 'screen', ['coffee consumers/lot-html.coffee'], { detached: true, stdio: ['ignore', 'ignore', 'ignore']}
+    sh.spawn 'screen', ['coffee consumers/lot-json.coffee'], { detached: true, stdio: ['ignore', 'ignore', 'ignore']}
     console.log "Done"
     done()
 
