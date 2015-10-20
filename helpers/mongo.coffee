@@ -108,8 +108,6 @@ module.exports.updateLot = (alot, cb) ->
       log.error "Not fount lot #{alot.url}, num: #{alot.number}"
 
 module.exports.update = (auction, cb) ->
-  console.log auction.url
-  console.log auction.lots
   if not auction.region? or auction.region is 'Не определен'
     auction.region = regionize(auction)
   auction.url = auction.url.replace '//www.', '//'
@@ -198,8 +196,8 @@ module.exports.update = (auction, cb) ->
             trade.lots.push lot
             save.push new Promise (resolve) -> tagger lot, (err, nlot) -> nlot.save(resolve)
         else
-          console.log alot.url
           console.log alot
+          cb "No status!"
       Promise.all(remove).then -> Promise.all(save).then ->
         trade.updated = new Date()
         trade.save cb

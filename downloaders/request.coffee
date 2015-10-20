@@ -19,7 +19,6 @@ module.exports = (url, cb) ->
   Sync =>
     try
       while typeof data is 'undefined' or not data? or data.length < 10000
-        console.log data?.length
         data = get.sync null, url
       cb null, data
     catch e then cb e
