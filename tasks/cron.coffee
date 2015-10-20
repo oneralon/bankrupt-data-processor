@@ -42,3 +42,24 @@ module.exports = (grunt) ->
     exec 'cd ~/projects/bankrupt-server && screen grunt production'
     console.log "Reload server done"
     done()
+
+  grunt.registerTask 'cron:reload-consumers', ->
+    console.log "Reloading consumers..."
+    exec 'sudo service rabbitmq-server restart'
+    exec 'sudo service redis-server restart'
+    exec 'pkill -9 -f \'SCREEN coffee consumers/lists-html.coffee\''
+    exec 'pkill -9 -f \'SCREEN coffee consumers/trades-url.coffee\''
+    exec 'pkill -9 -f \'SCREEN coffee consumers/trades-html.coffee\''
+    exec 'pkill -9 -f \'SCREEN coffee consumers/trades-json.coffee\''
+    exec 'pkill -9 -f \'SCREEN coffee consumers/lot-url.coffee\''
+    exec 'pkill -9 -f \'SCREEN coffee consumers/lot-html.coffee\''
+    exec 'pkill -9 -f \'SCREEN coffee consumers/lot-json.coffee\''
+    exec 'cd /opt/bdp && screen coffee consumers/lists-html.coffee\''
+    exec 'cd /opt/bdp && screen coffee consumers/trades-url.coffee\''
+    exec 'cd /opt/bdp && screen coffee consumers/trades-html.coffee\''
+    exec 'cd /opt/bdp && screen coffee consumers/trades-json.coffee\''
+    exec 'cd /opt/bdp && screen coffee consumers/lot-url.coffee\''
+    exec 'cd /opt/bdp && screen coffee consumers/lot-html.coffee\''
+    exec 'cd /opt/bdp && screen coffee consumers/lot-json.coffee\''
+    console.log "Done"
+    done = @async()
