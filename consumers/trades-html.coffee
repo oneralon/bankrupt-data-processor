@@ -29,6 +29,7 @@ else
       html        = message.content.toString()
       Sync =>
         try
+          console.log headers
           trade = parser.sync null, html, etp, headers.url, false
           trade.url = headers.url
           trade.etp = etp

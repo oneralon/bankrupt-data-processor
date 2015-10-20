@@ -18,7 +18,7 @@ lotParser = require './lot'
 
 module.exports = (html, etp, url, ismicro, cb) ->
   log.info "Parse trade #{url}"
-
+  tradeUrl = url
   last = html.lastIndexOf('</table>') + 8
 
   substr = html.length - last
@@ -94,7 +94,6 @@ module.exports = (html, etp, url, ismicro, cb) ->
   else
     pages = parseInt($(pages[pages.length -1]).text() or '1')
   lots = []
-
   log.info "Trade has #{pages} pages"
 
   additional =
@@ -102,12 +101,11 @@ module.exports = (html, etp, url, ismicro, cb) ->
     procedure: trade.additional
     currency: 'Российская Федерация'
     category: 'Не определена'
-
   if pages is 1 and $("table[id*=lotNumber], table.data:contains('Лот №'), table.data:contains('Сведения о предмете торгов'), table.data:contains('Информация о предмете торгов'), table:contains('Сведения по лоту №')").length > 0
     lots = lotParser html, etp, additional
     trade.lots = lots
     log.info "Found #{trade.lots.length} lots"
-    cb 'No lots!' if trade.lots.length is 0
+    cb "No lots! #{url}" if trade.lots.length is 0
     cb null, trade
   else
     for page in [1..pages]
@@ -126,5 +124,5 @@ module.exports = (html, etp, url, ismicro, cb) ->
           lot.url = if lot.url? then lot.url.replace '//www.', '//' else trade.url.replace '//www.', '//'
           trade.lots.push lot
       log.info "Found #{trade.lots.length} lots"
-      cb 'No lots!' if trade.lots.length is 0
+      cb "No lots! #{tradeUrl}" if trade.lots.length is 0
       cb null, trade

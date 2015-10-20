@@ -108,10 +108,13 @@ module.exports.updateLot = (alot, cb) ->
       log.error "Not fount lot #{alot.url}, num: #{alot.number}"
 
 module.exports.update = (auction, cb) ->
+  console.log auction.url
+  console.log auction.lots
   if not auction.region? or auction.region is 'Не определен'
     auction.region = regionize(auction)
   auction.url = auction.url.replace '//www.', '//'
   for lot in auction.lots
+    unless lot? then continue
     if lot.url? then lot.url = lot.url.replace '//www.', '//'
     else lot.url = auction.url
     lot.region = auction.region if not lot.region or lot.region is 'Не определен'

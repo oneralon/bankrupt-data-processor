@@ -9,6 +9,12 @@ host       = /^https?\:\/\/(www\.)?([A-Za-z0-9\.\-]+)/
 require '../../models/lot'
 Lot       = сonnection.model 'Lot'
 
+save = (container, item) ->
+  container.push new Promise (resolve) -> 
+    item.last_event = new Date(item.last_event)
+    console.log item.url
+    item.save()
+
 module.exports = (grunt) ->
   grunt.registerTask 'migration:events', ->
     done = @async()
@@ -19,11 +25,13 @@ module.exports = (grunt) ->
     query =
       url: new RegExp(etps)
       $or: [
-        present: true, last_date: $gte: new Date()
+        present: true, last_date: $lte: new Date()
       ,
         present: $exists: false
       , 
         last_event: $exists: false
+      ,
+        last_event: null
       ]
     perPage = 1000
     proceed_range = (skip, cb) ->
@@ -33,12 +41,18 @@ module.exports = (grunt) ->
         console.log "Skip: #{skip}       Lots: #{lots.length}"
         lot_promises = []
         for lot in lots
+          console.log lot.last_event
           unless lot.trade? then lot_promises.push new Promise (resolve) -> lot.remove(resolve)
           else
             unless lot.trade._id? then lot_promises.push new Promise (resolve) -> lot.remove(resolve)
             else
               diffpatch.patch lot, diffpatch.diff(lot, diffpatch.intervalize(lot, lot.trade), Lot)
-              lot_promises.push new Promise (resolve) -> lot.save(resolve)
+              save lot_promises, lot
         Promise.all(lot_promises).catch(cb).then -> proceed_range(skip + perPage, cb)
     proceed_range 0, ->
       Lot.update {present:true, last_event:{$lte:new Date()}}, {$set:{present:false}}, {multi:1}, done
+
+  grunt.registerTask 'migration:present', ->
+    console.log 'Update present field' 
+    done = @async()
+    Lot.update {present:true, last_event:{$lte:new Date()}}, {$set:{present:false}}, {multi:1}, done

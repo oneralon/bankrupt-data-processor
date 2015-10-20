@@ -29,6 +29,7 @@ publish = (container, url, etp) ->
         resolve()
 
 module.exports = (html, etp, url, ismicro, cb) ->
+  console.log etp, url
   $ = cheerio.load(html)
   log.info "Parse trade #{url}"
   trade = {}
@@ -171,7 +172,7 @@ module.exports = (html, etp, url, ismicro, cb) ->
   for lotJQ in lotsJQ
     rel = $(lotJQ).find('td.gridAltColumn a').attr('href')
     urls.push etp.href.match(host)[0] + rel if rel?
-  if $("table[id*='ctl00_ctl00_MainContent_ContentPlaceHolderMiddle_ctl00_srLots'] .pager span:not(:contains('Страницы:'))").next("a:not(:contains('<<'))").length is 0
+  if true or $("table[id*='ctl00_ctl00_MainContent_ContentPlaceHolderMiddle_ctl00_srLots'] .pager span:not(:contains('Страницы:'))").next("a:not(:contains('<<'))").length is 0
     for lotUrl in urls
       publish promises, lotUrl, etp
     Promise.all(promises).then (lots) ->

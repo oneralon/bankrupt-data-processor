@@ -28,16 +28,15 @@ module.exports = (grunt) ->
     query =
       url: new RegExp(regex)
       $or: [
-        last_event: null
+        last_event: null, intervals: {$eq:[]}
       ,
-        last_event: $exists: false
-#        updated: $exists: false
-#      ,
-#        status: $exists: false
-#      ,
-#        status: {$exists: true, $eq: ''}
-#      ,
-#        status: {$exists: true, $eq: 'Не определен'}
+        updated: $exists: false
+      ,
+        status: $exists: false
+      ,
+        status: {$exists: true, $eq: ''}
+      ,
+        status: {$exists: true, $eq: 'Не определен'}
       ]
     Lot.find(query).populate('trade').exec (err, lots) ->
       done(err) if err?
@@ -46,10 +45,10 @@ module.exports = (grunt) ->
       Sync =>
         try
           for lot in lots
-            if false #lot.trade.etp.platform is 'i-tender' or lot.trade.etp.platform is 'sberbank-ast'
-              amqp.publishLot.sync null, config.lotsUrlsQueue, lot.url
+            if lot.trade.etp.platform is 'i-tender'
+              amqp.publishLot.sync null, lot.url
             else
-              amqp.publishLot.sync null, config.tradeUrlsQueue, lot.trade.url
+              amqp.publishLot.sync null, lot.trade.url
           done()
         catch e then done(e)
 
@@ -81,8 +80,8 @@ module.exports = (grunt) ->
       regex += "(#{etp.href.match(host)[2]})|"
     regex = regex.slice(0,-1)
     query =
-      #$where: 'this.lots.length <= 50'
-      #'etp.platform': 'i-tender'
+      $where: 'this.lots.length < 50'
+      url: /vertrades/
       $or: [
         updated: { $exists: false }
       ,
@@ -91,8 +90,6 @@ module.exports = (grunt) ->
         $where: 'this.lots.length == 0'
       ,
         $or: [{trade_type:{$exists:false}}, {trade_type:null}]
-      , 
-        last_event: null
       ]
     Trade.find(query).limit(10000).exec (err, trades) ->
       done(err) if err?

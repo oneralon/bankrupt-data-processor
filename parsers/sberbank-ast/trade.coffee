@@ -17,6 +17,7 @@ host      = /^https?\:\/\/[A-Za-z0-9\.\-]+/
 module.exports = (xml, etp, url, ismicro, cb) ->
   Sync =>
     try
+      console.log etp, url
       trade = {}
       data = xmlParser.parseString.sync xmlParser, xml
       trade.number = data.Purchase?.PurchaseInfo?.PurchaseCode
