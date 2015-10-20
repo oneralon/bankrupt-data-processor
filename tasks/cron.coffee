@@ -85,7 +85,7 @@ module.exports = (grunt) ->
         console.log "Skip: #{skip}\t\t\t\tLots: #{lots.length}"
         for lot in lots
           if lot.trade? and lot.trade._id?
-            if lot.url is trade.url
+            if lot.url is lot.trade.url
               queue = config.tradeUrlsQueue 
               parser = lot.trade.etp.platform + '/' + 'trade'
             else
