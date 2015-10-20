@@ -1,6 +1,9 @@
 mongoose   = require 'mongoose'
 Sync       = require 'sync'
 exec       = require('child_process').exec
+collector  = require '../helpers/collector'
+redis      = require '../helpers/redis'
+amqp       = require '../helpers/amqp'
 config     = require '../config'
 сonnection = mongoose.createConnection "mongodb://localhost/#{config.database}"
 
