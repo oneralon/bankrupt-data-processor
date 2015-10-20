@@ -49,13 +49,13 @@ module.exports = (grunt) ->
     done = @async()
     sh.execSync 'sudo service rabbitmq-server restart'
     sh.execSync 'sudo service redis-server restart'
-    sh.execSync 'pkill -9 -f \'SCREEN coffee consumers/lists-html.coffee\''
-    sh.execSync 'pkill -9 -f \'SCREEN coffee consumers/trades-url.coffee\''
-    sh.execSync 'pkill -9 -f \'SCREEN coffee consumers/trades-html.coffee\''
-    sh.execSync 'pkill -9 -f \'SCREEN coffee consumers/trades-json.coffee\''
-    sh.execSync 'pkill -9 -f \'SCREEN coffee consumers/lot-url.coffee\''
-    sh.execSync 'pkill -9 -f \'SCREEN coffee consumers/lot-html.coffee\''
-    sh.execSync 'pkill -9 -f \'SCREEN coffee consumers/lot-json.coffee\''
+    sh.execSync 'pkill -9 -f \'node /usr/local/bin/coffee /opt/bdp/consumers/lists-html.coffee\''
+    sh.execSync 'pkill -9 -f \'node /usr/local/bin/coffee /opt/bdp/consumers/trades-url.coffee\''
+    sh.execSync 'pkill -9 -f \'node /usr/local/bin/coffee /opt/bdp/consumers/trades-html.coffee\''
+    sh.execSync 'pkill -9 -f \'node /usr/local/bin/coffee /opt/bdp/consumers/trades-json.coffee\''
+    sh.execSync 'pkill -9 -f \'node /usr/local/bin/coffee /opt/bdp/consumers/lot-url.coffee\''
+    sh.execSync 'pkill -9 -f \'node /usr/local/bin/coffee /opt/bdp/consumers/lot-html.coffee\''
+    sh.execSync 'pkill -9 -f \'node /usr/local/bin/coffee /opt/bdp/consumers/lot-json.coffee\''
     sh.spawn 'coffee', ['/opt/bdp/consumers/lists-html.coffee'], { detached: true, stdio: ['ignore', 'ignore', 'ignore']} 
     sh.spawn 'coffee', ['/opt/bdp/consumers/trades-url.coffee'], { detached: true, stdio: ['ignore', 'ignore', 'ignore']}
     sh.spawn 'coffee', ['/opt/bdp/consumers/trades-html.coffee'], { detached: true, stdio: ['ignore', 'ignore', 'ignore']}
