@@ -1,6 +1,6 @@
 mongoose   = require 'mongoose'
 Sync       = require 'sync'
-exec       = require('child_process').execSync
+exec       = require('execSync').exec
 collector  = require '../helpers/collector'
 redis      = require '../helpers/redis'
 amqp       = require '../helpers/amqp'
