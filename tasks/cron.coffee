@@ -56,14 +56,13 @@ module.exports = (grunt) ->
     sh.execSync 'pkill -9 -f \'SCREEN coffee consumers/lot-url.coffee\''
     sh.execSync 'pkill -9 -f \'SCREEN coffee consumers/lot-html.coffee\''
     sh.execSync 'pkill -9 -f \'SCREEN coffee consumers/lot-json.coffee\''
-    sh.execSync 'cd /opt/bdp'
-    sh.spawn 'screen', ['coffee consumers/lists-html.coffee'], { detached: true, stdio: ['ignore', 'ignore', 'ignore']} 
-    sh.spawn 'screen', ['coffee consumers/trades-url.coffee'], { detached: true, stdio: ['ignore', 'ignore', 'ignore']}
-    sh.spawn 'screen', ['coffee consumers/trades-html.coffee'], { detached: true, stdio: ['ignore', 'ignore', 'ignore']}
-    sh.spawn 'screen', ['coffee consumers/trades-json.coffee'], { detached: true, stdio: ['ignore', 'ignore', 'ignore']}
-    sh.spawn 'screen', ['coffee consumers/lot-url.coffee'], { detached: true, stdio: ['ignore', 'ignore', 'ignore']}
-    sh.spawn 'screen', ['coffee consumers/lot-html.coffee'], { detached: true, stdio: ['ignore', 'ignore', 'ignore']}
-    sh.spawn 'screen', ['coffee consumers/lot-json.coffee'], { detached: true, stdio: ['ignore', 'ignore', 'ignore']}
+    sh.spawn 'screen', ['coffee /opt/bdp/consumers/lists-html.coffee'], { detached: true, stdio: ['ignore', 'ignore', 'ignore']} 
+    sh.spawn 'screen', ['coffee /opt/bdp/consumers/trades-url.coffee'], { detached: true, stdio: ['ignore', 'ignore', 'ignore']}
+    sh.spawn 'screen', ['coffee /opt/bdp/consumers/trades-html.coffee'], { detached: true, stdio: ['ignore', 'ignore', 'ignore']}
+    sh.spawn 'screen', ['coffee /opt/bdp/consumers/trades-json.coffee'], { detached: true, stdio: ['ignore', 'ignore', 'ignore']}
+    sh.spawn 'screen', ['coffee /opt/bdp/consumers/lot-url.coffee'], { detached: true, stdio: ['ignore', 'ignore', 'ignore']}
+    sh.spawn 'screen', ['coffee /opt/bdp/consumers/lot-html.coffee'], { detached: true, stdio: ['ignore', 'ignore', 'ignore']}
+    sh.spawn 'screen', ['coffee /opt/bdp/consumers/lot-json.coffee'], { detached: true, stdio: ['ignore', 'ignore', 'ignore']}
     console.log "Done"
     done()
 
