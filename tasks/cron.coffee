@@ -34,10 +34,11 @@ module.exports = (grunt) ->
         log.error e
         done(e)
 
-  grunt.registerTask 'cron:reload', ->
-    console.log "Reload all services"
+  grunt.registerTask 'cron:reload-server', ->
+    console.log "Reloading server and services..."
     done = @async()
     exec 'sudo service mongodb restart'
-    exec 'sudo service rabbitmq-server restart'
-    exec 'sudo service redis-server restart'
+    exec 'pkill -9 -f \'SCREEN grunt production\''
+    exec 'cd ~/projects/bankrupt-server && screen grunt production'
+    console.log "Reload server done"
     done()
