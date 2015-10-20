@@ -11,6 +11,8 @@ config     = require '../config'
 
 require '../models/lot'
 Lot       = сonnection.model 'Lot'
+require '../models/trade'
+Trade     = сonnection.model 'Trade'
 
 module.exports = (grunt) ->
   grunt.registerTask 'cron:present', ->
