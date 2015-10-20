@@ -92,7 +92,7 @@ module.exports = (grunt) ->
               queue = config.lotsUrlsQueue
               parser = lot.trade.etp.platform + '/' + 'lot'
             downloader = if /sberbank/.test lot.trade.etp.platform then 'request-sber' else 'request'
-            lot_promises.push new Promise (resolve) ->
+            lot_promises.push new Promise (resolve, reject) ->
               amqp.publish queue, null
               ,
                 headers:
@@ -102,7 +102,7 @@ module.exports = (grunt) ->
                   queue: queue.replace 'Urls', 'Html'
                   parser: parser
               ,
-                resolve
+                (err) -> if err? then reject(err) else resolve()
           else
             console.log "Remove lot with empty trade -- #{lot._id}"
             lot_promises.push new Promise (resolve) -> lot.remove(resolve)
