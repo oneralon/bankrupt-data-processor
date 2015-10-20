@@ -1,6 +1,7 @@
 mongoose   = require 'mongoose'
 Sync       = require 'sync'
 Promise    = require 'promise'
+moment     = require 'moment'
 sh         = require 'child_process'
 collector  = require '../helpers/collector'
 redis      = require '../helpers/redis'
