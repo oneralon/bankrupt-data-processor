@@ -79,7 +79,7 @@ module.exports = (grunt) ->
       lot_promises = []
       Lot.find(query).skip(skip).limit(perPage).populate('trade').exec (err, lots) ->
         cb(err) if err?
-        if not lots? or lots.length is 0 then cb()
+        if not lots? or lots.length is 0 then cb(null, false)
         console.log "Skip: #{skip}\t\t\t\tLots: #{lots.length}"
         Sync =>
           try
@@ -101,8 +101,14 @@ module.exports = (grunt) ->
               else
                 console.log "Remove lot with empty trade -- #{lot._id}"
                 lot.remove.sync null
-            proceed_range(skip + perPage, cb)
+            cb(null, true)
           catch e then done(e)
-    proceed_range 0, ->
-      console.log "Done"
-      done()
+    Sync =>
+      try
+        res = true
+        current = 0
+        while res
+          res = proceed_range.sync null, current
+          current += perPage
+        done()
+      catch e done(e)
