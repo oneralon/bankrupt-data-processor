@@ -39,13 +39,10 @@ module.exports = (grunt) ->
         done(e)
 
   grunt.registerTask 'cron:reload-server', ->
-    console.log "Reloading server and services..."
+    console.log "Reloading mongo and services..."
     done = @async()
     sh.execSync 'sudo service mongodb restart'
-    sh.execSync 'pkill -9 -f \'SCREEN grunt production\''
-    sh.execSync 'cd ~/projects/bankrupt-server'
-    sh.spawn 'screen', ['grunt', 'production'], { detached: true, stdio: ['ignore', 'ignore', 'ignore']}
-    console.log "Reload server done"
+    console.log "Reload mongo done"
     done()
 
   grunt.registerTask 'cron:reload-consumers', ->
