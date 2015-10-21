@@ -43,7 +43,8 @@ module.exports = (grunt) ->
     done = @async()
     sh.execSync 'sudo service mongodb restart'
     sh.execSync 'pkill -9 -f \'SCREEN grunt production\''
-    sh.spawn 'cd ~/projects/bankrupt-server && screen grunt production', { detached: true, stdio: ['ignore', 'ignore', 'ignore']}
+    sh.execSync 'cd ~/projects/bankrupt-server'
+    sh.spawn 'screen', ['grunt', 'production'], { detached: true, stdio: ['ignore', 'ignore', 'ignore']}
     console.log "Reload server done"
     done()
 
