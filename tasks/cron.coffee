@@ -111,4 +111,4 @@ module.exports = (grunt) ->
           res = proceed_range.sync null, current
           current += perPage
         done()
-      catch e done(e)
+      catch e then done(e)
