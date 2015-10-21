@@ -81,28 +81,28 @@ module.exports = (grunt) ->
         cb(err) if err?
         if not lots? or lots.length is 0 then cb()
         console.log "Skip: #{skip}\t\t\t\tLots: #{lots.length}"
-        for lot in lots
-          if lot.trade? and lot.trade._id?
-            if lot.url is lot.trade.url
-              queue = config.tradeUrlsQueue 
-              parser = lot.trade.etp.platform + '/' + 'trade'
-            else
-              queue = config.lotsUrlsQueue
-              parser = lot.trade.etp.platform + '/' + 'lot'
-            downloader = if /sberbank/.test lot.trade.etp.platform then 'request-sber' else 'request'
-            lot_promises.push new Promise (resolve, reject) ->
-              amqp.publish queue, null, headers:
-                etp: lot.trade.etp
-                downloader: downloader
-                url: lot.url
-                queue: queue.replace 'Urls', 'Html'
-                parser: parser
-              ,
-                (err) -> if err? then reject(err) else resolve()
-          else
-            console.log "Remove lot with empty trade -- #{lot._id}"
-            lot_promises.push new Promise (resolve) -> lot.remove(resolve)
-        Promise.all(lot_promises).catch(cb).then -> proceed_range(skip + perPage, cb)
+        Sync =>
+          try
+            for lot in lots
+              if lot.trade? and lot.trade._id?
+                if lot.url is lot.trade.url
+                  queue = config.tradeUrlsQueue 
+                  parser = lot.trade.etp.platform + '/' + 'trade'
+                else
+                  queue = config.lotsUrlsQueue
+                  parser = lot.trade.etp.platform + '/' + 'lot'
+                downloader = if /sberbank/.test lot.trade.etp.platform then 'request-sber' else 'request'
+                amqp.publish.sync null, queue, '', headers:
+                  etp: lot.trade.etp
+                  downloader: downloader
+                  url: lot.url
+                  queue: queue.replace 'Urls', 'Html'
+                  parser: parser
+              else
+                console.log "Remove lot with empty trade -- #{lot._id}"
+                lot.remove.sync null
+            proceed_range(skip + perPage, cb)
+          catch e then done(e)
     proceed_range 0, ->
       console.log "Done"
       done()
