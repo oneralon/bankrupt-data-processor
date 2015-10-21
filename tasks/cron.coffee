@@ -93,14 +93,12 @@ module.exports = (grunt) ->
               parser = lot.trade.etp.platform + '/' + 'lot'
             downloader = if /sberbank/.test lot.trade.etp.platform then 'request-sber' else 'request'
             lot_promises.push new Promise (resolve, reject) ->
-              amqp.publish queue, null
-              ,
-                headers:
-                  etp: lot.trade.etp
-                  downloader: downloader
-                  url: lot.url
-                  queue: queue.replace 'Urls', 'Html'
-                  parser: parser
+              amqp.publish queue, null, headers:
+                etp: lot.trade.etp
+                downloader: downloader
+                url: lot.url
+                queue: queue.replace 'Urls', 'Html'
+                parser: parser
               ,
                 (err) -> if err? then reject(err) else resolve()
           else

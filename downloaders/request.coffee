@@ -6,7 +6,7 @@ config          = require '../config'
 logger          = require '../helpers/logger'
 log             = logger  'REQUEST DOWNLOADER'
 options =
-  proxy: 'http://127.0.0.1:18118'
+  #proxy: 'http://127.0.0.1:18118'
   compressed: true
   accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'
   user_agent: 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.132 Safari/537.36'
