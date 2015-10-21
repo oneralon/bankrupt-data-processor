@@ -7,6 +7,7 @@ collector  = require '../helpers/collector'
 redis      = require '../helpers/redis'
 amqp       = require '../helpers/amqp'
 config     = require '../config'
+host       = /^https?\:\/\/(www\.)?([A-Za-z0-9\.\-]+)/
 сonnection = mongoose.createConnection "mongodb://localhost/#{config.database}"
 
 require '../models/lot'
@@ -92,8 +93,12 @@ module.exports = (grunt) ->
                   queue = config.lotsUrlsQueue
                   parser = lot.trade.etp.platform + '/' + 'lot'
                 downloader = if /sberbank/.test lot.trade.etp.platform then 'request-sber' else 'request'
+                r = new RegExp(lot.url.match(host)[2])
+                etp = config.etps.filter( (t) ->
+                  r.test t.href
+                )?[0]
                 amqp.publish.sync null, queue, '', headers:
-                  etp: lot.trade.etp
+                  etp: etp
                   downloader: downloader
                   url: lot.url
                   queue: queue.replace 'Urls', 'Html'
