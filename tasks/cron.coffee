@@ -6,6 +6,7 @@ sh         = require 'child_process'
 collector  = require '../helpers/collector'
 redis      = require '../helpers/redis'
 amqp       = require '../helpers/amqp'
+diffpatch  = require '../helpers/diffpatch'
 config     = require '../config'
 host       = /^https?\:\/\/(www\.)?([A-Za-z0-9\.\-]+)/
 сonnection = mongoose.createConnection "mongodb://localhost/#{config.database}"
@@ -103,6 +104,49 @@ module.exports = (grunt) ->
                   url: lot.url
                   queue: queue.replace 'Urls', 'Html'
                   parser: parser
+              else
+                console.log "Remove lot with empty trade -- #{lot._id}"
+                lot.remove.sync null
+            cb(null, true)
+          catch e then done(e)
+    Sync =>
+      try
+        res = true
+        current = 0
+        while res
+          res = proceed_range.sync null, current
+          current += perPage
+        done()
+      catch e then done(e)
+
+  grunt.registerTask 'cron:events', ->
+    console.log "Update last event lots"
+    done = @async()
+    date = moment().subtract(3, 'hour')
+    query =
+      status: $in: ["Идут торги", "Извещение опубликовано", "Не определен", "Прием заявок"]
+      $or: [
+        present: true, last_date: $lte: new Date()
+      ,
+        present: $exists: false
+      ,
+        last_event: $exists: false
+      ,
+        last_event: null
+      ]
+    perPage = 1000
+    proceed_range = (skip, cb) ->
+      lot_promises = []
+      Lot.find(query).skip(skip).limit(perPage).populate('trade').exec (err, lots) ->
+        cb(err) if err?
+        if not lots? or lots.length is 0 then cb(null, false)
+        console.log "Skip: #{skip}\t\t\t\tLots: #{lots.length}"
+        Sync =>
+          try
+            for lot in lots
+              if lot.trade? and lot.trade._id?
+                diffpatch.patch lot, diffpatch.diff(lot, diffpatch.intervalize(lot, lot.trade), Lot)
+                mongo.updateLot.sync null, lot
               else
                 console.log "Remove lot with empty trade -- #{lot._id}"
                 lot.remove.sync null
