@@ -3,9 +3,9 @@ moment     = require 'moment'
 module.exports.intervalize = (lot, trade) ->
   if lot.intervals?
     if lot.intervals.length > 0
-      intervals = lot.intervals.filter (i) -> i.interval_start_date > new Date()
+      intervals = lot.intervals.filter (i) -> i.interval_start_date > new Date() or i.request_start_date > new Date()
       if intervals.length > 0
-        last = intervals[intervals.length - 1]
+        last = intervals[0]
         lot.last_event = last?.interval_start_date? or last?.request_start_date?
   unless lot.last_event?
     lot.last_event = trade.holding_date or trade.results_date or trade.requests_end_date or trade.official_publish_date or trade.print_publish_date
