@@ -106,6 +106,7 @@ module.exports.updateLot = (alot, cb) ->
         tagger lot, (err, nlot) -> nlot.save(cb)
     else
       log.error "Not fount lot #{alot.url}, num: #{alot.number}"
+      cb()
 
 module.exports.update = (auction, cb) ->
   if not auction.region? or auction.region is 'Не определен'
@@ -161,7 +162,7 @@ module.exports.update = (auction, cb) ->
       trade.documents = auction.documents
       auction.lots    = auction.lots or []
       for alot in auction.lots
-        if alot.status isnt ''
+        if alot? and alot.status isnt ''
           unless alot.url? then alot.url = trade.url
           alot = diffpatch.intervalize alot, trade
           lots = trade.lots.filter (i) ->
@@ -197,7 +198,7 @@ module.exports.update = (auction, cb) ->
             save.push new Promise (resolve) -> tagger lot, (err, nlot) -> nlot.save(resolve)
         else
           console.log alot
-          cb "No status!"
+          
       Promise.all(remove).then -> Promise.all(save).then ->
         trade.updated = new Date()
         trade.save cb

@@ -29,7 +29,6 @@ publish = (container, url, etp) ->
         resolve()
 
 module.exports = (html, etp, url, ismicro, cb) ->
-  console.log etp, url
   $ = cheerio.load(html)
   log.info "Parse trade #{url}"
   trade = {}

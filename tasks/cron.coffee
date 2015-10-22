@@ -55,23 +55,23 @@ module.exports = (grunt) ->
     sh.execSync 'pkill -9 -f \'node /usr/local/bin/coffee /opt/bdp/consumers/trades-url.coffee\''
     sh.execSync 'pkill -9 -f \'node /usr/local/bin/coffee /opt/bdp/consumers/trades-html.coffee\''
     sh.execSync 'pkill -9 -f \'node /usr/local/bin/coffee /opt/bdp/consumers/trades-json.coffee\''
-    sh.execSync 'pkill -9 -f \'node /usr/local/bin/coffee /opt/bdp/consumers/lot-url.coffee\''
-    sh.execSync 'pkill -9 -f \'node /usr/local/bin/coffee /opt/bdp/consumers/lot-html.coffee\''
-    sh.execSync 'pkill -9 -f \'node /usr/local/bin/coffee /opt/bdp/consumers/lot-json.coffee\''
+    sh.execSync 'pkill -9 -f \'node /usr/local/bin/coffee /opt/bdp/consumers/lots-url.coffee\''
+    sh.execSync 'pkill -9 -f \'node /usr/local/bin/coffee /opt/bdp/consumers/lots-html.coffee\''
+    sh.execSync 'pkill -9 -f \'node /usr/local/bin/coffee /opt/bdp/consumers/lots-json.coffee\''
     sh.spawn 'coffee', ['/opt/bdp/consumers/lists-html.coffee'], { detached: true, stdio: ['ignore', 'ignore', 'ignore']} 
     sh.spawn 'coffee', ['/opt/bdp/consumers/trades-url.coffee'], { detached: true, stdio: ['ignore', 'ignore', 'ignore']}
     sh.spawn 'coffee', ['/opt/bdp/consumers/trades-html.coffee'], { detached: true, stdio: ['ignore', 'ignore', 'ignore']}
     sh.spawn 'coffee', ['/opt/bdp/consumers/trades-json.coffee'], { detached: true, stdio: ['ignore', 'ignore', 'ignore']}
-    sh.spawn 'coffee', ['/opt/bdp/consumers/lot-url.coffee'], { detached: true, stdio: ['ignore', 'ignore', 'ignore']}
-    sh.spawn 'coffee', ['/opt/bdp/consumers/lot-html.coffee'], { detached: true, stdio: ['ignore', 'ignore', 'ignore']}
-    sh.spawn 'coffee', ['/opt/bdp/consumers/lot-json.coffee'], { detached: true, stdio: ['ignore', 'ignore', 'ignore']}
+    sh.spawn 'coffee', ['/opt/bdp/consumers/lots-url.coffee'], { detached: true, stdio: ['ignore', 'ignore', 'ignore']}
+    sh.spawn 'coffee', ['/opt/bdp/consumers/lots-html.coffee'], { detached: true, stdio: ['ignore', 'ignore', 'ignore']}
+    sh.spawn 'coffee', ['/opt/bdp/consumers/lots-json.coffee'], { detached: true, stdio: ['ignore', 'ignore', 'ignore']}
     console.log "Done"
     done()
 
   grunt.registerTask 'cron:old', ->
     console.log "Update old lots"
     done = @async()
-    date = moment().subtract(2, 'day')
+    date = moment().subtract(3, 'hour')
     query =
       status: $in: ["Идут торги", "Извещение опубликовано", "Не определен", "Прием заявок"]
       updated: { $exists: true, $lt: date }
