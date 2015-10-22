@@ -147,7 +147,7 @@ module.exports = (grunt) ->
             for lot in lots
               if lot.trade? and lot.trade._id?
                 diffpatch.patch lot, diffpatch.diff(lot, diffpatch.intervalize(lot, lot.trade), Lot)
-                mongo.updateLot.sync null, lot
+                lot.save.sync null
               else
                 console.log "Remove lot with empty trade -- #{lot._id}"
                 lot.remove.sync null
