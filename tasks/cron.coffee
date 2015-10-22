@@ -150,7 +150,7 @@ module.exports = (grunt) ->
                 lot.save.sync null
               else
                 console.log "Remove lot with empty trade -- #{lot._id}"
-                lot.remove.sync null
+                save lot_promises, lot
             cb(null, true)
           catch e then done(e)
     Sync =>
@@ -162,3 +162,9 @@ module.exports = (grunt) ->
           current += perPage
         done()
       catch e then done(e)
+
+save = (container, item) ->
+  container.push new Promise (resolve) -> 
+    item.last_event = new Date(item.last_event)
+    console.log item.url
+    item.save()
