@@ -7,6 +7,7 @@ collector  = require '../helpers/collector'
 redis      = require '../helpers/redis'
 amqp       = require '../helpers/amqp'
 diffpatch  = require '../helpers/diffpatch'
+mongo      = require '../helpers/mongo'
 config     = require '../config'
 host       = /^https?\:\/\/(www\.)?([A-Za-z0-9\.\-]+)/
 сonnection = mongoose.createConnection "mongodb://localhost/#{config.database}"
