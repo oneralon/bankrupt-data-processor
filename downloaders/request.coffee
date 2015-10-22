@@ -6,8 +6,6 @@ config          = require '../config'
 logger          = require '../helpers/logger'
 log             = logger  'REQUEST DOWNLOADER'
 options =
-  #proxy: 'http://127.0.0.1:18118'
-  compressed: true
   accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'
   user_agent: 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.132 Safari/537.36'
   follow_max: 10
@@ -24,6 +22,9 @@ module.exports = (url, cb) ->
     catch e then cb e
 
 get = (url, cb) ->
+  etp = config.getEtp(url)
+  options.compression = etp.compression or true
+  if etp.tor then options.proxy = 'http://127.0.0.1:18118'
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0"
   needle.get url, options, (err, resp, body) ->
     unless err? and resp?.statusCode isnt 200

@@ -58,7 +58,6 @@ intervals_fieldsets =
 
 module.exports = (html, etp, additional) ->
   lots = []
-  console.log html
   $ = cheerio.load html,
     xmlMode: true
     decodeEntities: false

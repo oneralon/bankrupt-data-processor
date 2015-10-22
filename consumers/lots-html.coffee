@@ -29,7 +29,12 @@ else
       html        = message.content.toString()
       Sync =>
         try
-          lot = parser html, etp
+          if headers.etp.platform is 'sberbank-ast' 
+            lot = parser.sync null, html, null, etp
+          else lot = parser html, etp
+          unless lot?
+            console.log headers.url
+            return cb()
           lot.url = headers.url
           lot.tradeUrl = headers.tradeUrl
           amqp.publish.sync null, config.lotsJsonQueue, JSON.stringify(lot), headers: headers

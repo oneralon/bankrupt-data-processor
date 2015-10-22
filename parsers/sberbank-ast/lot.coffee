@@ -15,13 +15,12 @@ module.exports = (xml, trade, etp, cb) ->
   Sync =>
     try
       lot = {}
-      data = xmlParser.parseString.sync xmlParser, xml
-
+      lotData = data = xmlParser.parseString.sync xmlParser, xml
       lot.number = Number data.BidView?.Bids?.BidInfo?.BidNo
       lot.title = data.BidView?.Bids?.BidInfo?.BidName.trim()
       lot.region = data.BidView?.Bids?.BidDebtorInfo.BidRegion
       lot.status = data.BidView?.BidChangeLog.BidChangeLogString[0].BidChangeLogComment
-      lot.procedure = trade.Purchase.RequestInfo.RegistrationDocuments
+      lot.procedure = trade?.Purchase.RequestInfo.RegistrationDocuments
       if data.BidView?.Bids?.BidDebtorInfo?.BidCategoryInfo?.bidcategorys?
         if data.BidView?.Bids?.BidDebtorInfo?.BidCategoryInfo?.bidcategorys?.length
           lot.category = (data.BidView?.Bids?.BidDebtorInfo.BidCategoryInfo.bidcategorys.map (item) -> item.bidcategoryname).join ' '
@@ -54,6 +53,8 @@ module.exports = (xml, trade, etp, cb) ->
             deposit_sum: Number(item.ReservationCoverAmount.trim().replace(/\s/g, '').replace(/,/g, '.').trim())
             interval_price: Number(item.BidAmount.trim().replace(/\s/g, '').replace(/,/g, '.').trim())
           }
-      lot.status = lot_status.sync null, trade.Purchase.PurchaseInfo.PurchaseCode, lot
+      if lotData.BidView?.PurchaseMainInfo?.PurchaseCode?
+        lot.status = lot_status.sync null, lotData.BidView?.PurchaseMainInfo?.PurchaseCode, lot
+      else console.log lotData
       cb null, lot
     catch e then cb(e)
