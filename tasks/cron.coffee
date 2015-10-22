@@ -147,10 +147,10 @@ module.exports = (grunt) ->
             for lot in lots
               if lot.trade? and lot.trade._id?
                 diffpatch.patch lot, diffpatch.diff(lot, diffpatch.intervalize(lot, lot.trade), Lot)
-                lot.save.sync null
+                save lot_promises, lot
               else
                 console.log "Remove lot with empty trade -- #{lot._id}"
-                save lot_promises, lot
+                lot.remove.sync null
             cb(null, true)
           catch e then done(e)
     Sync =>
