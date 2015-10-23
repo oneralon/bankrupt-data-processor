@@ -27,6 +27,9 @@ lotSchema = new Schema
   deposit_procedure: String
   url: String
   last_message: Date
+  updated: Date
+  last_event: Date
+  present: Boolean
   region: String
   documents: [
     name: String
@@ -57,9 +60,6 @@ lotSchema = new Schema
     type: Schema.Types.ObjectId
     ref: 'lotAlias'
   ]
-  updated: Date
-  last_event: Date
-  present: Boolean
 
 # lotSchema.index {title: 'text', information: 'text'}, { default_language: "russian" }
 lotSchema.index last_message: 1

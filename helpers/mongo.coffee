@@ -91,6 +91,12 @@ module.exports.updateLot = (alot, cb) ->
           dublicates.push new Promise (resolve) -> rlot.remove(resolve)
       diff = diffpatch.diff lot, alot, Lot
       diffpatch.patch lot, diff
+      lot.last_event = alot.last_event
+      lot.present = alot.present
+      lot.discount = lot.start_price - lot.current_sum
+      lot.discount_percent = lot.discount / lot.start_price
+      lot.step_sum = if lot.step_sum is NaN then 0 else lot.step_sum
+      lot.step_percent = if lot.step_precent is NaN then 0 else lot.step_percent
       lot.intervals = alot.intervals
       lot.documents = alot.documents
       lot.tagInputs = alot.tagInputs
@@ -100,10 +106,12 @@ module.exports.updateLot = (alot, cb) ->
       if lots.length > 1
         log.info "Updated #{lot.url} with #{lots.length - 1} dublicates"
         Promise.all(dublicates).then -> lot.trade.save ->
+          log.info "Updated #{lot.url}"
           tagger lot, (err, nlot) -> nlot.save(cb)
       else
         log.info "Updated #{lot.url}"
-        tagger lot, (err, nlot) -> nlot.save(cb)
+        tagger lot, (err, nlot) ->
+          nlot.save(cb)         
     else
       log.error "Not fount lot #{alot.url}, num: #{alot.number}"
       cb()

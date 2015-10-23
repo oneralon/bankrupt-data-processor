@@ -8,13 +8,13 @@ module.exports =
   lotsHtmlQueue:     'bankrupt-parser.lotHtml'
   lotsJsonQueue:     'bankrupt-parser.lotJson'
 
-  listWorkers:       2
-  tradeUrlWorkers:   10
-  tradeHtmlWorkers:  10
-  tradeJsonWorkers:  2
+  listWorkers:       1
+  tradeUrlWorkers:   8
+  tradeHtmlWorkers:  4
+  tradeJsonWorkers:  1
   lotUrlWorkers:     8
-  lotHtmlWorkers:    2
-  lotJsonWorkers:    2
+  lotHtmlWorkers:    1
+  lotJsonWorkers:    1
   timeout:           60000
   incUpdTime:        30000
 

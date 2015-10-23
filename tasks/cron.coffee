@@ -73,7 +73,7 @@ module.exports = (grunt) ->
   grunt.registerTask 'cron:old', ->
     console.log "Update old lots"
     done = @async()
-    date = moment().subtract(3, 'hour')
+    date = moment().subtract(6, 'hour')
     query =
       status: $in: ["Идут торги", "Извещение опубликовано", "Не определен", "Прием заявок"]
       updated: { $exists: true, $lt: date }
@@ -123,7 +123,6 @@ module.exports = (grunt) ->
   grunt.registerTask 'cron:events', ->
     console.log "Update last event lots"
     done = @async()
-    date = moment().subtract(3, 'hour')
     query =
       status: $in: ["Идут торги", "Извещение опубликовано", "Не определен", "Прием заявок"]
       $or: [
@@ -146,8 +145,8 @@ module.exports = (grunt) ->
           try
             for lot in lots
               if lot.trade? and lot.trade._id?
-                diffpatch.patch lot, diffpatch.diff(lot, diffpatch.intervalize(lot, lot.trade), Lot)
-                save lot_promises, lot
+                lot = diffpatch.intervalize(lot, lot.trade))
+                lot.save.sync null
               else
                 console.log "Remove lot with empty trade -- #{lot._id}"
                 lot.remove.sync null
@@ -165,6 +164,5 @@ module.exports = (grunt) ->
 
 save = (container, item) ->
   container.push new Promise (resolve) -> 
-    item.last_event = new Date(item.last_event)
-    console.log item.url
+    console.log  item.last_event
     item.save()
