@@ -126,7 +126,7 @@ module.exports = (grunt) ->
     query =
       status: $in: ["Идут торги", "Извещение опубликовано", "Не определен", "Прием заявок"]
       $or: [
-        present: true, last_date: $lte: new Date()
+        present: true, last_event: $lte: new Date()
       ,
         present: $exists: false
       ,
