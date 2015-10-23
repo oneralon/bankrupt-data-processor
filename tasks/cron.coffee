@@ -73,7 +73,7 @@ module.exports = (grunt) ->
   grunt.registerTask 'cron:old', ->
     console.log "Update old lots"
     done = @async()
-    date = moment().subtract(6, 'hour')
+    date = moment().subtract(3, 'hour')
     query =
       status: $in: ["Идут торги", "Извещение опубликовано", "Не определен", "Прием заявок"]
       updated: { $exists: true, $lt: date }
@@ -145,7 +145,7 @@ module.exports = (grunt) ->
           try
             for lot in lots
               if lot.trade? and lot.trade._id?
-                lot = diffpatch.intervalize(lot, lot.trade))
+                lot = diffpatch.intervalize(lot, lot.trade)
                 lot.save.sync null
               else
                 console.log "Remove lot with empty trade -- #{lot._id}"
