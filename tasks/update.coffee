@@ -28,27 +28,28 @@ module.exports = (grunt) ->
     query =
       url: new RegExp(regex)
       $or: [
-        last_event: null, intervals: {$eq:[]}
+        last_event: null
       ,
-        updated: $exists: false
-      ,
-        status: $exists: false
-      ,
-        status: {$exists: true, $eq: ''}
-      ,
-        status: {$exists: true, $eq: 'Не определен'}
+        last_event: $exists: false
+#        updated: $exists: false
+#      ,
+#        status: $exists: false
+#      ,
+#        status: {$exists: true, $eq: ''}
+#      ,
+#        status: {$exists: true, $eq: 'Не определен'}
       ]
-    Lot.find(query).limit(100).populate('trade').exec (err, lots) ->
+    Lot.find(query).populate('trade').exec (err, lots) ->
       done(err) if err?
       log.info "#{lots.length} found"
       unless lots? then done()
       Sync =>
         try
           for lot in lots
-            if lot.trade.etp.platform is 'i-tender'
-              amqp.publishLot.sync null, lot.url
+            if false #lot.trade.etp.platform is 'i-tender' or lot.trade.etp.platform is 'sberbank-ast'
+              amqp.publishLot.sync null, config.lotsUrlsQueue, lot.url
             else
-              amqp.publishLot.sync null, lot.trade.url
+              amqp.publishLot.sync null, config.tradeUrlsQueue, lot.trade.url
           done()
         catch e then done(e)
 
@@ -80,15 +81,20 @@ module.exports = (grunt) ->
       regex += "(#{etp.href.match(host)[2]})|"
     regex = regex.slice(0,-1)
     query =
-      url: new RegExp(regex)
+      #$where: 'this.lots.length <= 50'
+      #'etp.platform': 'i-tender'
       $or: [
         updated: { $exists: false }
       ,
         'etp.platform': { $exists: false }
       ,
         $where: 'this.lots.length == 0'
+      ,
+        $or: [{trade_type:{$exists:false}}, {trade_type:null}]
+      , 
+        last_event: null
       ]
-    Trade.find(query).limit(100).exec (err, trades) ->
+    Trade.find(query).limit(10000).exec (err, trades) ->
       done(err) if err?
       Sync =>
         try
@@ -106,6 +112,7 @@ module.exports = (grunt) ->
                 parser: "#{etp.platform}/trade"
                 queue: config.tradeHtmlQueue
                 number: trade.number
+          done()
           log.info "Select for update invalid lots"
           query =
             url: new RegExp(regex)

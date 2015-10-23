@@ -15,7 +15,7 @@ Trade     = сonnection.model 'Trade'
 Lot       = сonnection.model 'Lot'
 
 getLots = (skip, cb) ->
-  Lot.find({updated: {$exists: false}}).skip(skip).limit(100).exec (err, lots) ->
+  Lot.find($or:[{last_event: {$exists: false}}, {last_event:null}, {type:{$exists:false}}]).skip(skip).limit(1000).exec (err, lots) ->
     cb err if err?
     cb null, lots
 

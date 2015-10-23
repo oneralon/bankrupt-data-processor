@@ -58,7 +58,6 @@ intervals_fieldsets =
 
 module.exports = (html, etp, additional) ->
   lots = []
-
   $ = cheerio.load html,
     xmlMode: true
     decodeEntities: false
@@ -115,6 +114,7 @@ module.exports = (html, etp, additional) ->
       url = etp.href.match(host)?[0] + $(@).attr('href')
       docs.push { name: name, url: url }
     lot.documents = docs
+    console.log lot
     lots.push lot
   log.info "Parsed #{lots.length} lots"
   return lots

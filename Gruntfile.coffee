@@ -6,4 +6,5 @@ module.exports = (grunt)->
       collect: 'tasks/collect.coffee'
       consumers: 'tasks/consumers.coffee'
       update: 'tasks/update.coffee'
+      cron: 'tasks/cron.coffee'
       migration: 'tasks/migration.coffee'

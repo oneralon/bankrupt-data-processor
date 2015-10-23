@@ -15,9 +15,13 @@ options =
   follow_set_cookies: true
   follow_set_referer: true
 
-module.exports = (trade, title, number, cb) ->
+module.exports = (trade, lot, cb) ->
+  price = Math.round(lot.start_price)
+  title = lot.title.slice(0,255).replace(/[\=\—&\(\),\/\.\'\"\:\;\#\–\№\%\*\?\@\!\~\`\{\}\[\]\+\^\<\>\«\»]/g, ' ').replace(/[А-Яа-яA-Za-z]{1,1}/g, ' ').replace(/(^|\s)\d+($|\s)/g, ' ')
+  title = title.replace(/[\s\-\,\.^\d]\-*[\s\-\,\.$\d\\]/g, ' ').replace(/(^|\s)\d+($|\s)/g, ' ')
+  title = title.replace(/(^|\s)кв(\s|$)/ig, ' ').replace(/(^|\s)\d+($|\s)/g, ' ').trim()
   form =
-    xmlFilter: "<query><purchcode>#{trade}</purchcode><purchname>#{title}</purchname><typeid></typeid><typename></typename><bidstatusid></bidstatusid><haspicture></haspicture><repurchase></repurchase><ispledge></ispledge><amountstart>0</amountstart><amountend>1000000000000</amountend><currentamountstart></currentamountstart><currentamountend></currentamountend><orgid></orgid><orgname></orgname><debtorinn></debtorinn><debtorname></debtorname><requeststartdatestart></requeststartdatestart><requeststartdateend></requeststartdateend><requestdatestart></requestdatestart><requestdateend></requestdateend><auctionstartdatestart></auctionstartdatestart><auctionstartdateend></auctionstartdateend><purchdescription></purchdescription><regionid></regionid><regionname></regionname><purchasegroupid></purchasegroupid><purchasegroupname></purchasegroupname></query>"
+    xmlFilter: "<query><purchcode>#{trade}</purchcode><purchname>#{title}</purchname><typeid></typeid><typename></typename><bidstatusid></bidstatusid><haspicture></haspicture><repurchase></repurchase><ispledge></ispledge><amountstart>#{price - 1}</amountstart><amountend>#{price + 1}</amountend><currentamountstart></currentamountstart><currentamountend></currentamountend><orgid></orgid><orgname></orgname><debtorinn></debtorinn><debtorname></debtorname><requeststartdatestart></requeststartdatestart><requeststartdateend></requeststartdateend><requestdatestart></requestdatestart><requestdateend></requestdateend><auctionstartdatestart></auctionstartdatestart><auctionstartdateend></auctionstartdateend><purchdescription></purchdescription><regionid></regionid><regionname></regionname><purchasegroupid></purchasegroupid><purchasegroupname></purchasegroupname></query>"
     hdnPageNum: 1
     RequestStartDateStart: null
     RequestStartDateEnd: null
@@ -28,17 +32,30 @@ module.exports = (trade, title, number, cb) ->
 
   Sync =>
     try
-      resp = needle.post.sync null, 'http://utp.sberbank-ast.ru/Bankruptcy/List/BidList', form, options
-      $ = cheerio.load resp['0'].body
+      page = 1
+      while typeof data is 'undefined' or not data? or data is ''
+        data = get.sync null, form, lot.number
+        if data is ''
+          page += 1
+          form.hdnPageNum = page
+      cb null, data
+    catch e then cb e
+
+get = (form, number, cb) ->
+  needle.post 'http://utp.sberbank-ast.ru/Bankruptcy/List/BidList', form, options, (err, resp, body) ->
+    cb() if err? or not body?
+    if typeof body isnt 'undefined'
+      $ = cheerio.load body
       xml = $('#xmlData').val()
-      if xml? and xml isnt "<List />"
+      if xml? and xml.length > 0 and xml isnt "<List />" and xml[0] is '<'
         json = xmlParser.parseString.sync xmlParser, xml
         if json.List.data.row.length > 0
           row = json.List.data.row.filter( (i) ->
             i.BidNo.toString() is number.toString()
           )[0]
-          cb null, row.PurchaseState
+          if row? then cb null, row.PurchaseState
+          else cb(null, '')
         else
           cb null, json.List.data.row.PurchaseState
-      else cb("Empty list")
-    catch e then cb(e)
+      else cb()
+    else cb()

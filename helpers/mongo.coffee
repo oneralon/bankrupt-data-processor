@@ -91,6 +91,12 @@ module.exports.updateLot = (alot, cb) ->
           dublicates.push new Promise (resolve) -> rlot.remove(resolve)
       diff = diffpatch.diff lot, alot, Lot
       diffpatch.patch lot, diff
+      lot.last_event = alot.last_event
+      lot.present = alot.present
+      lot.discount = lot.start_price - lot.current_sum
+      lot.discount_percent = lot.discount / lot.start_price
+      lot.step_sum = if lot.step_sum is NaN then 0 else lot.step_sum
+      lot.step_percent = if lot.step_precent is NaN then 0 else lot.step_percent
       lot.intervals = alot.intervals
       lot.documents = alot.documents
       lot.tagInputs = alot.tagInputs
@@ -100,18 +106,22 @@ module.exports.updateLot = (alot, cb) ->
       if lots.length > 1
         log.info "Updated #{lot.url} with #{lots.length - 1} dublicates"
         Promise.all(dublicates).then -> lot.trade.save ->
+          log.info "Updated #{lot.url}"
           tagger lot, (err, nlot) -> nlot.save(cb)
       else
         log.info "Updated #{lot.url}"
-        tagger lot, (err, nlot) -> nlot.save(cb)
+        tagger lot, (err, nlot) ->
+          nlot.save(cb)         
     else
       log.error "Not fount lot #{alot.url}, num: #{alot.number}"
+      cb()
 
 module.exports.update = (auction, cb) ->
   if not auction.region? or auction.region is 'Не определен'
     auction.region = regionize(auction)
   auction.url = auction.url.replace '//www.', '//'
   for lot in auction.lots
+    unless lot? then continue
     if lot.url? then lot.url = lot.url.replace '//www.', '//'
     else lot.url = auction.url
     lot.region = auction.region if not lot.region or lot.region is 'Не определен'
@@ -160,7 +170,7 @@ module.exports.update = (auction, cb) ->
       trade.documents = auction.documents
       auction.lots    = auction.lots or []
       for alot in auction.lots
-        if alot.status isnt ''
+        if alot? and alot.status isnt ''
           unless alot.url? then alot.url = trade.url
           alot = diffpatch.intervalize alot, trade
           lots = trade.lots.filter (i) ->
@@ -195,8 +205,8 @@ module.exports.update = (auction, cb) ->
             trade.lots.push lot
             save.push new Promise (resolve) -> tagger lot, (err, nlot) -> nlot.save(resolve)
         else
-          console.log alot.url
           console.log alot
+          
       Promise.all(remove).then -> Promise.all(save).then ->
         trade.updated = new Date()
         trade.save cb

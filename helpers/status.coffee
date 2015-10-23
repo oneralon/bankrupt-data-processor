@@ -1,5 +1,5 @@
 module.exports = (status) ->
-  status = status.trim()
+  status = if status? then status.trim() else 'Не определен'
   for key, val of statuses
     for regexp in val
       if regexp.test status then return key
@@ -9,6 +9,7 @@ module.exports.statuses = statuses =
   'Извещение опубликовано': [
     /^Извещение опубликовано$/i
     /^Новая$/i
+    /^Опубликован\(\-а\)$/i
     /^Опубликована$/i
     /^Опубликован\(\-а\)$/i
     /^Объявленные торги$/i
@@ -31,6 +32,7 @@ module.exports.statuses = statuses =
     /^ид(е|ё)т при(е|ё)м заявок \(приостановленны\)$/i
   ]
   'Прием заявок завершен': [
+    /^Закрытие торгов$/i
     /^Определение участников торгов$/i
     /^При(е|ё)м заявок на интервале не активен$/i
     /^Период заверш(е|ё)н$/i
@@ -83,6 +85,7 @@ module.exports.statuses = statuses =
   ]
   'Торги не состоялись': [
     /^Не состоялся$/i
+    /^Не состоялся\(\-ась\)$/i
     /^Торги не состоялись$/i
   ]
   'Торги приостановлены': [

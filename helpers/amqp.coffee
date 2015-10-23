@@ -44,18 +44,19 @@ module.exports.publish = publish = (queue, message, headers, cb) ->
         connection.close().catch(error).then ->
           cb()
 
-module.exports.publishLot = (url, cb) ->
+module.exports.publishLot = (queue, url, cb) ->
   r = new RegExp(url.match(host)[2])
   etp = config.etps.filter( (t) ->
     r.test t.href
   )?[0]
+  type = if /^lot/.test(queue) then 'lot' else 'trade'
   if etp
-    publish config.lotsUrlsQueue, null, headers:
+    publish queue, null, headers:
       etp: etp
       downloader: 'request'
       url: url
-      queue: config.lotsHtmlQueue
-      parser: "#{etp.platform}/lot"
+      queue: queue.replace 'Urls', 'Html'
+      parser: "#{etp.platform}/#{type}"
     , cb
   else cb('No etp!')
 

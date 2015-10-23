@@ -27,7 +27,9 @@ else
       etp         = headers.etp
       Sync =>
         try
+          console.log headers
           html = downloader.sync null, headers.url
+          console.log html
           amqp.publish.sync null, headers.queue, html, headers: headers
           cb()
         catch e

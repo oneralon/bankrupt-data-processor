@@ -1,10 +1,17 @@
 amqp            = require 'amqplib'
 Sync            = require 'sync'
-request         = require 'request'
+needle          = require 'needle'
 iconv           = require 'iconv-lite'
 config          = require '../config'
 logger          = require '../helpers/logger'
 log             = logger  'REQUEST DOWNLOADER'
+options =
+  accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'
+  user_agent: 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.132 Safari/537.36'
+  follow_max: 10
+  follow_set_cookies: true
+  follow_set_referer: true
+  open_timeout: 120000
 
 module.exports = (url, cb) ->
   Sync =>
@@ -15,21 +22,13 @@ module.exports = (url, cb) ->
     catch e then cb e
 
 get = (url, cb) ->
+  etp = config.getEtp(url)
+  options.compression = etp.compression or true
+  if etp.tor then options.proxy = 'http://127.0.0.1:18118'
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0"
-  request.get(url, {
-    options:
-      headers:
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'
-        'Accept-Language': 'en-US,en;q=0.8'
-        'Cache-Control': 'max-age=0'
-        'Accept-Charset': 'utf-8'
-        'Content-Type': 'text/html; charset=utf-8'
-        'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.132 Safari/537.36'
-  }).on 'error', (err) -> cb()
-  .on 'response', (res) ->
-    encoding = res.headers['content-type']?.match(/charset=(.+)/i)?[1]
-    encoding = if encoding? and /Windows\-1251/i.test(encoding) then 'win1251' else 'utf8'
-    chunks = []
-    res.on 'end', () -> cb null, iconv.decode Buffer.concat(chunks), encoding
-    res.on 'data', (chunk) -> chunks.push chunk
-  .on 'timeout', -> cb()
+  needle.get url, options, (err, resp, body) ->
+    unless err? and resp?.statusCode isnt 200
+      encoding = resp.headers['content-type']?.match(/charset=(.+)/i)?[1]
+      encoding = if encoding? and /Windows\-1251/i.test(encoding) then 'win1251' else 'utf8'
+      if body? then cb null, iconv.decode(new Buffer(resp.raw), encoding) else cb()
+    else cb()
