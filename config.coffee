@@ -21,6 +21,12 @@ module.exports =
   database:          'bankrot-parser'
 
   etps: [
+    name: 'Межотраслевая торговая система "Фабрикант"'
+    href: 'https://www.fabrikant.ru/trades/procedure/search/?filter_id=6'
+    platform: 'fabrikant'
+    tor: yes
+    compressed: yes
+  ,
     name: 'Cбербанк. Автоматизированная система торгов'
     href: 'http://utp.sberbank-ast.ru/Bankruptcy/List/BidList'
     platform: 'sberbank-ast'
