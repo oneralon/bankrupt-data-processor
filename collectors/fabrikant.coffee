@@ -37,7 +37,7 @@ collect = (etp, cb) ->
 proceed = (number, etp, cb) ->
   Sync =>
     try
-      resp = needle.get.sync null, etp.href + '&page=' + number, options
+      resp = needle.get.sync null, etp.href + '&count_on_page=40&page=' + number, options
       $ = cheerio.load resp[1]
       trades = parseInt $('.Search-result-count > span').text().trim()
       pages = Math.round(trades / 10) + 1
@@ -50,15 +50,15 @@ proceed = (number, etp, cb) ->
         url = $(@).find('.Search-item-option > a[target!=_blank]').first().attr('href')
         url = etp.href.match(host)[0] + url
         url = url.replace '://www.', '://'
-        if urls.indexOf(url) is -1
-          urls.push url
-          result.push url: url, number: num
-      amqp.publish.sync null, config.listsHtmlQueue, new Buffer(JSON.stringify(result), 'utf8'),
-        headers:
-          parser: 'fabrikant/list'
+        amqp.publish.sync null, config.tradeUrlsQueue, '', headers:
+          url: url
+          number: num
           etp: etp
+          downloader: 'request'
+          parser: 'fabrikant/trade'
+          queue: config.tradeHtmlQueue
       log.info "Complete page #{number} of #{pages} pages"
-      redis.set.sync null, etp.href, number.toString()
+      redis.set.sync null, etp.href, number
       cb(null, rows)
     catch e then cb e
 
