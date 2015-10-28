@@ -24,7 +24,7 @@ module.exports =
     name: 'Межотраслевая торговая система "Фабрикант"'
     href: 'https://fabrikant.ru/trades/procedure/search/?filter_id=6'
     platform: 'fabrikant'
-    tor: yes
+    tor: no
     compressed: yes
   ,
     name: 'Cбербанк. Автоматизированная система торгов'
