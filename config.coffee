@@ -21,6 +21,12 @@ module.exports =
   database:          'bankrot-parser'
 
   etps: [
+    name: 'Российский аукционный дом'
+    href: 'http://bankruptcy.lot-online.ru/e-auction/lots.xhtml'
+    platform: 'lot-online'
+    tor: yes
+    compressed: yes
+  ,
     name: 'Cбербанк. Автоматизированная система торгов'
     href: 'http://utp.sberbank-ast.ru/Bankruptcy/List/BidList'
     platform: 'sberbank-ast'
