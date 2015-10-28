@@ -21,18 +21,43 @@ options =
   follow_set_referer: true
   headers:
     'Content-Type':'application/x-www-form-urlencoded'
-    'Faces-Request':'partial/ajax'
+    'Faces-Request':'html'
     'Referer':'http://bankruptcy.lot-online.ru/e-auction/lots.xhtml'
+
+emptyForm =
+  'formMain': 'formMain'
+  'formMain:commonSearchCriteriaStr': null
+  # 'javax.faces.ViewState':null
+  'formMain:msgBoxText': null
+  'javax.faces.partial.ajax': false
+  # 'javax.faces.source': 'formMain:j_idt163:6:clPage'
+  # 'javax.faces.partial.execute': 'formMain:j_idt163:6:clPage'
+  # 'formMain:j_idt163:6:clPage': 'formMain:j_idt163:6:clPage'
+  'javax.faces.partial.render': 'formMain:panelList formMain:LotListPaginatorID'
 
 Sync =>
   try
     log.info "Start collecting #{etp.name}"
     page = parseInt redis.get.sync(null, etp.href) or '0'
-    form = "formMain=formMain&formMain%3AcommonSearchCriteriaStr=&formMain%3Aj_idt90=&formMain%3Aj_idt94=&formMain%3AitKeyWords=&formMain%3Aj_idt100=&formMain%3AauctionDatePlanBID_input=&formMain%3AauctionDatePlanEID_input=&formMain%3AcostBValueB=0&formMain%3AcostBValueE=0&formMain%3Aj_idt111=&formMain%3AselectIndPublish=1&formMain%3AmsgBoxText=&javax.faces.partial.ajax=true&javax.faces.source=formMain:j_idt163:#{page}:clPage&javax.faces.partial.execute=formMain:j_idt163:#{page}:clPage&javax.faces.partial.render=formMain:panelList formMain:LotListPaginatorID&formMain:j_idt163:#{page}:clPage=formMain:j_idt163:#{page}:clPage"
+    html = needle.get.sync null, 'http://bankruptcy.lot-online.ru/e-auction/lots.xhtml', options
+    $ = cheerio.load html[1]
+    cookie = html[0].headers['set-cookie'][0].match(/^(JSESSIONID=[a-zA-Z0-9.]+);/)[1]
+    vstate = $('input[id="javax.faces.ViewState"]').val()
+    form = emptyForm
+    param = "formMain:j_idt163:clPage50"
+    form['javax.faces.source'] = form['javax.faces.partial.execute'] = form[param] = param
+    # form['javax.faces.ViewState'] = vstate
     while true
+      options.cookie = cookie
+      log.info form['javax.faces.source']
       html = needle.post.sync null, etp.href, form, options
-      $ = cheerio.load html[1]['partial-response']['changes']['update'][0]['_']
-      console.log $.html()
+      $ = cheerio.load html[1]
+      vstate = $('input[id="javax.faces.ViewState"]').val()
+      form = emptyForm
+      param = "formMain:j_idt163:#{page}:clPage50"
+      form['javax.faces.source'] = form['javax.faces.partial.execute'] = form[param] = param
+      # form['javax.faces.ViewState'] = vstate
+      console.log $('#new-field-lot').text()
       page += 1
       redis.set.sync null, etp.href, page.toString()
     log.info "Complete collecting #{etp.name}"
