@@ -24,40 +24,28 @@ options =
     'Faces-Request':'html'
     'Referer':'http://bankruptcy.lot-online.ru/e-auction/lots.xhtml'
 
-emptyForm =
-  'formMain': 'formMain'
-  'formMain:commonSearchCriteriaStr': null
-  # 'javax.faces.ViewState':null
-  'formMain:msgBoxText': null
-  'javax.faces.partial.ajax': false
-  # 'javax.faces.source': 'formMain:j_idt163:6:clPage'
-  # 'javax.faces.partial.execute': 'formMain:j_idt163:6:clPage'
-  # 'formMain:j_idt163:6:clPage': 'formMain:j_idt163:6:clPage'
-  'javax.faces.partial.render': 'formMain:panelList formMain:LotListPaginatorID'
-
 Sync =>
   try
     log.info "Start collecting #{etp.name}"
     page = parseInt redis.get.sync(null, etp.href) or '0'
     html = needle.get.sync null, 'http://bankruptcy.lot-online.ru/e-auction/lots.xhtml', options
     $ = cheerio.load html[1]
-    cookie = html[0].headers['set-cookie'][0].match(/^(JSESSIONID=[a-zA-Z0-9.]+);/)[1]
-    vstate = $('input[id="javax.faces.ViewState"]').val()
-    form = emptyForm
-    param = "formMain:j_idt163:clPage50"
-    form['javax.faces.source'] = form['javax.faces.partial.execute'] = form[param] = param
-    # form['javax.faces.ViewState'] = vstate
+    options.cookies = 'JSESSIONID': html[0].headers['set-cookie'][0].match(/^JSESSIONID=([a-zA-Z0-9.]+);/)[1]
+    form = "formMain=formMain&formMain%3AcommonSearchCriteriaStr=&javax.faces.ViewState=#{$('input[id="javax.faces.ViewState"]').val().replace(':','%3A')}&formMain%3AmsgBoxText=&javax.faces.partial.ajax=true&javax.faces.source=formMain:clNext&javax.faces.partial.execute=formMain:clNext&javax.faces.partial.render=formMain:panelList formMain:LotListPaginatorID&formMain:clNext=formMain:clNext"
     while true
-      options.cookie = cookie
-      log.info form['javax.faces.source']
       html = needle.post.sync null, etp.href, form, options
       $ = cheerio.load html[1]
-      vstate = $('input[id="javax.faces.ViewState"]').val()
-      form = emptyForm
-      param = "formMain:j_idt163:#{page}:clPage50"
-      form['javax.faces.source'] = form['javax.faces.partial.execute'] = form[param] = param
-      # form['javax.faces.ViewState'] = vstate
-      console.log $('#new-field-lot').text()
+      form = "formMain=formMain&formMain%3AcommonSearchCriteriaStr=&javax.faces.ViewState=#{$('input[id="javax.faces.ViewState"]').val().replace(':','%3A')}&formMain%3AmsgBoxText=&javax.faces.partial.ajax=true&javax.faces.source=formMain:clNext&javax.faces.partial.execute=formMain:clNext&javax.faces.partial.render=formMain:panelList formMain:LotListPaginatorID&formMain:clNext=formMain:clNext"
+      $('td[class="ui-datagrid-column"]').each ->
+        number = $(@).find('div[id="new-field-lot"]').text()
+        url = 'http://bankruptcy.lot-online.ru/e-auction/' + $(@).find('a.filed.filed-title').attr('href')
+        amqp.publish.sync null, config.tradeUrlsQueue, '', headers:
+          url: url
+          number: number
+          etp: etp
+          downloader: 'request'
+          parser: 'lot-online/trade'
+          queue: config.tradeHtmlQueue
       page += 1
       redis.set.sync null, etp.href, page.toString()
     log.info "Complete collecting #{etp.name}"
