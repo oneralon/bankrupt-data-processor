@@ -27,8 +27,10 @@ else
       etp         = headers.etp
       Sync =>
         try
-          html = downloader.sync null, headers.url
-          amqp.publish.sync null, headers.queue, html, headers: headers
+          result = downloader.sync null, headers.url
+          for k, v of result[1]
+            headers[k] = v
+          amqp.publish.sync null, headers.queue, result[0], headers: headers
           cb()
         catch e
           cb e

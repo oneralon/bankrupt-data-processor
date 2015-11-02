@@ -16,7 +16,7 @@ host      = /^https?\:\/\/[A-Za-z0-9\.\-]+/
 
 lotParser = require './lot'
 
-module.exports = (html, etp, url, ismicro, cb) ->
+module.exports = (html, etp, url, headers, cb) ->
   log.info "Parse trade #{url}"
   tradeUrl = url
   last = html.lastIndexOf('</table>') + 8
