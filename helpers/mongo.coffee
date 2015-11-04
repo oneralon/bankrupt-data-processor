@@ -93,8 +93,8 @@ module.exports.updateLot = (alot, cb) ->
       diffpatch.patch lot, diff
       lot.last_event = alot.last_event
       lot.present = alot.present
-      lot.discount = lot.start_price - lot.current_sum
-      lot.discount_percent = lot.discount / lot.start_price
+      lot.discount = lot.start_price - lot.current_sum * 100 or 0
+      lot.discount_percent = lot.discount / lot.start_price * 100 or 0
       lot.step_sum = if lot.step_sum is NaN then 0 else lot.step_sum
       lot.step_percent = if lot.step_precent is NaN then 0 else lot.step_percent
       lot.intervals = alot.intervals
