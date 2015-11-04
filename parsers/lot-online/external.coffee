@@ -35,7 +35,7 @@ options =
     'Content-Type':'application/x-www-form-urlencoded'
     'Faces-Request':'partial/ajax'
     'DNT': '1'
-    'Connection': 'keep-alive'
+    'Connection': 'close'
     'Origin': 'http://bankruptcy.lot-online.ru'
 
 module.exports = (page, trade, cookies, vstate, cb) ->
