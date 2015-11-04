@@ -14,11 +14,12 @@ log       = logger  'SBERBANK-AST TRADE PARSER'
 
 host      = /^https?\:\/\/[A-Za-z0-9\.\-]+/
 
-module.exports = (xml, etp, url, ismicro, cb) ->
+module.exports = (xml, etp, url, headers, cb) ->
   Sync =>
     try
-      console.log etp, url
       trade = {}
+      trade.etp = etp
+      trade.url = url
       data = xmlParser.parseString.sync xmlParser, xml
       trade.number = data.Purchase?.PurchaseInfo?.PurchaseCode
       trade.type = data.Purchase?.PurchaseTypeInfo?.PurchaseTypeName

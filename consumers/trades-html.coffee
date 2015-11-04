@@ -29,9 +29,7 @@ else
       html        = message.content.toString()
       Sync =>
         try
-          trade = parser.sync null, html, etp, headers.url, false
-          trade.url = headers.url
-          trade.etp = etp
+          trade = parser.sync null, html, etp, headers.url, headers
           amqp.publish.sync null, config.tradeJsonQueue, JSON.stringify(trade), headers: headers
           cb()
         catch e

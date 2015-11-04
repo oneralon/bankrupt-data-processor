@@ -111,7 +111,7 @@ module.exports.updateLot = (alot, cb) ->
       else
         log.info "Updated #{lot.url}"
         tagger lot, (err, nlot) ->
-          nlot.save(cb)         
+          nlot.save(cb)
     else
       log.error "Not fount lot #{alot.url}, num: #{alot.number}"
       cb()
@@ -206,7 +206,7 @@ module.exports.update = (auction, cb) ->
             save.push new Promise (resolve) -> tagger lot, (err, nlot) -> nlot.save(resolve)
         else
           console.log alot
-          
+
       Promise.all(remove).then -> Promise.all(save).then ->
         trade.updated = new Date()
         trade.save cb
