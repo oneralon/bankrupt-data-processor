@@ -49,10 +49,10 @@ Sync =>
     resp = needle.post.sync null, url, form, options
     vstate = resp[1]['partial-response'].changes.update[resp[1]['partial-response'].changes.update.length - 1]._.replace(':', '%3A')
     form = "formMain=formMain&formMain%3AcommonSearchCriteriaStr=&formMain%3Aj_idt85=22&formMain%3Aj_idt90=&formMain%3Aj_idt94=&formMain%3AitKeyWords=&formMain%3Aj_idt100=&formMain%3AauctionDatePlanBID_input=&formMain%3AauctionDatePlanEID_input=&formMain%3AcostBValueB=0&formMain%3AcostBValueE=0&formMain%3Aj_idt111=&formMain%3AselectIndPublish=3&javax.faces.ViewState=#{vstate}&formMain%3AmsgBoxText=&javax.faces.partial.ajax=true&javax.faces.source=formMain:clPage50&javax.faces.partial.execute=formMain:clPage50&javax.faces.partial.render=formMain:panelList formMain:LotListPaginatorID formMain:formSelectTableType&formMain:clPage50=formMain:clPage50"
+    getter = 1
     while true
       resp = needle.post.sync null, url, form, options
-      $ = cheerio.load resp[1]['partial-response'].changes.update[1]._.toString(), decodeEntities: true
-      vstate = resp[1]['partial-response'].changes.update[resp[1]['partial-response'].changes.update.length - 1]._.replace(':', '%3A')
+      $ = cheerio.load resp[1]['partial-response'].changes.update[getter]._.toString(), decodeEntities: true
       $('tr').each ->
         number = $(@).find('.field-lot').text()
         url = 'http://bankruptcy.lot-online.ru/e-auction/' + $(@).find('.filed-title').attr('href')
@@ -68,6 +68,7 @@ Sync =>
       redis.set.sync null, etp.href, page.toString()
       if $('tr').length is 0 then break
       form = "formMain=formMain&formMain%3AcommonSearchCriteriaStr=&formMain%3Aj_idt85=22&formMain%3Aj_idt90=&formMain%3Aj_idt94=&formMain%3AitKeyWords=&formMain%3Aj_idt100=&formMain%3AauctionDatePlanBID_input=&formMain%3AauctionDatePlanEID_input=&formMain%3AcostBValueB=0&formMain%3AcostBValueE=0&formMain%3Aj_idt111=&formMain%3AselectIndPublish=3&javax.faces.ViewState=#{vstate}&formMain%3AmsgBoxText=&javax.faces.partial.ajax=true&javax.faces.source=formMain:clNext&javax.faces.partial.execute=formMain:clNext&javax.faces.partial.render=formMain:panelList formMain:LotListPaginatorID&formMain:clNext=formMain:clNext"
+      getter = 0
     log.info "Complete collecting #{etp.name}"
     process.exit 0
   catch e
