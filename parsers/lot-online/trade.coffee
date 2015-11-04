@@ -54,7 +54,7 @@ module.exports = (html, etp, url, headers, cb) ->
         trade.etp = etp
         trade.title = $('div.product > p.field-description').first().text().trim()
         trade.number = $('em.field-lot').text()
-        trade.type = trim($('div.tender').clone().children().remove().end().text().trim()
+        trade.type = $('div.tender').clone().children().remove().end().text().trim()
         trade.trade_type = trade.type.match(/(аукцион|конкурс|публичного предложения)/i)[0].toLowerCase().replace('публичного предложения', 'публичное предложение')
         trade.membership_type = if /Открытый/.test(trade.type) then 'Открытая' else 'Закрытая'
         trade.price_submission_type = if /открытой/.test(trade.type) then 'Открытая' else 'Закрытая'
@@ -122,7 +122,4 @@ module.exports = (html, etp, url, headers, cb) ->
         lot.discount_percent = lot.discount / lot.start_price * 100
         trade.lots = [lot]
         external $, trade, cookies, vstate, (err, extended) ->
-          if err?
-            return cb err
-          else
-            return cb null, extended
+          if err? then return cb(err) else return cb(null, extended)
