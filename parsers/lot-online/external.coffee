@@ -23,7 +23,6 @@ get = (url, form, options, cb) ->
       needle.post.sync null, url, form, options
       cb null, resp[1]['partial-response'].changes.update[0]._
     catch e then cb e
-    
 
 options =
   proxy: 'http://127.0.0.1:18118'
@@ -46,14 +45,14 @@ module.exports = (page, trade, cookies, vstate, cb) ->
       # Порядок проведения торгов (421)
       if page('.js:contains("Порядок проведения торгов")').length > 0
         $ = cheerio.load get.sync(null, url, "formMain=formMain&formMain%3AcommonSearchCriteriaStr=&javax.faces.ViewState=#{vstate}&formMain%3AmsgBoxText=&javax.faces.source=formMain%3Aj_idt421&javax.faces.partial.event=click&javax.faces.partial.execute=formMain%3Aj_idt421%20formMain%3Aj_idt421&javax.faces.partial.render=formMain%3ApanelGroupAuctionOrder&javax.faces.behavior.event=action&javax.faces.partial.ajax=true", options).toString(), decodeEntities: true
-        trade.submission_procedure = trim $('.form-item > label:contains("Порядок оформления участия в торгах, перечень документов участника и требования к оформлению")')?['0']?.next?['data']
+        trade.lots[0].procedure = trade.submission_procedure = trim $('.form-item > label:contains("Порядок оформления участия в торгах, перечень документов участника и требования к оформлению")')?['0']?.next?['data']
         trade.win_procedure = trim $('.form-item > label:contains("Порядок и критерии определения победителя торгов")')?['0']?.next?['data']
         trade.results_place = trim $('.form-item > label:contains("Дата, время и место подведения результатов открытых торгов")')?['0']?.next?['data']
       # Порядок оформления прав победителя (424)
       if page('.js:contains("Порядок оформления прав победителя")').length > 0
         $ = cheerio.load get.sync(null, url, "formMain=formMain&formMain%3AcommonSearchCriteriaStr=&javax.faces.ViewState=#{vstate}&formMain%3AmsgBoxText=&javax.faces.source=formMain%3Aj_idt424&javax.faces.partial.event=click&javax.faces.partial.execute=formMain%3Aj_idt424%20formMain%3Aj_idt424&javax.faces.partial.render=formMain%3ApanelGroupWinnerRightsOrder1&javax.faces.behavior.event=action&javax.faces.partial.ajax=true", options).toString(), decodeEntities: true
-        trade.contract_procedure = trim $('.form-item > label:contains("Порядок и срок заключения договора купли-продажи имущества (предприятия) должника")')?['0']?.next?['data']
-        trade.payment_terms = trim $('.form-item > label:contains("Сроки платежей, реквизиты счетов, на которые вносятся платежи")')?['0']?.next?['data']
+        trade.debtor.contract_procedure = trim $('.form-item > label:contains("Порядок и срок заключения договора купли-продажи имущества (предприятия) должника")')?['0']?.next?['data']
+        trade.debtor.payment_terms = trim $('.form-item > label:contains("Сроки платежей, реквизиты счетов, на которые вносятся платежи")')?['0']?.next?['data']
       # Порядок внесения задатка (359)
       if page('.js:contains("Порядок внесения задатка")').length > 0
         $ = cheerio.load get.sync(null, url, "formMain=formMain&formMain%3AcommonSearchCriteriaStr=&javax.faces.ViewState=#{vstate}&formMain%3AmsgBoxText=&javax.faces.source=formMain%3Aj_idt359&javax.faces.partial.event=click&javax.faces.partial.execute=formMain%3Aj_idt359%20formMain%3Aj_idt359&javax.faces.partial.render=formMain%3ApanelGroupDpDepositOrder&javax.faces.behavior.event=action&javax.faces.partial.ajax=true", options).toString(), decodeEntities: true
