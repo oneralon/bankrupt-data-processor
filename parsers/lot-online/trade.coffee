@@ -36,7 +36,8 @@ trim = (text) -> if text? then text.replace(/^\s+/, '').replace(/\s+$/, '') else
 
 module.exports = (html, etp, url, headers, cb) ->
   needle.get url, options, (err, resp, body) ->
-    return cb err if err? or not resp.headers['set-cookie']?
+    return cb err if err?
+    return cb 'No headers!' if not resp.headers['set-cookie']?
     cookies = {JSESSIONID: resp.headers['set-cookie'][0].match(/JSESSIONID=([a-zA-Z0-9.]+);/)[1]}
     options.cookies = cookies
     options.headers['Referer'] = url
