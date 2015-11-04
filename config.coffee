@@ -10,7 +10,7 @@ module.exports =
 
   listWorkers:       1
   tradeUrlWorkers:   1
-  tradeHtmlWorkers:  1
+  tradeHtmlWorkers:  3
   tradeJsonWorkers:  1
   lotUrlWorkers:     8
   lotHtmlWorkers:    1
