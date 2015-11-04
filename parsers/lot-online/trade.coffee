@@ -29,6 +29,7 @@ options =
   follow_set_referer: true
   open_timeout: 120000
   headers: {}
+  cookies: {}
 
 external = require './external'
 
