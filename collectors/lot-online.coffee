@@ -35,7 +35,7 @@ Sync =>
     while true
       html = needle.post.sync null, etp.href, form, options
       $ = cheerio.load html[1]
-      form = "formMain=formMain&formMain%3AcommonSearchCriteriaStr=&javax.faces.ViewState=#{$('input[id="javax.faces.ViewState"]').val().replace(':','%3A')}&formMain%3AmsgBoxText=&javax.faces.partial.ajax=true&javax.faces.source=formMain:clNext&javax.faces.partial.execute=formMain:clNext&javax.faces.partial.render=formMain:panelList formMain:LotListPaginatorID&formMain:clNext=formMain:clNext"
+      form = "formMain=formMain&formMain%3AcommonSearchCriteriaStr=&formMain%3Aj_idt85=22&formMain%3Aj_idt90=&formMain%3Aj_idt94=&formMain%3AitKeyWords=&formMain%3Aj_idt100=&formMain%3AauctionDatePlanBID_input=&formMain%3AauctionDatePlanEID_input=&formMain%3AcostBValueB=0&formMain%3AcostBValueE=0&formMain%3Aj_idt111=&formMain%3AselectIndPublish=1&formMain%3AmsgBoxText=&javax.faces.partial.ajax=true&javax.faces.source=formMain:clNext&javax.faces.partial.execute=formMain:clNext&javax.faces.partial.render=formMain:panelList formMain:LotListPaginatorID&formMain:clNext=formMain:clNext"
       $('td[class="ui-datagrid-column"]').each ->
         number = $(@).find('div[id="new-field-lot"]').text()
         url = 'http://bankruptcy.lot-online.ru/e-auction/' + $(@).find('a.filed.filed-title').attr('href')
