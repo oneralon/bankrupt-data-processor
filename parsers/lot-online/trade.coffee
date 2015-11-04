@@ -122,4 +122,7 @@ module.exports = (html, etp, url, headers, cb) ->
         lot.discount_percent = lot.discount / lot.start_price * 100
         trade.lots = [lot]
         external $, trade, cookies, vstate, (err, extended) ->
-          if err? then return cb err else return cb null, extended
+          if err?
+            return cb err
+          else
+            return cb null, extended
