@@ -47,7 +47,7 @@ module.exports = (html, etp, url, headers, cb) ->
       needle.head 'http://bankruptcy.lot-online.ru/e-auction/accessDenied.xhtml', options, ->
         cb err if err?
         log.info "Parse trade #{url}"
-        $ = cheerio.load html
+        $ = cheerio.load body
         trade = {}
         lot = {}
         trade.url = url
