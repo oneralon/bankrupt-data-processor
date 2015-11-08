@@ -22,18 +22,25 @@ module.exports = (html, etp, url, ismicro, cb) ->
 
   $ = cheerio.load html
 
-  trade.title = title = $('body > table:nth-child(2) > tbody > tr > td > table:nth-child(6) > tbody > tr > td.body_text > table > tbody > tr:nth-child(1) > td > table > tbody > tr > td:nth-child(1)').text().trim()
+  trade.title = $('td.body_text > h1').text().match(/Продать \"(.+)\"$/)[1]
   trade.type = $('td.fname:contains("Форма аукциона")').next().text()
-  trade.trade_type = title.match(/(аукцион|конкурс|публичное предложение)/i)[0].toLowerCase()
   trade.membership_type = if /Открытый/.test(trade.type) then 'Открытая' else 'Закрытая'
   trade.price_submission_type = if /открытой/.test(trade.type) then 'Открытая' else 'Закрытая'
-  trade.win_procedure = $('td.fname:contains("Порядок и критерии выявления победителя")').next().text()
-  trade.submission_procedure = $('td.fname:contains("Порядок подачи заявок на участие")').next().text()
-  trade.holding_date = moment $('td.fname:contains("Дата и время подведения итогов")').next().text(), "DD.MM.YYYY HH:mm"
-  trade.official_publish_date = moment $('td.fname:contains("Дата публикации в печатных СМИ")').next().text().match(/от (.+)$/)?[1], "DD.MM.YYYY"
-  trade.print_publish_date =  moment $('td.fname:contains("Дата публикации в печатных СМИ по месту нахождения должника")').next().text().match(/от (.+)$/)?[1], "DD.MM.YYYY"
-  trade.results_place = $('td.fname:contains("Место проведения")').next().text()
-  trade.results_date = moment $('td.fname:contains("Дата подведения результатов торгов")').next().text(), "DD.MM.YYYY HH:mm"
+  trade.win_procedure = $('td.fname:contains("Порядок и критерии выявления победителя")').next().text().trim()
+  trade.submission_procedure = $('td.fname:contains("Порядок подачи заявок на участие")').next().text().trim()
+  trade.official_publish_date = moment $('td.fname:contains("Дата публикации в печатных СМИ")').next().text().match(/от ([\d\.]+)/)?[1], "DD.MM.YYYY"
+  trade.print_publish_date =  moment $('td.fname:contains("Дата публикации в печатных СМИ по месту нахождения должника")').next().text().match(/от ([\d\.]+)/)?[1], "DD.MM.YYYY"
+  trade.holding_date = moment $('td.fname:contains("Дата и время подведения итогов")').next().text().trim(), "DD.MM.YYYY HH:mm"
+  trade.results_place = $('td.fname:contains("Место проведения")').next().text().trim()
+
+  head = $('table.blank > tbody > tr.thead > td > table > tbody > tr > td[class!=countdown]').text().trim()
+  trade.trade_type = head.match(/(аукцион|конкурс|публичное предложение)/i)[0].toLowerCase()
+  if /Отказ организатора/i.test head
+    trade.status = 'Торги отменены'
+  # else
+
+  trade.results_date = moment $('td.fname:contains("Дата подведения результатов торгов")').next().text().trim(), "DD.MM.YYYY HH:mm"
+
   # trade.additional
 
   trade.debtor = {}
