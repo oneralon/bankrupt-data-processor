@@ -17,7 +17,7 @@ host      = /^https?\:\/\/[A-Za-z0-9\.\-]+/
 
 math = (text) ->
   if text isnt ''
-    parseFloat(text.replace(/\s/, '').replace(',','.'))
+    parseFloat(text.replace(/\s/g, '').replace(',','.'))
   else null
 
 options =
