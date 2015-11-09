@@ -31,6 +31,8 @@ tradeSchema = new Schema
       name: String
       fax: String
       phone: String
+      email: String
+      address: String
       _id: false
     _id: false
   debtor:
