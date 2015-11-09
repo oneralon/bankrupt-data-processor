@@ -126,4 +126,4 @@ module.exports = (html, etp, url, headers, cb) ->
         trade.lots = [lot]
         external $, trade, cookies, vstate, (err, extended) ->
           if err? then cb(err)
-          else if not extended? then cb(null, extended) else cb('Error on returning')
+          else if extended? then cb(null, extended) else cb('Error on returning')
