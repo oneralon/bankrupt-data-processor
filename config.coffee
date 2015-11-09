@@ -27,6 +27,12 @@ module.exports =
     tor: no
     compressed: yes
   ,
+    name: 'Российский аукционный дом'
+    href: 'http://bankruptcy.lot-online.ru/e-auction/lots.xhtml'
+    platform: 'lot-online'
+    tor: no
+    compressed: yes
+  ,
     name: 'Cбербанк. Автоматизированная система торгов'
     href: 'http://utp.sberbank-ast.ru/Bankruptcy/List/BidList'
     platform: 'sberbank-ast'

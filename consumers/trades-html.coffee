@@ -29,11 +29,11 @@ else
       html        = message.content.toString()
       Sync =>
         try
-          trade = parser.sync null, html, etp, headers.url, false
-          trade.url = headers.url
-          trade.etp = etp
-          amqp.publish.sync null, config.tradeJsonQueue, JSON.stringify(trade), headers: headers
-          cb()
+          unless /undefined/.test headers.url
+            trade = parser.sync null, html, etp, headers.url, headers
+            amqp.publish.sync null, config.tradeJsonQueue, JSON.stringify(trade), headers: headers
+            cb()
+          else cb()
         catch e
           log.error e
           cb e

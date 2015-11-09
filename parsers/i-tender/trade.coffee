@@ -32,6 +32,8 @@ module.exports = (html, etp, url, ismicro, cb) ->
   $ = cheerio.load(html)
   log.info "Parse trade #{url}"
   trade = {}
+  trade.etp = etp
+  trade.url = url
   trade_type = $('legend:contains("№")').text().trim()
   if /аукцион/i.test(trade_type)
     trade.trade_type = 'аукцион'
@@ -178,18 +180,16 @@ module.exports = (html, etp, url, ismicro, cb) ->
       trade.lots = lots
       cb null, trade
   else
-    if not ismicro
-      log.info 'More than 50 lots in trade'
-      collector.collect url, (err, relatives) ->
-        cb err if err?
-        for rel in relatives
-          urls.push etp.href.match(host)[0] + rel
-        for lotUrl in urls
-          publish promises, lotUrl, etp
-        collector.phantom.exit()
-        Promise.all(promises).then (lots) ->
-          for lot in lots
-            if lot.status then lot.status = status(lot.status)
-          trade.lots = lots
-          cb null, trade
-    else cb 'Micro parser more than 50'
+    log.info 'More than 50 lots in trade'
+    collector.collect url, (err, relatives) ->
+      cb err if err?
+      for rel in relatives
+        urls.push etp.href.match(host)[0] + rel
+      for lotUrl in urls
+        publish promises, lotUrl, etp
+      collector.phantom.exit()
+      Promise.all(promises).then (lots) ->
+        for lot in lots
+          if lot.status then lot.status = status(lot.status)
+        trade.lots = lots
+        cb null, trade
