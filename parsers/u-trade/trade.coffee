@@ -35,6 +35,7 @@ module.exports = (html, etp, url, headers, cb) ->
 
   deposit_procedure = $("th:contains('Информация о торгах')")?.parent().parent().parent().find("td:contains('Сроки и порядок внесения и возврата задатка, реквизиты счетов, на которые вносится задаток')")?.next().text().trim()
   trade = {}
+  trade.etp = etp
   trade.url = url
   trade.type = $('td:contains("Форма проведения торгов и подачи предложений")').next().text().trim()
   if /аукцион/i.test(trade.type)

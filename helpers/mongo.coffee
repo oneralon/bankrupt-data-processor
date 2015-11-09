@@ -93,8 +93,8 @@ module.exports.updateLot = (alot, cb) ->
       diffpatch.patch lot, diff
       lot.last_event = alot.last_event
       lot.present = alot.present
-      lot.discount = lot.start_price - lot.current_sum
-      lot.discount_percent = lot.discount / lot.start_price
+      lot.discount = lot.start_price - lot.current_sum * 100 or 0
+      lot.discount_percent = lot.discount / lot.start_price * 100 or 0
       lot.step_sum = if lot.step_sum is NaN then 0 else lot.step_sum
       lot.step_percent = if lot.step_precent is NaN then 0 else lot.step_percent
       lot.intervals = alot.intervals
@@ -111,7 +111,7 @@ module.exports.updateLot = (alot, cb) ->
       else
         log.info "Updated #{lot.url}"
         tagger lot, (err, nlot) ->
-          nlot.save(cb)         
+          nlot.save(cb)
     else
       log.error "Not fount lot #{alot.url}, num: #{alot.number}"
       cb()
@@ -206,7 +206,7 @@ module.exports.update = (auction, cb) ->
             save.push new Promise (resolve) -> tagger lot, (err, nlot) -> nlot.save(resolve)
         else
           console.log alot
-          
+
       Promise.all(remove).then -> Promise.all(save).then ->
         trade.updated = new Date()
         trade.save cb

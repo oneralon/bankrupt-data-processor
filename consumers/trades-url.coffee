@@ -27,7 +27,10 @@ else
       etp         = headers.etp
       Sync =>
         try
-          result = downloader.sync null, headers.url
+          if headers.etp.platform is 'lot-online'
+            result = ['', {}]
+          else
+            result = downloader.sync null, headers.url
           for k, v of result[1]
             headers[k] = v
           amqp.publish.sync null, headers.queue, result[0], headers: headers

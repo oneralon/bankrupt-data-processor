@@ -32,6 +32,8 @@ module.exports = (html, etp, url, ismicro, cb) ->
   $ = cheerio.load(html)
   log.info "Parse trade #{url}"
   trade = {}
+  trade.etp = etp
+  trade.url = url
   trade_type = $('legend:contains("№")').text().trim()
   if /аукцион/i.test(trade_type)
     trade.trade_type = 'аукцион'
