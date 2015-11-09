@@ -17,7 +17,8 @@ lotParser = require './lot'
 module.exports = (html, etp, url, ismicro, cb) ->
   log.info "Parse trade #{url}"
   trade = {}
-  trade.url = url
+  lot   = {}
+  trade.url = lot.url = url
   trade.etp = etp
 
   $ = cheerio.load html
@@ -33,7 +34,28 @@ module.exports = (html, etp, url, ismicro, cb) ->
   trade.holding_date = moment $('td.fname:contains("Дата и время подведения итогов")').next().text().trim(), "DD.MM.YYYY HH:mm"
   trade.results_place = $('td.fname:contains("Место проведения")').next().text().trim()
 
+  trade.debtor = {}
+  trade.debtor.full_name = $('td.fname:contains("Должник")').next().text().match(/(.+)\(/)[1]
+  trade.debtor.short_name = null
+  trade.debtor.inn = $('td.fname:contains("Должник")').next().text().match(/ИНН:\s(\d+)/)[1]
+  trade.debtor.ogrn = $('td.fname:contains("Должник")').next().text().match(/ОГРН:\s(\d+)/)[1]
+  trade.debtor.arbitral_commissioner = $('td.fname:contains("Арбитражный управляющий")').next().text().match(/(.+)\(/)[1].trim()
+  trade.debtor.arbitral_name = $('td.fname:contains("Наименование арбитражного суда")').next().text()
+  trade.debtor.bankruptcy_number = $('td.fname:contains("Номер дела о банкротстве")').next().text()
+  trade.debtor.reviewing_property = $('td.fname:contains("Порядок ознакомления с имуществом")').next().text()
+  trade.debtor.arbitral_organization = $('td.fname:contains("членом которой является арбитражный управляющий")').next().text()
+  trade.debtor.contract_procedure = $('td.fname:contains("Порядок и сроки заключения договора ")').next().text()
+  trade.debtor.payment_terms = lot.payment_account = $('td.fname:contains("Условия оплаты")').next().text()
+  trade.bankrot_date = null
+  trade.contract_signing_person = $('td.fname:contains("Организатор процедуры")').next().find('a').text()
+
+  $('td.fname:contains("№ сообщения на ЕФРСБ")').next().text()
+
+
+
+
   head = $('table.blank > tbody > tr.thead > td > table > tbody > tr > td[class!=countdown]').text().trim()
+  trade.number = head.match(/№\s(\d+)/)?[1]
   trade.trade_type = head.match(/(аукцион|конкурс|публичное предложение)/i)[0].toLowerCase()
   if /Отказ организатора/i.test head
     trade.status = 'Торги отменены'
@@ -43,20 +65,18 @@ module.exports = (html, etp, url, ismicro, cb) ->
 
   # trade.additional
 
-  trade.debtor = {}
-  trade.debtor.inn = $('td.fname:contains("Должник")').next().text().match(/ИНН:\s(\d+)/)[1]
-  trade.debtor.short_name = $('td.fname:contains("Должник")').next().text().match(/(.+)\(/)[1]
-  trade.debtor.full_name = $('td.fname:contains("Должник")').next().text().match(/(.+)\(/)[1]
-  trade.debtor.ogrn = $('td.fname:contains("Должник")').next().text().match(/ОГРН:\s(\d+)/)[1]
+
+  
+
+
+
   trade.debtor.judgment
-  trade.debtor.reviewing_property = $('td.fname:contains("Порядок ознакомления с имуществом")').next().text()
+
   trade.debtor.region = regionize trade
-  trade.debtor.arbitral_name = $('td.fname:contains("Наименование арбитражного суда")').next().text()
-  trade.debtor.bankruptcy_number = $('td.fname:contains("Номер дела о банкротстве")').next().text()
-  trade.debtor.arbitral_commissioner = $('td.fname:contains("Арбитражный управляющий")').next().text().match(/(.+)\(/)[1].trim()
-  trade.debtor.arbitral_organization = $('td.fname:contains("членом которой является арбитражный управляющий")').next().text()
-  trade.debtor.contract_procedure = $('td.fname:contains("Порядок и сроки заключения договора ")').next().text()
-  trade.debtor.payment_terms = $('td.fname:contains("Условия оплаты")').next().text()
+
+  
+  
+ 
 
   trade.owner = {}
   trade.owner.short_name = $('td.fname:contains("Организатор процедуры:")').next().find('a').text()
@@ -68,6 +88,8 @@ module.exports = (html, etp, url, ismicro, cb) ->
   # trade.owner.ogrnip
 
   trade.contact = name: $('td.fname:contains("Контактное лицо:")').next().html().split('<br>').join(', ')
+
+  trade.lots = [lot]
 
   lotParser html, etp, url, (err, lot) ->
     trade.lots = [lot]
