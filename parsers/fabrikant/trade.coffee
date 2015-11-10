@@ -92,8 +92,9 @@ module.exports = (html, etp, url, ismicro, cb) ->
         now = new Date()
         if now < trade.requests_start_date then lot.status = 'Извещение опубликовано'
         else
-          if now > trade.requests_end_date then lot.status = 'Прием заявок'
-          # lot.status = if $('a:contains("Предложения")').next().text().trim() is '- 0' then 'Прием заявок' else 'Идут торги'
+          if $('a:contains("Предложения")').next().text().trim() is '- 0' or $('a:contains("Претенденты")').next().text().trim() is '- 0/0'
+            lot.status = 'Прием заявок'
+          else 'Идут торги'
           if now > trade.holding_date then lot.status = 'Торги завершены'
       lot.number = 1
       lot.title = $('td.fname:contains("реализуемого")').next().find('b').text().trim()
