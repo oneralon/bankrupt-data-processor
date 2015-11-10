@@ -70,6 +70,7 @@ module.exports = (html, etp, url, ismicro, cb) ->
       trade.bankrot_date = trade.requests_start_date
       trade.contract_signing_person = $('td.fname:contains("Организатор процедуры")').next().find('a').text()
       ownerUrl = 'https://www.fabrikant.ru' + $('td.fname:contains("Организатор процедуры")').next().find('a').attr('href')
+      if /undefined/.test ownerUrl then console.log url
       resp = needle.get.sync null, ownerUrl, options
       ownerPage = cheerio.load resp[1]
       trade.owner = {}
@@ -122,6 +123,7 @@ module.exports = (html, etp, url, ismicro, cb) ->
       lot.deposit_return_date = null
       lot.documents = []
       docUrl = 'https://www.fabrikant.ru' + $('a:contains("Документация по торгам")').first().attr('href')
+      if /undefined/.test docUrl then console.log url
       resp = needle.get.sync null, docUrl, options
       docPage = cheerio.load resp[1]
       docPage('tr.c1').each ->
