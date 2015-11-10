@@ -139,8 +139,9 @@ module.exports = (html, etp, url, ismicro, cb) ->
         for i in [0..lot.intervals.length - 2]
           first  = lot.intervals[i]
           second = lot.intervals[i+1]
-          first.interval_end_date = first.request_end_date = moment(second.request_start_date).subtract(1, 'seconds').toDate()
-          second.deposit_sum = first.interval_price - second.interval_price
+          if second?
+            first.interval_end_date = first.request_end_date = moment(second.request_start_date).subtract(1, 'seconds').toDate()
+            second.deposit_sum = first.interval_price - second.interval_price
         lot.intervals[0].deposit_sum = lot.start_price - lot.intervals[0].interval_price
         lot.intervals[lot.intervals.length-1].interval_end_date = lot.intervals[lot.intervals.length-1].request_end_date = moment(trade.requests_end_date or trade.holding_date).subtract(1, 'seconds').toDate()
       trade.lots = [lot]
