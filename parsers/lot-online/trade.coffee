@@ -113,7 +113,7 @@ module.exports = (html, etp, url, headers, cb) ->
             request_start_date: moment($(this).find('td').first().text(), "DD.MM.YYYY").toDate()
             interval_end_date: moment($(this).find('td').first().next().text(), "DD.MM.YYYY").subtract(1, 'seconds').toDate()
             request_end_date: moment($(this).find('td').first().next().text(), "DD.MM.YYYY").subtract(1, 'seconds').toDate()
-            price_reduction_percent: interval_price / lot.start_price * 100
+            price_reduction_percent: (1 - interval_price / lot.start_price) * 100
             interval_price: interval_price
             deposit_sum: lot.deposit_size
         if lot.intervals.length > 0

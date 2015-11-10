@@ -133,7 +133,7 @@ module.exports = (html, etp, url, ismicro, cb) ->
           interval_start_date: moment(@data.slice(0, 16), "DD.MM.YYYY HH:mm").toDate()
           request_start_date: moment(@data.slice(0, 16), "DD.MM.YYYY HH:mm").toDate()
           interval_price: math(@data.slice(18, 200))
-          price_reduction_percent: math(@data.slice(18, 200)) / lot.start_price * 100
+          price_reduction_percent: (1 - math(@data.slice(18, 200)) / lot.start_price) * 100
       if lot.intervals.length > 0
         for i in [0..lot.intervals.length - 2]
           first  = lot.intervals[i]
