@@ -13,8 +13,6 @@ log       = logger  'FABRIKANT TRADE PARSER'
 config    = require '../../config'
 host      = /^https?\:\/\/[A-Za-z0-9\.\-]+/
 
-lotParser = require './lot'
-
 options =
   # proxy: 'http://127.0.0.1:18118'
   compressed: true
@@ -49,6 +47,7 @@ module.exports = (html, etp, url, ismicro, cb) ->
       trade.print_publish_date =  moment($('td.fname:contains("Дата публикации в печатных СМИ по месту нахождения должника")').next().text().match(/от ([\d\.]+)/)?[1], "DD.MM.YYYY").toDate()
       trade.holding_date = moment($('td.fname:contains("Дата и время подведения итогов")').next().text().trim(), "DD.MM.YYYY HH:mm").toDate()
       trade.results_place = $('td.fname:contains("Место проведения")').next().text().trim()
+      trade.additional = $('td.fname:contains("Условия передачи имущества")').next().text().trim()
       trade.debtor = {}
       trade.debtor.full_name = $('td.fname:contains("Должник")').next().text().match(/(.+)\(/)[1]
       trade.debtor.short_name = null
@@ -62,34 +61,40 @@ module.exports = (html, etp, url, ismicro, cb) ->
       trade.debtor.contract_procedure = $('td.fname:contains("Порядок и сроки заключения договора ")').next().text()
       trade.debtor.payment_terms = lot.payment_account = $('td.fname:contains("Условия оплаты")').next().text()
       trade.debtor.judgment = null
+      trade.requests_start_date = moment($('td.fname:contains("Дата публикации в МТС \"Фабрикант.ру\"")').next().text().trim(), "DD.MM.YYYY HH:mm").toDate()
+      trade.requests_end_date = moment($('td.fname:contains("Дата окончания приема аукционных заявок в аукционе")').next().find('b').text().trim(), "DD.MM.YYYY HH:mm").toDate()
+      trade.holding_date = moment($('td.fname:contains("Дата подведения результатов торгов")').next().text().trim() or $('td.fname:contains("Дата начала аукциона")').next().text().trim(), "DD.MM.YYYY HH:mm").toDate()
       trade.debtor.debtor_type = 'Не определен'
       if /(ООО|АО|ЗАО|ПАО|ОАО|ГУП|ФГУП|МУП)/i.test trade.debtor.full_name then trade.debtor.debtor_type = 'Юридическое лицо'
       if /(ПБОЮЛ|ИП)/i.test trade.debtor.full_name then trade.debtor.debtor_type = 'Индивидуальный предприниматель'
       trade.bankrot_date = null
       trade.contract_signing_person = $('td.fname:contains("Организатор процедуры")').next().find('a').text()
       ownerUrl = 'https://www.fabrikant.ru' + $('td.fname:contains("Организатор процедуры")').next().find('a').attr('href')
-      # resp = needle.get.sync null, ownerUrl, options
-      # ownerPage = cheerio.load resp[1]
-      # trade.owner = {}
-      # trade.owner.short_name = ownerPage('td.fname:contains("Краткое наименование организации")').next().text()
-      # trade.owner.full_name = ownerPage('td.fname:contains("Полное наименование организации")').next().text()
-      # trade.owner.internet_address = ownerPage('td.fname:contains("Адрес корпоративного web-сайта")').next().text()
-      # trade.owner.contact =
-      #   name: $('td.fname:contains("Организатор процедуры")').next().find('a').text()
-      #   address: ownerPage('td.fname:contains("Почтовый адрес")').next().text()
-      #   ogrn: ownerPage('td.fname:contains("ОГРН")').next().text()
-      #   fax: ownerPage('td.fname:contains("Факс")').next().text()
-      #   phone: ownerPage('td.fname:contains("Телефон")').next().text()
-      #   email: ownerPage('td.fname:contains("Email")').next().text()
-
+      resp = needle.get.sync null, ownerUrl, options
+      ownerPage = cheerio.load resp[1]
+      trade.owner = {}
+      trade.owner.short_name = ownerPage('td.fname:contains("Краткое наименование организации")').next().text()
+      trade.owner.full_name = ownerPage('td.fname:contains("Полное наименование организации")').next().text()
+      trade.owner.internet_address = ownerPage('td.fname:contains("Адрес корпоративного web-сайта")').next().text()
+      trade.owner.contact =
+        name: $('td.fname:contains("Организатор процедуры")').next().find('a').text()
+        address: ownerPage('td.fname:contains("Почтовый адрес")').next().text()
+        ogrn: ownerPage('td.fname:contains("ОГРН")').next().text()
+        fax: ownerPage('td.fname:contains("Факс")').next().text()
+        phone: ownerPage('td.fname:contains("Телефон")').next().text()
+        email: ownerPage('td.fname:contains("Email")').next().text()
       head = $('td:contains("Извещение о проведении")').last().text().trim()
-      console.log head
       trade.number = head.match(/№\s(\d+)/)?[1]
       trade.trade_type = head.match(/(аукцион|конкурс|публичное предложение)/i)[0].toLowerCase()
       if /Отказ организатора/i.test head
-        trade.status = 'Торги отменены'
-      # else
-
+        lot.status = 'Торги отменены'
+      else
+        now = new Date()
+        if now < trade.requests_start_date then lot.status = 'Извещение опубликовано'
+        else
+          lot.status = if $('a:contains("Предложения")').next().text().trim() is '- 0' then 'Прием заявок' else 'Идут торги'
+          if now > trade.requests_end_date then lot.status = 'Идут торги'
+          if now > trade.holding_date then lot.status = 'Торги завершены'
       lot.number = 1
       lot.title = $('td.fname:contains("реализуемого")').next().find('b').text().trim()
       lot.procedure = "Документы, прилагаемые к заявке: " + $('td.fname:contains("Документы, прилагаемые к заявке:")').next().text()
@@ -114,23 +119,29 @@ module.exports = (html, etp, url, ismicro, cb) ->
       lot.deposit_size = null
       lot.correspondent_account = null
       lot.deposit_return_date = null
-
+      lot.documents = []
+      docUrl = 'https://www.fabrikant.ru' + $('a:contains("Документация по торгам")').first().attr('href')
+      resp = needle.get.sync null, docUrl, options
+      docPage = cheerio.load resp[1]
+      docPage('tr.c1').each ->
+        lot.documents.push
+          name: docPage(@).find('td > a > b').text()
+          url: 'https://www.fabrikant.ru' + docPage(@).find('td > a').attr('href')
+      lot.intervals = []
+      $('td.fname:contains("Понижение цены")').next().clone().children().remove().end().contents().each ->
+        lot.intervals.push
+          interval_start_date: moment(@data.slice(0, 16), "DD.MM.YYYY HH:mm").toDate()
+          request_start_date: moment(@data.slice(0, 16), "DD.MM.YYYY HH:mm").toDate()
+          interval_price: math(@data.slice(18, 200))
+          price_reduction_percent: math(@data.slice(18, 200)) / lot.start_price * 100
+      if lot.intervals.length > 0
+        for i in [0..lot.intervals.length - 2]
+          first  = lot.intervals[i]
+          second = lot.intervals[i+1]
+          first.interval_end_date = first.request_end_date = moment(second.request_start_date).subtract(1, 'seconds').toDate()
+          second.deposit_sum = first.interval_price - second.interval_price
+        lot.intervals[0].deposit_sum = lot.start_price - lot.intervals[0].interval_price
+        lot.intervals[lot.intervals.length-1].interval_end_date = lot.intervals[lot.intervals.length-1].request_end_date = moment(trade.requests_end_date or trade.holding_date).subtract(1, 'seconds').toDate()
       trade.lots = [lot]
-
-
-
-
-      console.log trade
-
-      # trade.results_date = moment($('td.fname:contains("Дата подведения результатов торгов")').next().text().trim(), "DD.MM.YYYY HH:mm").toDate()
-
-      # # trade.additional
-
-      # trade.owner.internet_address
-      # trade.owner.inn
-      # trade.owner.kpp
-      # trade.owner.ogrn
-      # trade.owner.ogrnip
-      e()
       cb null, trade
     catch e then cb e
