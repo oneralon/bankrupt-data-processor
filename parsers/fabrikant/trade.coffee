@@ -25,7 +25,7 @@ options =
 
 math = (text) ->
   if text isnt ''
-    parseFloat(text.match(/(.+)руб/)[1].replace(/\s/g, '').replace(',','.'))
+    parseFloat(text.match(/(.+)руб/)?[1].replace(/\s/g, '').replace(',','.'))
   else null
 
 module.exports = (html, etp, url, ismicro, cb) ->
@@ -49,11 +49,11 @@ module.exports = (html, etp, url, ismicro, cb) ->
       trade.results_place = $('td.fname:contains("Место проведения")').next().text().trim()
       trade.additional = $('td.fname:contains("Условия передачи имущества")').next().text().trim()
       trade.debtor = {}
-      trade.debtor.full_name = $('td.fname:contains("Должник")').next().text().match(/(.+)\(/)[1]
+      trade.debtor.full_name = $('td.fname:contains("Должник")').next().text().match(/(.+)\(/)?[1]
       trade.debtor.short_name = null
-      trade.debtor.inn = $('td.fname:contains("Должник")').next().text().match(/ИНН:\s(\d+)/)[1]
-      trade.debtor.ogrn = $('td.fname:contains("Должник")').next().text().match(/ОГРН:\s(\d+)/)[1]
-      trade.debtor.arbitral_commissioner = $('td.fname:contains("Арбитражный управляющий")').next().text().match(/(.+)\(/)[1].trim()
+      trade.debtor.inn = $('td.fname:contains("Должник")').next().text().match(/ИНН:\s(\d+)/)?[1]
+      trade.debtor.ogrn = $('td.fname:contains("Должник")').next().text().match(/ОГРН:\s(\d+)/)?[1]
+      trade.debtor.arbitral_commissioner = $('td.fname:contains("Арбитражный управляющий")').next().text().match(/(.+)\(/)?[1].trim()
       trade.debtor.arbitral_name = $('td.fname:contains("Наименование арбитражного суда")').next().text()
       trade.debtor.bankruptcy_number = $('td.fname:contains("Номер дела о банкротстве")').next().text()
       trade.debtor.reviewing_property = $('td.fname:contains("Порядок ознакомления с имуществом")').next().text()
@@ -85,7 +85,7 @@ module.exports = (html, etp, url, ismicro, cb) ->
         email: ownerPage('td.fname:contains("Email")').next().text()
       head = $('td:contains("Извещение о проведении")').last().text().trim()
       trade.number = head.match(/№\s(\d+)/)?[1]
-      trade.trade_type = head.match(/(аукцион|конкурс|публичное предложение)/i)[0].toLowerCase()
+      trade.trade_type = head.match(/(аукцион|конкурс|публичное предложение)/i)?[0].toLowerCase()
       if /Отказ организатора/i.test head
         lot.status = 'Торги отменены'
       else
