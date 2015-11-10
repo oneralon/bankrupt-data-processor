@@ -21,12 +21,12 @@ module.exports =
   database:          'bankrot-parser'
 
   etps: [
-  #   name: 'Межотраслевая торговая система "Фабрикант"'
-  #   href: 'https://fabrikant.ru/trades/procedure/search/?filter_id=6'
-  #   platform: 'fabrikant'
-  #   tor: no
-  #   compressed: yes
-  # ,
+    name: 'Межотраслевая торговая система "Фабрикант"'
+    href: 'https://fabrikant.ru/trades/procedure/search/?filter_id=6'
+    platform: 'fabrikant'
+    tor: no
+    compressed: yes
+  ,
     name: 'Российский аукционный дом'
     href: 'http://bankruptcy.lot-online.ru/e-auction/lots.xhtml'
     platform: 'lot-online'
