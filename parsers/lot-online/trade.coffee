@@ -17,7 +17,7 @@ host      = /^https?\:\/\/[A-Za-z0-9\.\-]+/
 
 math = (text) ->
   if text isnt ''
-    parseFloat(text.replace(/\s/, '').replace(',','.'))
+    parseFloat(text.replace(/\s/g, '').replace(',','.'))
   else null
 
 options =
@@ -38,12 +38,13 @@ trim = (text) -> if text? then text.replace(/^\s+/, '').replace(/\s+$/, '') else
 module.exports = (html, etp, url, headers, cb) ->
   needle.get url, options, (err, resp, body) ->
     return cb err if err?
-    return cb 'No headers!' if not resp.headers['set-cookie']?
-    cookies = {JSESSIONID: resp.headers['set-cookie'][0].match(/JSESSIONID=([a-zA-Z0-9.]+);/)[1]}
+    if not resp.headers['set-cookie']?
+      cookies = {JSESSIONID: resp.connection._httpMessage._header.match(/JSESSIONID=([a-zA-Z0-9.]+)/)[1]}
+    else cookies = {JSESSIONID: resp.headers['set-cookie'][0].match(/JSESSIONID=([a-zA-Z0-9.]+);/)[1]}
     options.cookies = cookies
     options.headers['Referer'] = url
     $ = cheerio.load body
-    vstate = $('input[id="javax.faces.ViewState"]').val().replace(':', '%3A')
+    vstate = body.match(/value\=\"(\-?\d+\:\-?\d+)\"/)?[1].replace(':', '%3A')
     needle.head 'http://bankruptcy.lot-online.ru/e-auction/accessDenied.xhtml', options, ->
       cb err if err?
       needle.head 'http://bankruptcy.lot-online.ru/e-auction/accessDenied.xhtml', options, ->
@@ -124,5 +125,5 @@ module.exports = (html, etp, url, headers, cb) ->
         lot.discount_percent = lot.discount / lot.start_price * 100
         trade.lots = [lot]
         external $, trade, cookies, vstate, (err, extended) ->
-          if not extended? then cb('Error on returning')
-          if err? then cb(err) else cb(null, extended)
+          if err? then cb(err)
+          else if not extended? then cb(null, extended) else cb('Error on returning')

@@ -9,8 +9,8 @@ module.exports =
   lotsJsonQueue:     'bankrupt-parser.lotJson'
 
   listWorkers:       1
-  tradeUrlWorkers:   1
-  tradeHtmlWorkers:  3
+  tradeUrlWorkers:   8
+  tradeHtmlWorkers:  4
   tradeJsonWorkers:  1
   lotUrlWorkers:     8
   lotHtmlWorkers:    1
@@ -21,6 +21,12 @@ module.exports =
   database:          'bankrot-parser'
 
   etps: [
+    name: 'Межотраслевая торговая система "Фабрикант"'
+    href: 'https://fabrikant.ru/trades/procedure/search/?filter_id=6'
+    platform: 'fabrikant'
+    tor: no
+    compressed: yes
+  ,
     name: 'Российский аукционный дом'
     href: 'http://bankruptcy.lot-online.ru/e-auction/lots.xhtml'
     platform: 'lot-online'
