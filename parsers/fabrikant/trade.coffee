@@ -150,6 +150,15 @@ module.exports = (html, etp, url, ismicro, cb) ->
           lot.intervals[lot.intervals.length-1].interval_end_date = lot.intervals[lot.intervals.length-1].request_end_date = moment(trade.requests_end_date or trade.holding_date).subtract(1, 'seconds').toDate()
         trade.lots = [lot]
       else
+        trade.documents = []
+        docUrl = 'https://www.fabrikant.ru' + $('a:contains("Документация по торгам")').first().attr('href')
+        if /undefined/.test docUrl then console.log url
+        resp = needle.get.sync null, docUrl, options
+        docPage = cheerio.load resp[1]
+        docPage('tr.c1').each ->
+          trade.documents.push
+            name: docPage(@).find('td > a > b').text()
+            url: 'https://www.fabrikant.ru' + docPage(@).find('td > a').attr('href')
         trade.lots = []
         $('div.lot_info').each ->
           lot = {url: trade.url}
