@@ -182,6 +182,7 @@ module.exports = (html, etp, url, ismicro, cb) ->
           trade.holding_date = moment(trade.holding_date or $('td.fname:contains("Дата подведения результатов торгов")').next().text().trim() or $('td.fname:contains("Дата начала аукциона")').next().text().trim(), "DD.MM.YYYY HH:mm").toDate()
           lot.step_sum = math $(@).find('td.fname:contains("Шаг аукциона")').next().text()
           lot.step_percent = Math.round(lot.step_sum / lot.start_price) * 100
+          lot.intervals = []
           $(@).find('td.fname:contains("Понижение цены")').next().clone().children().remove().end().contents().each ->
             lot.intervals.push
               interval_start_date: moment(@data.slice(0, 16), "DD.MM.YYYY HH:mm").toDate()
