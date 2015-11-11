@@ -153,11 +153,16 @@ module.exports = (html, etp, url, ismicro, cb) ->
         trade.lots = []
         $('div.lot_info').each ->
           lot = {url: trade.url}
-          lot.title = $(@).find('td.fname:contains("Характеристики, описание предмета договора")').next().text().trim()
-          lot.number = parseInt $(@).find('td.fname:contains("Характеристики, описание предмета договора")').next().text().trim().split(':')[0].split('№')[1]
-
-
-
+          lot.title = $(@).find('td.fname:contains("Характеристики, описание предмета договора")').next().text().trim().split(':')?[1]?.trim()
+          short = $(@).find('td.fname:contains("Характеристики, описание предмета договора")').next().text().trim().split(':')[0]
+          lot.status = $('td.fname:contains("Лоты")').next().find('tr:contains("'+short+'") > td.element').last().text()
+          lot.current_sum = math $('td.fname:contains("Лоты")').next().find('tr:contains("'+short+'") > td.element').last().prev().text().trim()
+          lot.number = parseInt $(@).find('td.fname:contains("Характеристики, описание предмета договора")').next().text().trim().split(':')?[0]?.split('№')?[1]
+          lot.currency = 'Российская Федерация'
+          lot.start_price = math $(@).find('td.fname:contains("Начальная цена продажи имущества")').next().text().replace('(без НДС)','').trim()
+          lot.discount = lot.start_price - lot.current_sum
+          lot.discount_percent = lot.discount / lot.start_price * 100
+          lot.category = $(@).find('td.fname:contains("Категория имущества")').next().text().trim()
 
           trade.lots.push lot
       cb null, trade
