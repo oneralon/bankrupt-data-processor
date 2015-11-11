@@ -172,7 +172,31 @@ module.exports = (html, etp, url, ismicro, cb) ->
           lot.discount = lot.start_price - lot.current_sum
           lot.discount_percent = lot.discount / lot.start_price * 100
           lot.category = $(@).find('td.fname:contains("Категория имущества")').next().text().trim()
-
+          lot.procedure = $(@).find('td.fname:contains("Порядок оформления участия в торгах")').next().text().trim()
+          lot.deposit_procedure = $(@).find('td.fname:contains("Размер задатка, сроки и порядок внесения и возврата, реквизиты счетов")').next().text().trim()
+          lot.payment_account = $(@).find('td.fname:contains("Условия оплаты")').next().text().trim()
+          lot.information = $(@).find('td.fname:contains("Предмет договор")').next().text().trim()
+          trade.debtor.reviewing_property = $(@).find('td.fname:contains("Порядок ознакомления с имуществом")').next().text().trim()
+          trade.requests_start_date = moment($(@).find('td.fname:contains("Дата и время начала приема заявок")').next().text().trim(), "DD.MM.YYYY HH:mm").toDate()
+          trade.requests_end_date = moment($(@).find('td.fname:contains("Дата и время окончания приема заявок")').next().text().trim(), "DD.MM.YYYY HH:mm").toDate()
+          trade.holding_date = moment(trade.holding_date or $('td.fname:contains("Дата подведения результатов торгов")').next().text().trim() or $('td.fname:contains("Дата начала аукциона")').next().text().trim(), "DD.MM.YYYY HH:mm").toDate()
+          lot.step_sum = math $(@).find('td.fname:contains("Шаг аукциона")').next().text()
+          lot.step_percent = Math.round(lot.step_sum / lot.start_price) * 100
+          $(@).find('td.fname:contains("Понижение цены")').next().clone().children().remove().end().contents().each ->
+            lot.intervals.push
+              interval_start_date: moment(@data.slice(0, 16), "DD.MM.YYYY HH:mm").toDate()
+              request_start_date: moment(@data.slice(0, 16), "DD.MM.YYYY HH:mm").toDate()
+              interval_price: math(@data.slice(18, 200))
+              price_reduction_percent: (1 - math(@data.slice(18, 200)) / lot.start_price) * 100
+          if lot.intervals.length > 0
+            for i in [0..lot.intervals.length - 2]
+              first  = lot.intervals[i]
+              second = lot.intervals[i+1]
+              if second? and first?
+                first.interval_end_date = first.request_end_date = moment(second.request_start_date).subtract(1, 'seconds').toDate()
+                second.deposit_sum = first.interval_price - second.interval_price
+            lot.intervals[0].deposit_sum = lot.start_price - lot.intervals[0].interval_price
+            lot.intervals[lot.intervals.length-1].interval_end_date = lot.intervals[lot.intervals.length-1].request_end_date = moment(trade.requests_end_date or trade.holding_date).subtract(1, 'seconds').toDate()
           trade.lots.push lot
       cb null, trade
     catch e then cb e
