@@ -18,10 +18,12 @@ module.exports = (grunt) ->
   grunt.registerTask 'collect:full', ->
     log.info "Start full collecting of #{config.etps.length} sources"
     done = @async()
-    arg = require('optimist').argv.etp
-    if arg
-      etps = [config.getEtp(arg)]
-    else etps = config.etps
+    argv = require('optimist').argv
+    etps = config.etps
+    if argv.etp?
+      etps = etps.filter (i) -> new RegExp(argv.etp.replace('.', '\.').replace('-', '\-')).test i.href
+    if argv.platform?
+      etps = etps.filter (i) -> new RegExp(argv.platform.replace('.', '\.').replace('-', '\-')).test i.platform
     Sync =>
       try
         redis.clear.sync null
