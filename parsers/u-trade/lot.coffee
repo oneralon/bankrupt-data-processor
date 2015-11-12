@@ -91,7 +91,7 @@ module.exports = (html, etp, additional) ->
     lot.price_reduction_type = $(@).find("td:contains('Порядок снижения цены')")?.next().text().trim()
     lot.current_sum = lot.start_price
 
-    interval_rows = $('div:contains("Интервалы снижения цены"), td:contains("График снижения цены")').next().find('tr')
+    interval_rows = $(@).find('div:contains("Интервалы снижения цены"), td:contains("График снижения цены")').next().find('tr')
     interval_rows = interval_rows.filter -> /\d{2}\.\d{2}\.\d{4} \d{2}:\d{2}/.test $(@).find('td').first().next().text().trim()
     fieldsets = intervals_fieldsets[etp.href] or intervals_fieldsets['*']
     interval_rows.each ->
