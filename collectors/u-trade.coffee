@@ -15,7 +15,7 @@ etp       = { name: argv.name, href: argv.href, platform: argv.platform }
 Sync =>
   try
     log.info "Start collecting #{etp.name}"
-    last = parseInt redis.get.sync(null, etp.href) or '1'
+    last = parseInt(redis.get.sync(null, etp.href) or '1')
     html = request.sync null, etp.href
     $ = cheerio.load html
     links = $("a[href *= '/etp/trade/list.html'], a[href*='r_num']")
