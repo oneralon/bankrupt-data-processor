@@ -41,7 +41,7 @@ intervals_fieldsets =
       fields: ['deposit_sum']
       type: Number
 
-  '*':
+  'undefined':
     0:
       fields: ['interval_start_date', 'request_start_date']
       type: Date
@@ -95,7 +95,7 @@ module.exports = (html, etp, additional) ->
     interval_rows = interval_rows.filter -> /\d{2}\.\d{2}\.\d{4} \d{2}:\d{2}/.test $(@).find('td').first().next().text().trim()
     for k, v of intervals_fieldsets
       if new RegExp(k.replace('.', '\.').replace('-', '\-')).test etp.href then fieldsets = v
-    fieldsets = fieldsets or intervals_fieldsets['*']
+    fieldsets = fieldsets or intervals_fieldsets['undefined']
     interval_rows.each ->
       lot.intervals = lot.intervals or []
       interval = {}
