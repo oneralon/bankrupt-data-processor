@@ -10,7 +10,7 @@ config    = require '../../config'
 host      = /^https?\:\/\/[A-Za-z0-9\.\-]+/
 
 intervals_fieldsets =
-  'http://m-ets.ru/search?r_num=О&lots=&debtor=&org=&arb=&arb_org=&stat=&sort=&desc=':
+  'm-ets.ru':
     1:
       fields: ['interval_start_date', 'request_start_date']
       type: Date
@@ -21,7 +21,7 @@ intervals_fieldsets =
       fields: ['interval_price']
       type: Number
 
-  'http://nistp.ru/etp/trade/list.html':
+  'nistp.ru':
     0:
       fields: ['interval_start_date']
       type: Date
@@ -93,7 +93,9 @@ module.exports = (html, etp, additional) ->
 
     interval_rows = $(@).find('div:contains("Интервалы снижения цены"), td:contains("График снижения цены")').next().find('tr')
     interval_rows = interval_rows.filter -> /\d{2}\.\d{2}\.\d{4} \d{2}:\d{2}/.test $(@).find('td').first().next().text().trim()
-    fieldsets = intervals_fieldsets[etp.href] or intervals_fieldsets['*']
+    for k, v of intervals_fieldsets
+      if new RegExp(k.replace('.', '\.').replace('-', '\-')).test etp.href then fieldsets = v
+    fieldsets = fieldsets or intervals_fieldsets['*']
     interval_rows.each ->
       lot.intervals = lot.intervals or []
       interval = {}
