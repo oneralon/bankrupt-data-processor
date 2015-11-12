@@ -114,8 +114,8 @@ module.exports = (html, etp, url, headers, cb) ->
       lots.push new Promise (resolve, reject) ->
         Sync =>
           try
-            html = request.sync null, pageUrl
-            lot = lotParser html, etp, additional
+            resp = request.sync null, pageUrl
+            lot = lotParser resp[0], etp, additional
             resolve(lot)
           catch e then reject e
     Promise.all(lots).catch(cb).then (lot_chunks) ->

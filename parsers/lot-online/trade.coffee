@@ -7,7 +7,6 @@ needle    = require 'needle'
 
 iconv     = require 'iconv-lite'
 
-request   = require '../../downloaders/request'
 logger    = require '../../helpers/logger'
 status    = require '../../helpers/status'
 log       = logger  'LOT-ONLINE TRADE PARSER'

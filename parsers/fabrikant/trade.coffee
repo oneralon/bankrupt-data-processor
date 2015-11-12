@@ -5,7 +5,6 @@ Promise   = require 'promise'
 Sync      = require 'sync'
 needle    = require 'needle'
 
-request   = require '../../downloaders/request'
 logger    = require '../../helpers/logger'
 regionize = require '../../helpers/regionize'
 status    = require '../../helpers/status'

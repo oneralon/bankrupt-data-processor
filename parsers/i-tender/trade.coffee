@@ -18,9 +18,9 @@ collector = require './lots-collector'
 
 publish = (container, url, etp) ->
   container.push new Promise (resolve, reject) ->
-    request url, (err, html) ->
+    request url, (err, resp) ->
       unless err?
-        lot = parseLot html, etp
+        lot = parseLot resp[0], etp
         lot.url = url.replace '//www.', '//'
         log.info "Resolved #{url}"
         resolve(lot)
