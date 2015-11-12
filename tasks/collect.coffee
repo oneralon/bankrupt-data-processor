@@ -20,7 +20,7 @@ module.exports = (grunt) ->
     done = @async()
     arg = require('optimist').argv.etp
     if arg
-      etps = config.getEtp(arg)
+      etps = [config.getEtp(arg)]
     else etps = config.etps
     Sync =>
       try
