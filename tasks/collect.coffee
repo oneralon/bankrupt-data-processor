@@ -18,11 +18,15 @@ module.exports = (grunt) ->
   grunt.registerTask 'collect:full', ->
     log.info "Start full collecting of #{config.etps.length} sources"
     done = @async()
+    arg = require('optimist').argv.etp
+    if arg
+      etps = [config.getEtp(arg)]
+    else etps = config.etps
     Sync =>
       try
         redis.clear.sync null
         amqp.init.sync null
-        for etp in config.etps
+        for etp in etps
           collector.sync null, etp, null
           exec 'pkill phantomjs'
         log.info "Complete full collecting of #{config.etps.length} sources"
