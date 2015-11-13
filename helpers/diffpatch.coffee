@@ -40,7 +40,8 @@ module.exports.diff = (left, right, model) ->
 
 module.exports.patch = (obj, diff) ->
   for k, v of diff
-    obj[k] = v
+    if v isnt 'Invalid date'
+      obj[k] = v
 
 module.exports.lot = (model, object) ->
   for k, v of object
