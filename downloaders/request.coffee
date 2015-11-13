@@ -23,7 +23,6 @@ module.exports = (url, cb) ->
     catch e then cb e
 
 get = (url, cb) ->
-  console.log url
   etp = config.getEtp(url)
   options.compression = etp.compression or true
   if etp.tor then options.proxy = 'http://127.0.0.1:18118'
