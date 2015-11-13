@@ -35,17 +35,17 @@ Sync =>
       ]
     log.info "Start collecting #{etp.name}"
     for status in params
-      etp.href = etp.href + status
-      last = parseInt(redis.get.sync(null, etp.href) or '1')
-      resp = request.sync null, etp.href
+      href = etp.href + status
+      last = parseInt(redis.get.sync(null, href) or '1')
+      resp = request.sync null, href
       $ = cheerio.load resp[0]
       links = $("a[href *= '/etp/trade/list.html'], a[href*='r_num']")
       if links.length is 0 then pages = 1
-      else pages = parseInt $(links[links.length - 1]).attr('href').match(/page=(\d+)/i)[1]
+      else pages = parseInt $(links[links.length - 1]).attr('href').match(/page=(\d+)/i)?[1] or 1
       for page in [last..pages]
         log.info "Download page #{page} of #{pages}"
-        if /\?/.test etp.href then url = etp.href + "&page=#{page}"
-        else url = etp.href + "?page=#{page}"
+        if /\?/.test etp.href then url = href + "&page=#{page}"
+        else url = href + "?page=#{page}"
         resp = request.sync null, url
         amqp.publish.sync null, config.listsHtmlQueue, new Buffer(resp[0], 'utf8'),
           headers:
