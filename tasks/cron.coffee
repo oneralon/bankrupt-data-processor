@@ -99,12 +99,13 @@ module.exports = (grunt) ->
                 etp = config.etps.filter( (t) ->
                   r.test t.href
                 )?[0]
-                amqp.publish.sync null, queue, '', headers:
-                  etp: etp
-                  downloader: downloader
-                  url: lot.url
-                  queue: queue.replace 'Urls', 'Html'
-                  parser: parser
+                if redis.check.sync(null, lot.url)
+                  amqp.publish.sync null, queue, '', headers:
+                    etp: etp
+                    downloader: downloader
+                    url: lot.url
+                    queue: queue.replace 'Urls', 'Html'
+                    parser: parser
               else
                 console.log "Remove lot with empty trade -- #{lot._id}"
                 lot.remove.sync null
@@ -114,6 +115,7 @@ module.exports = (grunt) ->
       try
         res = true
         current = 0
+        redis.clear.sync null
         while res
           res = proceed_range.sync null, current
           current += perPage
