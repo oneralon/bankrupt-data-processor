@@ -14,6 +14,25 @@ etp       = { name: argv.name, href: argv.href, platform: argv.platform }
 
 Sync =>
   try
+    if /m\-ets/.test etp.href
+      params = [
+        '?lots=&r_num=О&debtor=&org=&arb=&stat=3'
+        '?lots=&r_num=О&debtor=&org=&arb=&stat=4'
+        '?lots=&r_num=О&debtor=&org=&arb=&stat=5%2C6'
+        '?lots=&r_num=О&debtor=&org=&arb=&stat=71'
+        '?lots=&r_num=О&debtor=&org=&arb=&stat=72'
+        '?lots=&r_num=О&debtor=&org=&arb=&stat=8'
+        '?lots=&r_num=О&debtor=&org=&arb=&stat=10'
+        '?lots=&r_num=О&debtor=&org=&arb=&stat=12'
+      ]
+    else
+      params = [
+        '?processStatus=BID_SUBMISSION'
+        '?processStatus=BEFORE_TRADE'
+        '?processStatus=ACTIVE'
+        '?processStatus=AFTER_TRADE'
+        '?processStatus=CANCELED'
+      ]
     log.info "Start collecting #{etp.name}"
     last = parseInt(redis.get.sync(null, etp.href) or '1')
     resp = request.sync null, etp.href
