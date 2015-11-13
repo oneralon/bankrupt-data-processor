@@ -73,7 +73,7 @@ module.exports = (grunt) ->
   grunt.registerTask 'cron:old', ->
     console.log "Update old lots"
     done = @async()
-    date = moment().subtract(3, 'hour')
+    date = moment().subtract(3, 'days')
     query =
       status: $in: ["Идут торги", "Извещение опубликовано", "Не определен", "Прием заявок"]
       updated: { $exists: true, $lt: date }
