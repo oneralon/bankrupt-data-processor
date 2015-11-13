@@ -46,7 +46,7 @@ module.exports =
     compression: yes
   ,
     name: 'ЭТП "МЭТС"'
-    href: 'http://m-ets.ru/search?r_num=О&lots=&debtor=&org=&arb=&arb_org=&stat=&sort=&desc='
+    href: 'http://m-ets.ru/search'
     platform: 'u-trade'
     tor: yes
     compression: yes
@@ -93,12 +93,6 @@ module.exports =
     tor: yes
     compression: yes
   ,
-    name: 'Региональная торговая площадка'
-    href: 'http://regtorg.com/etp/trade/list.html'
-    platform: 'u-trade'
-    tor: yes
-    compression: yes
-  ,
     name: 'ЭТП "А-КОСТА"'
     href: 'http://akosta.info/etp/trade/list.html'
     platform: 'u-trade'
@@ -119,6 +113,12 @@ module.exports =
   ,
     name: 'Электронный капитал'
     href: 'http://eksystems.ru/etp/trade/list.html?type=bankruptcySales'
+    platform: 'u-trade'
+    tor: yes
+    compression: yes
+  ,
+    name: 'Региональная торговая площадка'
+    href: 'http://regtorg.com/etp/trade/list.html'
     platform: 'u-trade'
     tor: yes
     compression: yes

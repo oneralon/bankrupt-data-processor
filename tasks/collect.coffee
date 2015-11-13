@@ -16,7 +16,6 @@ module.exports = (grunt) ->
     amqp.init(done)
 
   grunt.registerTask 'collect:full', ->
-    log.info "Start full collecting of #{config.etps.length} sources"
     done = @async()
     argv = require('optimist').argv
     etps = config.etps
@@ -24,6 +23,7 @@ module.exports = (grunt) ->
       etps = etps.filter (i) -> new RegExp(argv.etp.replace('.', '\.').replace('-', '\-')).test i.href
     if argv.platform?
       etps = etps.filter (i) -> new RegExp(argv.platform.replace('.', '\.').replace('-', '\-')).test i.platform
+    log.info "Start full collecting of #{etps.length} sources"
     Sync =>
       try
         redis.clear.sync null
