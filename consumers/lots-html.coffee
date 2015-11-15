@@ -22,23 +22,34 @@ if cluster.isMaster
 else
   log.info "Lot HTML consumer worker #{cluster.worker.process.pid}"
   amqp.consume config.lotsHtmlQueue, (message, cb) =>
-    if message?
+    if message? and message.content.toString().length > 5
       headers     = message.properties.headers
-      parser      = require "../parsers/#{headers.parser}"
+      #parser      = require "../parsers/#{headers.parser}"
       etp         = headers.etp
       html        = message.content.toString()
       Sync =>
         try
+          if /undefined/i.test headers.url then cb()
+          queue = config.lotsJsonQueue
           if headers.etp.platform is 'sberbank-ast' 
+            parser      = require "../parsers/#{headers.parser}"
             lot = parser.sync null, html, null, etp
-          else lot = parser html, etp
+          else
+            if /fabrikant/i.test headers.etp.href
+              parser = require "../parsers/fabrikant/trade"
+              lot = parser.sync null, html, etp, headers.url, null
+              queue = config.tradesJsonQueue
+            else
+              parser      = require "../parsers/#{headers.parser}"
+              lot = parser html, etp
           unless lot?
             console.log headers.url
             return cb()
           lot.url = headers.url
           lot.tradeUrl = headers.tradeUrl
-          amqp.publish.sync null, config.lotsJsonQueue, JSON.stringify(lot), headers: headers
+          amqp.publish.sync null, queue, JSON.stringify(lot), headers: headers
           cb()
         catch e
           log.error e
           cb e
+    else cb()

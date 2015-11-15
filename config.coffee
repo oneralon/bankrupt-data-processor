@@ -120,7 +120,7 @@ module.exports =
     name: 'Региональная торговая площадка'
     href: 'http://regtorg.com/etp/trade/list.html'
     platform: 'u-trade'
-    tor: yes
+    tor: no
     compression: yes
   ,
   #---------------------------------------------------------------------------------

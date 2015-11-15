@@ -28,8 +28,11 @@ else
       Sync =>
         try
           console.log headers
-          html = downloader.sync null, headers.url
-          console.log html
+          if /sberbank/.test headers.etp.platform
+            html = downloader.sync null, headers.url
+          else
+            resp = downloader.sync null, headers.url
+            html = resp[0]
           amqp.publish.sync null, headers.queue, html, headers: headers
           cb()
         catch e
