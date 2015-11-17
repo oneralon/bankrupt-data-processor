@@ -5,3 +5,4 @@ module.exports = (grunt) ->
   require('./migrations/existing')(grunt)
   require('./migrations/last_message')(grunt)
   require('./migrations/tags')(grunt)
+  require('./migrations/etps')(grunt)
