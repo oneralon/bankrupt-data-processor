@@ -68,7 +68,7 @@ module.exports = (html, etp, url, headers, cb) ->
     phone: $("th:contains('Организатор торгов')")?.parent().parent().parent().find("td:contains('Номер контактного телефона')")?.next().text().trim()
   trade.debtor = {}
   trade.debtor.judgment = $("th:contains('Сведения о банкротстве')")?.parent().parent().parent().find("td:contains('Основание для проведения торгов')")?.next().text().trim()
-  trade.debtor.full_name = $("th:contains('Сведения о должнике')")?.parent().parent().parent().find("td:contains('Полное наименование')")?.next().text().trim()
+  trade.debtor.full_name = $("th:contains('Сведения о должнике')")?.parent().parent().parent().find("td:contains('Полное наименование')")?.next().text().trim() or $("th:contains('Сведения о должнике')")?.parent().parent().parent().find("td:contains('Фамилия, имя, отчество')")?.next().text().trim()
   trade.debtor.short_name = $("th:contains('Сведения о должнике')")?.parent().parent().parent().find("td:contains('Краткое наименование')")?.next().text().trim()
   trade.debtor.ogrn = $("th:contains('Сведения о должнике')")?.parent().parent().parent().find("td:contains('ОГРН')")?.next().text().trim()
   trade.debtor.inn = $("th:contains('Сведения о должнике')")?.parent().parent().parent().find("td:contains('ИНН')")?.next().text().trim()
