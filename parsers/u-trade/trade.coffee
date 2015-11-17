@@ -93,7 +93,7 @@ module.exports = (html, etp, url, headers, cb) ->
   if pages.length is 0
     pages = 1
   else
-    pages = parseInt($(pages[pages.length -1]).text() or '1')
+    pages = parseInt($('.paginatorNotSelectedPage').last().text() or '1')
   lots = []
   log.info "Trade has #{pages} pages"
 
