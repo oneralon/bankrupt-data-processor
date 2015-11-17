@@ -39,6 +39,19 @@ module.exports =
     tor: yes
     compressed: yes
   ,
+    name: 'ЭТП "Пром-Консалтинг"'
+    href: 'http://promkonsalt.ru/etp/trade/list.html'
+    platform: 'u-trade'
+    tor: yes
+    compression: yes
+  ,
+    name: 'ЭТП "МФБ"'
+    href: 'http://etp.mse.ru/etp/trade/list.html'
+    platform: 'u-trade'
+    tor: yes
+    compression: yes
+  ,
+
     name: 'ЭТП "Аукционы Дальнего Востока"'
     href: 'http://torgidv.ru/etp/trade/list.html'
     platform: 'u-trade'
@@ -120,7 +133,7 @@ module.exports =
     name: 'Региональная торговая площадка'
     href: 'http://regtorg.com/etp/trade/list.html'
     platform: 'u-trade'
-    tor: yes
+    tor: no
     compression: yes
   ,
   #---------------------------------------------------------------------------------

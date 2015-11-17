@@ -176,14 +176,14 @@ module.exports.update = (auction, cb) ->
           lots = trade.lots.filter (i) ->
             if alot.url isnt trade.url
               i.url is alot.url
-            else i.url is alot.url and i.number.toString() is alot.number.toString()
+            else i.url is alot.url and i.number?.toString() is alot.number?.toString()
           if lots.length > 0
             lot = lots[0]
             dublicates = []
             if lots.length > 1
               for i in [1..lots.length-1]
                 rlot = lots[i]
-                trade.lots = trade.lots.filter (i) -> i._id.toString() isnt rlot._id.toString()
+                trade.lots = trade.lots.filter (i) -> i._id?.toString() isnt rlot._id?.toString()
                 dublicates.push new Promise (resolve) -> rlot.remove(resolve)
             diff = diffpatch.diff lot, alot, Lot
             diffpatch.patch lot, diff
