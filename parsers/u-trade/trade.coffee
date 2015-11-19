@@ -68,14 +68,14 @@ module.exports = (html, etp, url, headers, cb) ->
     phone: $("th:contains('Организатор торгов')")?.parent().parent().parent().find("td:contains('Номер контактного телефона')")?.next().text().trim()
   trade.debtor = {}
   trade.debtor.judgment = $("th:contains('Сведения о банкротстве')")?.parent().parent().parent().find("td:contains('Основание для проведения торгов')")?.next().text().trim()
-  trade.debtor.full_name = $("th:contains('Сведения о должнике')")?.parent().parent().parent().find("td:contains('Полное наименование')")?.next().text().trim() or $("th:contains('Сведения о должнике')")?.parent().parent().parent().find("td:contains('Фамилия, имя, отчество')")?.next().text().trim()
+  trade.debtor.full_name = $("th:contains('Сведения о должнике')")?.parent().parent().parent().find("td:contains('Полное наименование')")?.next().text().trim() or $("th:contains('Сведения о должнике')")?.parent().parent().parent().find("td:contains('Фамилия, имя, отчество')")?.next().text().trim() or $("th:contains('Сведения о должнике')")?.parent().parent().parent().find("td:contains('ФИО')")?.next().text().trim()
   trade.debtor.short_name = $("th:contains('Сведения о должнике')")?.parent().parent().parent().find("td:contains('Краткое наименование')")?.next().text().trim()
   trade.debtor.ogrn = $("th:contains('Сведения о должнике')")?.parent().parent().parent().find("td:contains('ОГРН')")?.next().text().trim()
   trade.debtor.inn = $("th:contains('Сведения о должнике')")?.parent().parent().parent().find("td:contains('ИНН')")?.next().text().trim()
   trade.debtor.payment_terms = $("th:contains('Договор купли-продажи')")?.parent().parent().parent().find("td:contains('Сроки платежей, реквизиты счетов, на которые вносятся платежи')")?.next().text().trim()
   trade.debtor.contract_procedure = $("th:contains('Договор купли-продажи')")?.parent().parent().parent().find("td:contains('Порядок и срок заключения договора купли-продажи')")?.next().text().trim()
   trade.debtor.arbitral_organization = $("th:contains('Арбитражный управляющий')")?.parent().parent().parent().find("td:contains('Название саморегулируемой организации арбитражных управляющих')")?.next().text().trim()
-  trade.debtor.arbitral_commissioner = $("th:contains('Арбитражный управляющий')")?.parent().parent().parent().find("td:contains('Фамилия, имя, отчество')")?.next().text().trim()
+  trade.debtor.arbitral_commissioner = $("th:contains('Арбитражный управляющий')")?.parent().parent().parent().find("td:contains('ФИО')")?.next().text().trim() or $("th:contains('Арбитражный управляющий')")?.parent().parent().parent().find("td:contains('Фамилия, имя, отчество')")?.next().text().trim()
   trade.debtor.arbitral_name = $("th:contains('Сведения о банкротстве')")?.parent().parent().parent().find("td:contains('Наименование арбитражного суда')")?.next().text().trim()
   trade.debtor.bankruptcy_number = $("th:contains('Сведения о банкротстве')")?.parent().parent().parent().find("td:contains('Номер дела о банкротстве')")?.next().text().trim()
 
