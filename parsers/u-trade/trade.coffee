@@ -89,41 +89,43 @@ module.exports = (html, etp, url, headers, cb) ->
 
   log.info 'Parsed information'
 
-  pages = $('.paginatorNotSelectedPage')
-  if pages.length is 0
-    pages = 1
-  else
-    pages = parseInt($('.paginatorNotSelectedPage').last().text() or '1')
-  lots = []
-  log.info "Trade has #{pages} pages"
+  request etp.href.match(host)[0] + "/etp/trade/inner-view-lots.html?id=#{id}&page=1", (err, resp) ->
+    fPage = cheerio.load resp[0]
+    pages = fPage('.paginatorNotSelectedPage')
+    if pages.length is 0
+      pages = 1
+    else
+      pages = parseInt(fPage('.paginatorNotSelectedPage').last().text() or '1')
+    lots = []
+    log.info "Trade has #{pages} pages"
 
-  additional =
-    deposit_procedure: deposit_procedure
-    procedure: trade.additional
-    currency: 'Российская Федерация'
-    category: 'Не определена'
-  if pages is 1 and $("table[id*=lotNumber], table.data:contains('Лот №'), table.data:contains('Сведения о предмете торгов'), table.data:contains('Информация о предмете торгов'), table:contains('Сведения по лоту №')").length > 0
-    lots = lotParser html, etp, additional
-    trade.lots = lots
-    log.info "Found #{trade.lots.length} lots"
-    cb "No lots! #{url}" if trade.lots.length is 0
-    cb null, trade
-  else
-    for page in [1..pages]
-      pageUrl = etp.href.match(host)[0] + "/etp/trade/inner-view-lots.html?id=#{id}&page=#{page}"
-      lots.push new Promise (resolve, reject) ->
-        Sync =>
-          try
-            resp = request.sync null, pageUrl
-            lot = lotParser resp[0], etp, additional
-            resolve(lot)
-          catch e then reject e
-    Promise.all(lots).catch(cb).then (lot_chunks) ->
-      trade.lots = []
-      for chunk in lot_chunks
-        for lot in chunk
-          lot.url = if lot.url? then lot.url.replace '//www.', '//' else trade.url.replace '//www.', '//'
-          trade.lots.push lot
+    additional =
+      deposit_procedure: deposit_procedure
+      procedure: trade.additional
+      currency: 'Российская Федерация'
+      category: 'Не определена'
+    if pages is 1 and fPage("table[id*=lotNumber], table.data:contains('Лот №'), table.data:contains('Сведения о предмете торгов'), table.data:contains('Информация о предмете торгов'), table:contains('Сведения по лоту №')").length > 0
+      lots = lotParser resp[0], etp, additional
+      trade.lots = lots
       log.info "Found #{trade.lots.length} lots"
-      cb "No lots! #{tradeUrl}" if trade.lots.length is 0
+      cb "No lots! #{url}" if trade.lots.length is 0
       cb null, trade
+    else
+      for page in [1..pages]
+        pageUrl = etp.href.match(host)[0] + "/etp/trade/inner-view-lots.html?id=#{id}&page=#{page}"
+        lots.push new Promise (resolve, reject) ->
+          Sync =>
+            try
+              resp = request.sync null, pageUrl
+              lot = lotParser resp[0], etp, additional
+              resolve(lot)
+            catch e then reject e
+      Promise.all(lots).catch(cb).then (lot_chunks) ->
+        trade.lots = []
+        for chunk in lot_chunks
+          for lot in chunk
+            lot.url = if lot.url? then lot.url.replace '//www.', '//' else trade.url.replace '//www.', '//'
+            trade.lots.push lot
+        log.info "Found #{trade.lots.length} lots"
+        cb "No lots! #{tradeUrl}" if trade.lots.length is 0
+        cb null, trade
