@@ -13,9 +13,11 @@ module.exports.check = (url, cb) =>
     if reply is null or new Date() - new Date(reply) > 300000
       client.set url, (new Date()).toString()
       log.info "Redis check #{url} true"
+      client.quit()
       cb null, true
     else
       log.info "Redis check #{url} false"
+      client.quit()
       cb null, false
 
 module.exports.clear = (cb) ->
