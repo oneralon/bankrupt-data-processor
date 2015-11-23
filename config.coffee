@@ -41,6 +41,7 @@ module.exports =
     platform: 'sberbank-ast'
     tor: yes
     compressed: yes
+    timeout: 5 * 60 * 1000
   ,
     name: 'ЭТП "Пром-Консалтинг"'
     href: 'http://promkonsalt.ru/etp/trade/list.html'

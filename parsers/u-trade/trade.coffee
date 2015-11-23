@@ -1,6 +1,7 @@
 _         = require 'lodash'
 cheerio   = require 'cheerio'
 moment    = require 'moment'
+needle    = require 'needle'
 Promise   = require 'promise'
 Sync      = require 'sync'
 
@@ -89,16 +90,18 @@ module.exports = (html, etp, url, headers, cb) ->
 
   log.info 'Parsed information'
 
-  request etp.href.match(host)[0] + "/etp/trade/inner-view-lots.html?id=#{id}&page=1", (err, resp) ->
-    fPage = cheerio.load resp[0]
-    pages = fPage('.paginatorNotSelectedPage')
-    if pages.length is 0
-      pages = 1
+  needle.get etp.href.match(host)[0] + "/etp/trade/inner-view-lots.html?id=#{id}&page=1", (err, resp, body) ->
+    if resp.statusCode isnt 404
+      fPage = cheerio.load body
+      pages = fPage('.paginatorNotSelectedPage')
+      if pages.length is 0
+        pages = 1
+      else
+        pages = parseInt(fPage('.paginatorNotSelectedPage').last().text() or '1')
     else
-      pages = parseInt(fPage('.paginatorNotSelectedPage').last().text() or '1')
-    lots = []
+      pages = 1
     log.info "Trade has #{pages} pages"
-
+    lots = []
     additional =
       deposit_procedure: deposit_procedure
       procedure: trade.additional
