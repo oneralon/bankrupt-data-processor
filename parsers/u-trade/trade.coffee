@@ -105,9 +105,7 @@ module.exports = (html, etp, url, headers, cb) ->
       currency: 'Российская Федерация'
       category: 'Не определена'
     if pages is 1 and fPage("table[id*=lotNumber], table.data:contains('Лот №'), table.data:contains('Сведения о предмете торгов'), table.data:contains('Информация о предмете торгов'), table:contains('Сведения по лоту №')").length > 0
-      if $('th:contains("Лот №"), th:contains("Сведения о предмете торгов"), th:contains("Сведения по лоту №"), th:contains("Информация о предмете торгов")').length > 0
-        lots = lotParser html, etp, additional
-      else lots = lotParser resp[0], etp, additional
+      lots = lotParser resp[0], etp, additional
       trade.lots = lots
       log.info "Found #{trade.lots.length} lots"
       cb "No lots! #{url}" if trade.lots.length is 0
