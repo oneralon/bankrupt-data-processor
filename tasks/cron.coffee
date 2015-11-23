@@ -51,8 +51,8 @@ module.exports = (grunt) ->
   grunt.registerTask 'cron:reload-consumers', ->
     console.log "Reloading consumers..."
     done = @async()
-    sh.execSync 'sudo service rabbitmq-server restart'
-    sh.execSync 'sudo service redis-server restart'
+#    sh.execSync 'sudo service rabbitmq-server restart'
+#    sh.execSync 'sudo service redis-server restart'
     sh.execSync 'pkill -9 -f \'node /usr/local/bin/coffee /opt/bdp/consumers/lists-html.coffee\''
     sh.execSync 'pkill -9 -f \'node /usr/local/bin/coffee /opt/bdp/consumers/trades-url.coffee\''
     sh.execSync 'pkill -9 -f \'node /usr/local/bin/coffee /opt/bdp/consumers/trades-html.coffee\''

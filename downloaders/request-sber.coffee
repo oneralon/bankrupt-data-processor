@@ -16,7 +16,7 @@ module.exports = (url, cb) ->
     try
       while typeof data is 'undefined' or not data? or data.length < 1000
         data = get.sync null, url
-      cb null, data
+      cb null, data, {}
     catch e then cb e
 
 get = (url, cb) ->

@@ -13,7 +13,7 @@ config    = require '../../config'
 host      = /^https?\:\/\/[A-Za-z0-9\.\-]+/
 
 options =
-  # proxy: 'http://127.0.0.1:18118'
+  #proxy: 'http://127.0.0.1:18118'
   compressed: true
   accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'
   user_agent: 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.132 Safari/537.36'
@@ -37,7 +37,7 @@ module.exports = (html, etp, url, ismicro, cb) ->
   Sync =>
     try
       trade.title = $('td.fname:contains("реализуемого")').next().find('b').text().trim()
-      trade.type = $('td.fname:contains("Форма аукциона")').next().text()
+      trade.type = $('td.fname:contains("Форма аукциона")').next().text() or  $('td.fname:contains("Форма торга")').next().text()
       trade.membership_type = if /Открытый/.test(trade.type) then 'Открытая' else 'Закрытая'
       trade.price_submission_type = if /открытой/.test(trade.type) then 'Открытая' else 'Закрытая'
       trade.win_procedure = $('td.fname:contains("Порядок и критерии выявления победителя")').next().text().trim()

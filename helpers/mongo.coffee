@@ -89,6 +89,8 @@ module.exports.updateLot = (alot, cb) ->
           rlot = lots[i]
           lot.trade.lots = lot.trade.lots.filter (i) -> i.toString() isnt rlot._id.toString()
           dublicates.push new Promise (resolve) -> rlot.remove(resolve)
+      alot = diffpatch.intervalize alot, lot.trade
+      console.log alot.last_event
       diff = diffpatch.diff lot, alot, Lot
       diffpatch.patch lot, diff
       lot.last_event = alot.last_event

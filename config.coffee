@@ -16,7 +16,7 @@ module.exports =
   lotHtmlWorkers:    1
   lotJsonWorkers:    1
   timeout:           60000
-  incUpdTime:        30000
+  incUpdTime:        60000
 
   database:          'bankrot-parser'
 
