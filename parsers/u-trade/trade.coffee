@@ -90,8 +90,8 @@ module.exports = (html, etp, url, headers, cb) ->
 
   log.info 'Parsed information'
 
-  needle.get etp.href.match(host)[0] + "/etp/trade/inner-view-lots.html?id=#{id}&page=1", (err, resp, body) ->
-    if resp.statusCode isnt 404
+  needle.get etp.href.match(host)[0] + "/etp/trade/inner-view-lots.html?id=#{id}&page=1", (err, res, body) ->
+    if res.statusCode isnt 404
       fPage = cheerio.load body
       pages = fPage('.paginatorNotSelectedPage')
       if pages.length is 0
@@ -107,8 +107,8 @@ module.exports = (html, etp, url, headers, cb) ->
       procedure: trade.additional
       currency: 'Российская Федерация'
       category: 'Не определена'
-    if pages is 1 and fPage("table[id*=lotNumber], table.data:contains('Лот №'), table.data:contains('Сведения о предмете торгов'), table.data:contains('Информация о предмете торгов'), table:contains('Сведения по лоту №')").length > 0
-      lots = lotParser resp[0], etp, additional
+    if pages is 1 and $("table[id*=lotNumber], table.data:contains('Лот №'), table.data:contains('Сведения о предмете торгов'), table.data:contains('Информация о предмете торгов'), table:contains('Сведения по лоту №')").length > 0
+      lots = lotParser html, etp, additional
       trade.lots = lots
       log.info "Found #{trade.lots.length} lots"
       cb "No lots! #{url}" if trade.lots.length is 0
