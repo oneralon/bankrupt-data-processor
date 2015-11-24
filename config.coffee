@@ -102,7 +102,7 @@ module.exports =
     timeout: -1
   ,
     name: 'ЭТП "Новые Информацонные Сервисы"'
-    href: 'http://nistp.ru/etp/trade/list.html'
+    href: 'http://nistp.ru/trades'
     url: 'nistp.ru'
     platform: 'u-trade'
     tor: yes

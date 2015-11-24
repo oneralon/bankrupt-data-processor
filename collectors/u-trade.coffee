@@ -27,14 +27,27 @@ Sync =>
         ]
       else params = ['?lots=&r_num=О&debtor=&org=&arb=&stat=']
     else
-      if etp.recollect
-        params = [
-          '?processStatus=BID_SUBMISSION'
-          '?processStatus=BEFORE_TRADE'
-          '?processStatus=ACTIVE'
-          '?processStatus=AFTER_TRADE'
-        ]
-      else params = ['']
+      if /nistp/.test etp.href
+        if etp.recollect
+          params = [
+            '?title=&field_zayavka_au_ca_pp_numerator_value=&dolgnik_title=&arbitr_title=&field_zayavka_au_status_value_many_to_one=torg_waiting'
+            '?title=&field_zayavka_au_ca_pp_numerator_value=&dolgnik_title=&arbitr_title=&field_zayavka_au_status_value_many_to_one=torg_declared'
+            '?title=&field_zayavka_au_ca_pp_numerator_value=&dolgnik_title=&arbitr_title=&field_zayavka_au_status_value_many_to_one=torg_zay_reception'
+            '?title=&field_zayavka_au_ca_pp_numerator_value=&dolgnik_title=&arbitr_title=&field_zayavka_au_status_value_many_to_one=torg_zay_reception_end'
+            '?title=&field_zayavka_au_ca_pp_numerator_value=&dolgnik_title=&arbitr_title=&field_zayavka_au_status_value_many_to_one=torg_in_process'
+            '?title=&field_zayavka_au_ca_pp_numerator_value=&dolgnik_title=&arbitr_title=&field_zayavka_au_status_value_many_to_one=torg_result_summing'
+            '?title=&field_zayavka_au_ca_pp_numerator_value=&dolgnik_title=&arbitr_title=&field_zayavka_au_status_value_many_to_one=torg_pause'
+          ]
+        else params = ['']
+      else
+        if etp.recollect
+          params = [
+            '?processStatus=BID_SUBMISSION'
+            '?processStatus=BEFORE_TRADE'
+            '?processStatus=ACTIVE'
+            '?processStatus=AFTER_TRADE'
+          ]
+        else params = ['']
     log.info "Start collecting #{etp.name}"
     for status in params
       href = etp.href + status
