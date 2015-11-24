@@ -15,7 +15,7 @@ module.exports = (html, etp, cb) ->
       $ = cheerio.load(html)
       trades = []
       etpUrl = etp.href.match(host)[0]
-      rows = $('tr[onclick *= "/trade/view/purchase/general.html?id="], tr[onclick *= "location.href=\'generalView?id="]')
+      rows = $('tr[onclick *= "/trade/view/purchase/general.html?id="], tr[onclick *= "location.href=\'generalView?id="], td.views-field.views-field-phpcode-1 > div[onclick *= "window.location="]')
       if rows.length is 0
         rows = $('a[href *= "/trade/view/purchase/general.html?id="]')
         for row in rows
@@ -34,7 +34,8 @@ module.exports = (html, etp, cb) ->
         for row in rows
           func = $(row).attr('onclick')
           rel = func.match(/window.location=\'(\/trade\/view\/purchase\/general.html\?id=\d+)\'/i)?[1]
-          unless rel? then rel = '/' + func.match(/^location\.href=\'(.+)\'$/)[1]
+          unless rel? then rel = '/' + func.match(/^location\.href=\'(.+)\'$/)?[1]
+          unless rel? then rel = '/' + func.match(/^window\.location=\'(.+)\'$/)?[1]
           url = etpUrl + rel
           url = url.replace '://www.', '://'
           num = $(row).find('td:nth-child(1)').text()
