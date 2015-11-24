@@ -42,7 +42,8 @@ module.exports = (grunt) ->
           redis.clear.sync null
           amqp.init.sync null
           collector.sync null, etp, etp.timeout or config.incUpdTime, recollect or true
-        log.info "Complete updating of #{config.etps.length} sources"
+        done()
+        log.info "Complete updating of #{etps.length} sources"
         done()
       catch e
         log.error e
