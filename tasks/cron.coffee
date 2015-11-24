@@ -12,8 +12,6 @@ config     = require '../config'
 host       = /^https?\:\/\/(www\.)?([A-Za-z0-9\.\-]+)/
 сonnection = mongoose.createConnection "mongodb://localhost/#{config.database}"
 
-recollect = require('optimist').argv.recollect
-
 require '../models/lot'
 Lot       = сonnection.model 'Lot'
 require '../models/trade'
@@ -29,6 +27,13 @@ module.exports = (grunt) ->
       done()
 
   grunt.registerTask 'cron:recollect', ->
+    argv = require('optimist').argv
+    recollect = argv.recollect
+    etps = config.etps
+    if argv.etp?
+      etps = etps.filter (i) -> new RegExp(argv.etp.replace('.', '\.').replace('-', '\-')).test i.href
+    if argv.platform?
+      etps = etps.filter (i) -> new RegExp(argv.platform.replace('.', '\.').replace('-', '\-')).test i.platform
     console.log "Start updating of #{config.etps.length} sources" 
     done = @async()
     Sync =>

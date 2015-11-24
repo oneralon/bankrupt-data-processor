@@ -27,6 +27,7 @@ module.exports =
     platform: 'fabrikant'
     tor: no
     compressed: yes
+    timeout: 5 * 60 * 1000
   ,
     name: 'Российский аукционный дом'
     href: 'http://bankruptcy.lot-online.ru/e-auction/lots.xhtml'
@@ -34,6 +35,7 @@ module.exports =
     platform: 'lot-online'
     tor: no
     compressed: yes
+    timeout: 2 * 60 * 1000
   ,
     name: 'ЗАО "Сбербанк-АСТ"'
     href: 'http://utp.sberbank-ast.ru/Bankruptcy/List/BidList'
@@ -49,6 +51,7 @@ module.exports =
     platform: 'u-trade'
     tor: yes
     compression: yes
+    timeout: -1
   ,
     name: 'ЭТП "МФБ"'
     href: 'http://etp.mse.ru/etp/trade/list.html'
@@ -56,6 +59,7 @@ module.exports =
     platform: 'u-trade'
     tor: yes
     compression: yes
+    timeout: -1
   ,
     name: 'ЭТП "Аукционы Дальнего Востока"'
     href: 'http://torgidv.ru/etp/trade/list.html'
@@ -63,6 +67,7 @@ module.exports =
     platform: 'u-trade'
     tor: yes
     compression: yes
+    timeout: -1
   ,
     name: 'ЭТП "МЭТС"'
     href: 'http://m-ets.ru/search'
@@ -78,6 +83,7 @@ module.exports =
     platform: 'u-trade'
     tor: yes
     compression: yes
+    timeout: -1
   ,
     name: 'ЭТП "Аукционный тендерный центр"'
     href: 'http://atctrade.ru/etp/trade/list.html'
@@ -85,6 +91,7 @@ module.exports =
     platform: 'u-trade'
     tor: yes
     compression: yes
+    timeout: -1
   ,
     name: 'ЭТП "ВТБ-Центр"'
     href: 'http://vtb-center.ru/etp/trade/list.html'
@@ -92,6 +99,7 @@ module.exports =
     platform: 'u-trade'
     tor: yes
     compression: yes
+    timeout: -1
   ,
     name: 'ЭТП "Новые Информацонные Сервисы"'
     href: 'http://nistp.ru/etp/trade/list.html'
@@ -99,6 +107,7 @@ module.exports =
     platform: 'u-trade'
     tor: yes
     compression: yes
+    timeout: -1
   ,
     name: 'ЭТП "Аукцион-центр"'
     href: 'http://aukcioncenter.ru/etp/trade/list.html'
@@ -106,6 +115,7 @@ module.exports =
     platform: 'u-trade'
     tor: yes
     compression: yes
+    timeout: -1
   ,
     name: 'ЭТП "Система Электронных Торгов Имуществом"'
     href: 'http://seltim.ru/etp/trade/list.html'
@@ -113,6 +123,7 @@ module.exports =
     platform: 'u-trade'
     tor: yes
     compression: yes
+    timeout: -1
   ,
     name: 'ЭТП "Профит"'
     href: 'http://etp-profit.ru/etp/trade/list.html'
@@ -120,6 +131,7 @@ module.exports =
     platform: 'u-trade'
     tor: yes
     compression: yes
+    timeout: -1
   ,
     name: 'ЭТП "А-КОСТА info"'
     href: 'http://akosta.info/etp/trade/list.html'
@@ -127,6 +139,7 @@ module.exports =
     platform: 'u-trade'
     tor: yes
     compression: yes
+    timeout: -1
   ,
     name: 'ЭТП "Поволжский Аукционный Дом"'
     href: 'http://bankrot.auction63.ru/etp/trade/list.html'
@@ -134,6 +147,7 @@ module.exports =
     platform: 'u-trade'
     tor: yes
     compression: yes
+    timeout: -1
   ,
     name: 'Всероссийская Электронная Торговая Площадка'
     href: 'http://xn-----6kcbaifbn4di5abenic8aq7kvd6a.xn--p1ai/etp/trade/list.html'
@@ -141,6 +155,7 @@ module.exports =
     platform: 'u-trade'
     tor: yes
     compression: yes
+    timeout: -1
   ,
     name: 'Электронный капитал'
     href: 'http://eksystems.ru/etp/trade/list.html?type=bankruptcySales'
@@ -148,6 +163,7 @@ module.exports =
     platform: 'u-trade'
     tor: yes
     compression: yes
+    timeout: -1
   ,
     name: 'Региональная торговая площадка'
     href: 'http://regtorg.com/etp/trade/list.html'
@@ -155,6 +171,7 @@ module.exports =
     platform: 'u-trade'
     tor: no
     compression: yes
+    timeout: -1
   ,
   #---------------------------------------------------------------------------------
     name: 'ЭТП "Банкротство"'
