@@ -10,29 +10,31 @@ redis     = require '../helpers/redis'
 request   = require '../downloaders/request'
 log       = logger  'U-TRADE LIST COLLECTOR'
 config    = require '../config'
-etp       = { name: argv.name, href: argv.href, platform: argv.platform }
+etp       = { name: argv.name, href: argv.href, platform: argv.platform, recollect: argv.recollect }
 
 Sync =>
   try
     if /m\-ets/.test etp.href
-      params = [
-        '?lots=&r_num=О&debtor=&org=&arb=&stat=3'
-        '?lots=&r_num=О&debtor=&org=&arb=&stat=4'
-        '?lots=&r_num=О&debtor=&org=&arb=&stat=5%2C6'
-        '?lots=&r_num=О&debtor=&org=&arb=&stat=71'
-        '?lots=&r_num=О&debtor=&org=&arb=&stat=72'
-        '?lots=&r_num=О&debtor=&org=&arb=&stat=8'
-        '?lots=&r_num=О&debtor=&org=&arb=&stat=10'
-        '?lots=&r_num=О&debtor=&org=&arb=&stat=12'
-      ]
+      if etp.recollect
+        params = [
+          '?lots=&r_num=О&debtor=&org=&arb=&stat=3'
+          '?lots=&r_num=О&debtor=&org=&arb=&stat=4'
+          '?lots=&r_num=О&debtor=&org=&arb=&stat=5%2C6'
+          '?lots=&r_num=О&debtor=&org=&arb=&stat=71'
+          '?lots=&r_num=О&debtor=&org=&arb=&stat=72'
+          '?lots=&r_num=О&debtor=&org=&arb=&stat=8'
+          '?lots=&r_num=О&debtor=&org=&arb=&stat=12'
+        ]
+      else params = ['?lots=&r_num=О&debtor=&org=&arb=&stat=']
     else
-      params = [
-        '?processStatus=BID_SUBMISSION'
-        '?processStatus=BEFORE_TRADE'
-        '?processStatus=ACTIVE'
-        '?processStatus=AFTER_TRADE'
-        '?processStatus=CANCELED'
-      ]
+      if etp.recollect
+        params = [
+          '?processStatus=BID_SUBMISSION'
+          '?processStatus=BEFORE_TRADE'
+          '?processStatus=ACTIVE'
+          '?processStatus=AFTER_TRADE'
+        ]
+      else params = ['']
     log.info "Start collecting #{etp.name}"
     for status in params
       href = etp.href + status
@@ -51,7 +53,7 @@ Sync =>
           headers:
             parser: 'u-trade/list'
             etp: etp
-        redis.set.sync null, etp.href, page.toString()
+        redis.set.sync null, href, page.toString()
     log.info "Complete collecting #{etp.name}"
     process.exit 0
   catch e

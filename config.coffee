@@ -70,6 +70,7 @@ module.exports =
     platform: 'u-trade'
     tor: yes
     compression: yes
+    timeout: -1
   ,
     name: 'ЭТП "Аукционы Сибири"'
     href: 'http://ausib.ru/etp/trade/list.html'
