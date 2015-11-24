@@ -12,6 +12,8 @@ config     = require '../config'
 host       = /^https?\:\/\/(www\.)?([A-Za-z0-9\.\-]+)/
 сonnection = mongoose.createConnection "mongodb://localhost/#{config.database}"
 
+recollect = require('optimist').argv.recollect
+
 require '../models/lot'
 Lot       = сonnection.model 'Lot'
 require '../models/trade'
@@ -34,7 +36,7 @@ module.exports = (grunt) ->
         for etp in config.etps
           redis.clear.sync null
           amqp.init.sync null
-          collector.sync null, etp, etp.timeout or config.incUpdTime
+          collector.sync null, etp, etp.timeout or config.incUpdTime, recollect or true
         log.info "Complete updating of #{config.etps.length} sources"
         done()
       catch e

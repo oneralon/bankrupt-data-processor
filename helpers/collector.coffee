@@ -14,17 +14,21 @@ module.exports = (etp, timeout, cb) ->
       log.error e
       cb e
 
-proceed = (etp, timeout, cb)->
+proceed = (etp, timeout, recollect, cb)->
   collector = forever.start([
     'coffee', "./collectors/#{etp.platform}.coffee",
-    '--name', etp.name, '--href', etp.href, '--platform', etp.platform],
+    '--name', etp.name, '--href', etp.href, '--platform', etp.platform, '--recollect', recollect],
   {max: 1})
-  watchdog = setTimeout( ->
-    clearTimeout watchdog
-    log.info "Stop collecting by timer"
-    collector.stop()
-    cb(null, 0)
-  , timeout) if timeout?
-  collector.on 'exit:code', (code) ->
-    clearTimeout watchdog if watchdog?
-    cb(null, code)
+  if timeout > 0
+    watchdog = setTimeout( ->
+      clearTimeout watchdog
+      log.info "Stop collecting by timer"
+      collector.stop()
+      cb(null, 0)
+    , timeout) if timeout?
+    collector.on 'exit:code', (code) ->
+      clearTimeout watchdog if watchdog?
+      cb(null, code)
+  else
+    collector.on 'exit:code', (code) ->
+      cb(null, code)
