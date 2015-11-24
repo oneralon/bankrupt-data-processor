@@ -15,7 +15,7 @@ module.exports = (html, etp, cb) ->
       $ = cheerio.load(html)
       trades = []
       etpUrl = etp.href.match(host)[0]
-      rows = $('tr[onclick *= "/trade/view/purchase/general.html?id="], tr[onclick *= "location.href=\'generalView?id="], td.views-field.views-field-phpcode-1 > div[onclick *= "window.location="]')
+      rows = $('tr[onclick *= "/trade/view/purchase/general.html?id="], tr[onclick *= "location.href=\'generalView?id="], td.views-field.views-field-phpcode-3 > div')
       if rows.length is 0
         rows = $('a[href *= "/trade/view/purchase/general.html?id="]')
         for row in rows
