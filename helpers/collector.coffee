@@ -3,10 +3,10 @@ Sync       = require 'sync'
 logger     = require '../helpers/logger'
 log        = logger  'COLLECTOR FOREVER'
 
-module.exports = (etp, timeout, cb) ->
+module.exports = (etp, timeout, recollect, cb) ->
   Sync =>
     try
-      code = proceed.sync null, etp, timeout
+      code = proceed.sync null, etp, timeout, recollect
       while code isnt 0
         code = proceed.sync null, etp, timeout
       cb()
