@@ -34,15 +34,16 @@ module.exports = (grunt) ->
       etps = etps.filter (i) -> new RegExp(argv.etp.replace('.', '\.').replace('-', '\-')).test i.href
     if argv.platform?
       etps = etps.filter (i) -> new RegExp(argv.platform.replace('.', '\.').replace('-', '\-')).test i.platform
-    console.log "Start updating of #{config.etps.length} sources" 
+    console.log "Start updating of #{etps.length} sources" 
     done = @async()
     Sync =>
       try
-        for etp in config.etps
+        for etp in etps
           redis.clear.sync null
           amqp.init.sync null
           collector.sync null, etp, etp.timeout or config.incUpdTime, recollect or true
-        log.info "Complete updating of #{config.etps.length} sources"
+        done()
+        log.info "Complete updating of #{etps.length} sources"
         done()
       catch e
         log.error e
