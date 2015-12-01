@@ -54,9 +54,9 @@ Sync =>
       last = parseInt(redis.get.sync(null, href) or '1')
       resp = request.sync null, href
       $ = cheerio.load resp[0]
-      links = $("a[href *= '/etp/trade/list.html'], a[href*='r_num'], a[href*='/trades?']")
+      links = $("a[href *= '/etp/trade/list.html'], a[href*='r_num'], .views-field.views-field-phpcode-3 div[onclick*='window.location']")
       if links.length is 0 then pages = 1
-      else pages = parseInt $("a[href *= '/etp/trade/list.html'], a[href*='r_num'], a[href*='/trades?']").last().attr('href').match(/page=(\d+)/i)?[1] or 1
+      else pages = parseInt $("a[href *= '/etp/trade/list.html'], a[href*='r_num'], a[href*='/trades?']").last().attr('href')?.match(/page=(\d+)/i)?[1] or 1
       for page in [last..pages]
         log.info "Download page #{page} of #{pages}"
         if /\?/.test href then url = href + "&page=#{page}"
