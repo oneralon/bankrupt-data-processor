@@ -22,7 +22,7 @@ module.exports =
 
   etps: [
     name: 'Межотраслевая торговая система "Фабрикант"'
-    href: 'https://fabrikant.ru/trades/procedure/search/?filter_id=6'
+    href: 'https://www.fabrikant.ru/trades/procedure/search/'
     url: 'fabrikant.ru'
     platform: 'fabrikant'
     tor: no
@@ -35,7 +35,7 @@ module.exports =
     platform: 'lot-online'
     tor: no
     compressed: yes
-    timeout: 2 * 60 * 1000
+    timeout: 10 * 60 * 1000
   ,
     name: 'ЗАО "Сбербанк-АСТ"'
     href: 'http://utp.sberbank-ast.ru/Bankruptcy/List/BidList'
@@ -105,7 +105,7 @@ module.exports =
     href: 'http://nistp.ru/trades'
     url: 'nistp.ru'
     platform: 'u-trade'
-    tor: yes
+    tor: no
     compression: yes
     timeout: -1
   ,
@@ -318,7 +318,7 @@ module.exports =
     href: 'http://tendergarant.com/public/purchases-all/'
     url: 'tendergarant.com'
     platform: 'i-tender'
-    tor: yes
+    tor: no
     compression: yes
   ]
 

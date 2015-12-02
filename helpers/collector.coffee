@@ -8,7 +8,7 @@ module.exports = (etp, timeout, recollect, cb) ->
     try
       code = proceed.sync null, etp, timeout, recollect
       while code isnt 0
-        code = proceed.sync null, etp, timeout
+        code = proceed.sync null, etp, timeout, recollect
       cb()
     catch e
       log.error e

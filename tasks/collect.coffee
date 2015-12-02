@@ -29,7 +29,7 @@ module.exports = (grunt) ->
         redis.clear.sync null
         amqp.init.sync null
         for etp in etps
-          collector.sync null, etp, null
+          collector.sync null, etp, null, false
           exec 'pkill phantomjs'
         log.info "Complete full collecting of #{config.etps.length} sources"
         done()

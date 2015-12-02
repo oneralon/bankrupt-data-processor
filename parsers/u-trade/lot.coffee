@@ -64,7 +64,7 @@ module.exports = (html, etp, additional) ->
     recognizeCDATA: true
     recognizeSelfClosing: true
 
-  $("table[id*=lotNumber], table.data:contains('Лот №'), table.data:contains('Сведения о предмете торгов'), table.data:contains('Информация о предмете торгов'), table:contains('Сведения по лоту №')").each ->
+  $("table.views-table:contains('Лот №'), table[id*=lotNumber], table.data:contains('Лот №'), table.data:contains('Сведения о предмете торгов'), table.data:contains('Информация о предмете торгов'), table:contains('Сведения по лоту №')").each ->
     lot = {}
     for key, val of additional
       lot[key] = val
@@ -74,15 +74,19 @@ module.exports = (html, etp, additional) ->
     t3 = $(@).find("span:contains('Лот №')")?.text().replace(/Лот №\d+:/i, '').trim()
     t4 = $(@).find('td:contains("Краткие сведения об имуществе (предприятии) должника (наименование лота) ")')?.next().text().trim()
     lot.title = t0 or t1 or t2 or t3 or t4
-    lot.number = $(@).find('span.dashed_underline, th:contains("лоту №")')?.text().trim().match(/Лоту? №(\d+)/i)?[1].trim() or '1'
-    lot.information = $(@).find("td:contains('Cведения об имуществе (предприятии) должника, выставляемом на торги, его составе, характеристиках, описание')")?.next().text().trim()
-    lot.reviewing_property = $(@).find("td:contains('Порядок ознакомления с имуществом (предприятием) должника')")?.next().text().trim()
-    lot.start_price = parseFloat $(@).find("td:contains('Начальная цена продажи имущества')")?.next().text().trim().match(/([\d\s]+\,\d+)/)?[0]?.replace(/\s/g, '')
-    step = $(@).find("td:contains('Величина повышения начальной цены')")?.next().text().trim()
-    lot.step_percent = parseFloat step.match(/(\d+\,\d+)%/)
-    lot.step_sum = parseFloat step.match(/\(([\d\s]+\,\d+)\sруб\.\)/)?[1].replace(/\s/, '')
-    lot.status = status $(@).find("td:contains('Статус торгов')")?.next().text().trim()
-    deposit_size = $(@).find("td:contains('Размер задатка')")?.next().text().trim()
+    lot.number = parseInt $(@).find("td:contains('Номер лота')")?.next().text().trim() or $(@).find('span.dashed_underline, th:contains("лоту №")')?.text().trim().match(/Лоту? №(\d+)/i)?[1].trim() or '1'
+    lot.information = $(@).find("td:contains('Cведения об имуществе')")?.next().text().trim()
+    lot.reviewing_property = $(@).find("td:contains('Порядок ознакомления с имуществом')")?.next().text().trim()
+    lot.start_price = parseFloat $(@).find("td:contains('Начальная цена продажи имущества')")?.next().text().trim().match(/([\d\s]+\,\d+)/)?[0]?.replace(/\s/g, '') or $(@).find("td:contains('Стартовая цена')")?.next().text().trim().match(/([\d\s]+\.\d+)/)?[0]?.replace(/\s/g, '')
+    step = $(@).find("td:contains('Величина повышения начальной цены')")?.next().text().trim() or $(@).find("td:contains('Шаг аукциона, руб')")?.next().text().trim().replace('.', ',')
+    if /[\d\s]+\,\d+\s+руб\./.test step
+      lot.step_sum = parseFloat step.match(/([\d\s]+\,\d+)\sруб\./)?[1].replace(/,/, '.')
+      lot.step_percent = lot.step_sum / lot.start_price * 100
+    else
+      lot.step_percent = parseFloat step.match(/(\d+\,\d+)%/)
+      lot.step_sum = parseFloat step.match(/\(([\d\s]+\,\d+)\sруб\.\)/)?[1].replace(/\s/, '')
+    lot.status = status $(@).find("td:contains('Статус торгов')")?.next().text().trim() or $(@).find("td:contains('Текущий статус')")?.next().text().trim()
+    deposit_size = $(@).find("td:contains('Размер задатка')")?.next().text().trim().replace('.', ',')
     if /[\d\s]+\,\d+\s+руб\./.test deposit_size
       lot.deposit_size = parseFloat deposit_size.match(/([\d\s]+\,\d+)/)?[0]?.replace(/\s/g, '')
     else
@@ -108,7 +112,6 @@ module.exports = (html, etp, additional) ->
           for field in fieldset.fields
             interval[field] = value
       lot.intervals.push interval
-
     docs = []
     docs_rows = $(@).find("a[href*='/files/download/']")
     $(@).find("a[href*='/files/download/']").each ->
@@ -116,7 +119,6 @@ module.exports = (html, etp, additional) ->
       url = etp.href.match(host)?[0] + $(@).attr('href')
       docs.push { name: name, url: url }
     lot.documents = docs
-    console.log lot
     lots.push lot
   log.info "Parsed #{lots.length} lots"
   return lots
