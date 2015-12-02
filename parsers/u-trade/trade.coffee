@@ -39,7 +39,7 @@ module.exports = (html, etp, url, headers, cb) ->
   trade.etp = etp
   trade.url = url
   trade.type = $('td:contains("Форма проведения торгов и подачи предложений")').next().text().trim()
-  if trade.type is ''
+  unless trade.type?
     num = headers.number
     trade.type = if num[num.length-4] is 'О' then 'Открытый ' else 'Закрытый '
     trade.type += if num[num.length-3] is 'А' then 'аукцион с ' else 'торг посредством публичного предложения с '
@@ -146,4 +146,4 @@ module.exports = (html, etp, url, headers, cb) ->
     trade.lots = lots
     log.info "Found #{trade.lots.length} lots"
     cb "No lots! #{url}" if trade.lots.length is 0
-    # cb null, trade
+    cb null, trade
