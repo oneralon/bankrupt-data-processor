@@ -19,7 +19,7 @@ Trade     = сonnection.model 'Trade'
 
 module.exports = (grunt) ->
   grunt.registerTask 'cron:present', ->
-    console.log 'Update present field' 
+    console.log 'Update present field'
     done = @async()
     Lot.update {present:true, last_event:{$lte:new Date()}}, {$set:{present:false}}, {multi:1}, (err, result) ->
       done(err) if err?
@@ -34,7 +34,7 @@ module.exports = (grunt) ->
       etps = etps.filter (i) -> new RegExp(argv.etp.replace('.', '\.').replace('-', '\-')).test i.href
     if argv.platform?
       etps = etps.filter (i) -> new RegExp(argv.platform.replace('.', '\.').replace('-', '\-')).test i.platform
-    console.log "Start updating of #{etps.length} sources" 
+    console.log "Start updating of #{etps.length} sources"
     done = @async()
     Sync =>
       try
@@ -68,7 +68,7 @@ module.exports = (grunt) ->
     sh.execSync 'pkill -9 -f \'node /usr/local/bin/coffee /opt/bdp/consumers/lots-url.coffee\''
     sh.execSync 'pkill -9 -f \'node /usr/local/bin/coffee /opt/bdp/consumers/lots-html.coffee\''
     sh.execSync 'pkill -9 -f \'node /usr/local/bin/coffee /opt/bdp/consumers/lots-json.coffee\''
-    sh.spawn 'coffee', ['/opt/bdp/consumers/lists-html.coffee'], { detached: true, stdio: ['ignore', 'ignore', 'ignore']} 
+    sh.spawn 'coffee', ['/opt/bdp/consumers/lists-html.coffee'], { detached: true, stdio: ['ignore', 'ignore', 'ignore']}
     sh.spawn 'coffee', ['/opt/bdp/consumers/trades-url.coffee'], { detached: true, stdio: ['ignore', 'ignore', 'ignore']}
     sh.spawn 'coffee', ['/opt/bdp/consumers/trades-html.coffee'], { detached: true, stdio: ['ignore', 'ignore', 'ignore']}
     sh.spawn 'coffee', ['/opt/bdp/consumers/trades-json.coffee'], { detached: true, stdio: ['ignore', 'ignore', 'ignore']}
@@ -83,7 +83,7 @@ module.exports = (grunt) ->
     done = @async()
     date = moment().subtract(1, 'days')
     query =
-      status: $in: ["Идут торги", "Извещение опубликовано", "Не определен", "Прием заявок"]
+      status: $in: ["Идут торги", "Извещение опубликовано", "Не определен", "Прием заявок", "Прием заявок завершен"]
       updated: { $exists: true, $lt: date }
     perPage = 1000
     proceed_range = (skip, cb) ->
@@ -97,7 +97,7 @@ module.exports = (grunt) ->
             for lot in lots
               if lot.trade? and lot.trade._id?
                 if lot.url is lot.trade.url
-                  queue = config.tradeUrlsQueue 
+                  queue = config.tradeUrlsQueue
                   parser = lot.trade.etp.platform + '/' + 'trade'
                 else
                   queue = config.lotsUrlsQueue
@@ -172,7 +172,44 @@ module.exports = (grunt) ->
         done()
       catch e then done(e)
 
+  grunt.registerTask 'cron:intervalize', ->
+    console.log  "Intervalize lots"
+    done = @async()
+    query =
+      $where: 'this.intervals.length > 0'
+      # status: $in: ["Идут торги", "Извещение опубликовано", "Не определен", "Прием заявок", "Прием заявок завершен"]
+    perPage = 1000
+    proceed_range = (skip, cb) ->
+      lot_promises = []
+      Lot.find(query).skip(skip).limit(perPage).exec (err, lots) ->
+        cb(err) if err?
+        if not lots? or lots.length is 0 then cb(null, false)
+        console.log "Skip: #{skip}\t\t\t\tLots: #{lots.length}"
+        Sync =>
+          try
+            for lot in lots
+              intervals = lot.intervals.filter (i) -> i.interval_start_date > new Date() or i.request_start_date > new Date()
+              if intervals.length > 0
+                interval = intervals[0]
+              else
+                interval = lot.intervals[lot.intervals.length - 1]
+              lot.current_sum = interval.interval_price
+              lot.discount = lot.start_price - lot.current_sum
+              lot.discount_percent = lot.discount / lot.start_price * 100
+              save lot_promises, lot
+            cb(null, true)
+          catch e then done(e)
+    Sync =>
+      try
+        res = true
+        current = 0
+        while res
+          res = proceed_range.sync null, current
+          current += perPage
+        done()
+      catch e then done(e)
+
 save = (container, item) ->
-  container.push new Promise (resolve) -> 
+  container.push new Promise (resolve) ->
     console.log  item.last_event
     item.save()
