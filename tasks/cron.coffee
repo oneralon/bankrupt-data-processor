@@ -176,7 +176,6 @@ module.exports = (grunt) ->
     console.log  "Intervalize lots"
     done = @async()
     query =
-      $where: 'this.intervals.length > 0'
       # status: $in: ["Идут торги", "Извещение опубликовано", "Не определен", "Прием заявок", "Прием заявок завершен"]
     perPage = 1000
     proceed_range = (skip, cb) ->
@@ -188,14 +187,19 @@ module.exports = (grunt) ->
         Sync =>
           try
             for lot in lots
-              intervals = lot.intervals.filter (i) -> i.interval_start_date > new Date() or i.request_start_date > new Date()
-              if intervals.length > 0
-                interval = intervals[0]
+              if lot.intervals.length > 0
+                intervals = lot.intervals.filter (i) -> i.interval_start_date > new Date() or i.request_start_date > new Date()
+                if intervals.length > 0
+                  interval = intervals[0]
+                else
+                  interval = lot.intervals[lot.intervals.length - 1]
+                lot.current_sum = interval.interval_price
+                lot.discount = lot.start_price - lot.current_sum
+                lot.discount_percent = lot.discount / lot.start_price * 100
               else
-                interval = lot.intervals[lot.intervals.length - 1]
-              lot.current_sum = interval.interval_price
-              lot.discount = lot.start_price - lot.current_sum
-              lot.discount_percent = lot.discount / lot.start_price * 100
+                lot.current_sum = lot.start_price
+                lot.discount = lot.start_price - lot.current_sum
+                lot.discount_percent = lot.discount / lot.start_price * 100
               save lot_promises, lot
             cb(null, true)
           catch e then done(e)
@@ -211,5 +215,5 @@ module.exports = (grunt) ->
 
 save = (container, item) ->
   container.push new Promise (resolve) ->
-    console.log  item.last_event
+    console.log  item.current_sum
     item.save()
